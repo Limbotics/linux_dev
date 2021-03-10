@@ -1,1 +1,3 @@
-print("Hello, world, final test #3!")
+from adafruit_servokit import ServoKit
+kit = ServoKit(channels=16)
+
