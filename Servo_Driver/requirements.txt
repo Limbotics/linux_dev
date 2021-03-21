@@ -1,0 +1,3 @@
+adafruit-circuitpython-servokit==1.3.3
+
+#need to update requirements - not complete
