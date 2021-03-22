@@ -1,7 +1,19 @@
 from adafruit_servokit import ServoKit
 
+from enum import Enum
+
+
+class fingers(Enum):
+    """ This class defines which servo corresponds to which finger. """
+    thumb = 0
+    index = 1
+    middle = 2
+    ring = 3
+    pinky = 4
+
 
 class handServoControl:
+    """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
 
     def __init__(self):
 
@@ -9,26 +21,20 @@ class handServoControl:
         #16 channel piHat
         self.kit = ServoKit(channels=16)
 
-    #0 - Thumb
-    #1 - Index
-    #2 - Middle
-    #3 - Ring
-    #4 - Pinky
-
     def moveThumb(self, angle):
-        self.kit.servo[0].angle = angle
+        self.kit.servo[fingers.thumb].angle = angle
 
     def moveIndex(self, angle):
-        self.kit.servo[1].angle = angle
+        self.kit.servo[fingers.index].angle = angle
 
     def moveMiddle(self, angle):
-        self.kit.servo[2].angle = angle
+        self.kit.servo[fingers.middle].angle = angle
 
     def moveRing(self, angle):
-        self.kit.servo[3].angle = angle
+        self.kit.servo[fingers.ring].angle = angle
 
     def movePinky(self, angle):
-        self.kit.servo[4].angle = angle
+        self.kit.servo[fingers.pinky].angle = angle
 
 
 #https://www.w3schools.com/python/python_inheritance.asp
