@@ -7,11 +7,12 @@ from adafruit_servokit import ServoKit
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
 from Servo_Driver import servo
 from Camera_Interpreter import camera
+from Muscle_Driver import muscle
 
 #handLUTInst = servo.handLUTControl()
 
-c = camera.camera_interface()
-c.get_my_var()
+cam = camera.camera_interface()
+mi = muscle.muscle_interface()
 
 #while True:
     #Determine the current state we're in 
