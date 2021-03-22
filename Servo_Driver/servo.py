@@ -11,6 +11,13 @@ class fingers(Enum):
     ring = 3
     pinky = 4
 
+class grips(Enum):
+    """ This class defines the different grips available."""
+    openGrip = "open"
+    fist = "fist"
+    pencil = "pencil"
+    cup = "cup"
+
 
 class handServoControl:
     """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
@@ -41,7 +48,15 @@ class handServoControl:
 
 #this child class is the look up table and needs the most real world tuning
 class handLUTControl(handServoControl):
-    def __init__(self, grip_config="openHand"):
+
+    dispatch = {
+        grips.openGrip: openGrip,
+        grips.fist: closeGrip,
+        grips.pencil: pencilGrip,
+        grips.cup: cupGrip,
+    }
+    
+    def __init__(self, grip_config=grips.openGrip):
         super().__init__()
         self.grip_config = grip_config
 
@@ -73,16 +88,5 @@ class handLUTControl(handServoControl):
         self.moveRing(160)
         self.movePinky(160)
 
-    def loopHandLUTControl(self):
-
-        if self.grip_config == "openHand":
-            self.openGrip()
-
-        if self.grip_config == "closeHand":
-            self.closeGrip()
-
-        if self.grip_config == "pencil":
-            self.pencilGrip()
-        
-        if self.grip_config == "cup":
-            self.cupGrip()
+    def process_command(self):
+        self.dispatch[self.grip_config]()

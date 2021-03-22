@@ -9,16 +9,17 @@ from Servo_Driver import servo
 from Camera_Interpreter import camera
 from Muscle_Driver import muscle
 
-#handLUTInst = servo.handLUTControl()
+#handLUTInst = servo.()
 
 cam = camera.camera_interface()
 mi = muscle.muscle_interface()
 
 #while True:
     #Determine the current state we're in 
+        #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
         #No object detected & not currently in grasp mode -> Continue looking for object
         #No object detected & currently in grasp mode     -> User is actuating current grasp, do not change current grip
-        #Object detected & not currently in grasp mode    -> Select grip from database
+        #Object detected & not currently in grasp mode    -> Select grip from database, command servos to new grip
         #Object detected & currently in grasp mode        -> User is actuating current grasp, do not change current grip
 
 #handLUTInst.loopHandLUTControl()
