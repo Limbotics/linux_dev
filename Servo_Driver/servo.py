@@ -3,22 +3,6 @@ from adafruit_servokit import ServoKit
 from enum import Enum
 
 
-class fingers(Enum):
-    """ This class defines which servo corresponds to which finger. """
-    thumb = 0
-    index = 1
-    middle = 2
-    ring = 3
-    pinky = 4
-
-class grips(Enum):
-    """ This class defines the different grips available."""
-    openGrip = "open"
-    fist = "fist"
-    pencil = "pencil"
-    cup = "cup"
-
-
 class handServoControl:
     """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
 
