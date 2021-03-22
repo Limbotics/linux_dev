@@ -4,13 +4,11 @@ import os
 from adafruit_servokit import ServoKit
 
 #import other files
-#from os import "~/limbotics_github/transradial_development/Servo_driver/servo.py"
-import Servo_driver
-from .Camera_Interpreter.camera import *
+# from os import ~.limbotics_github.transradial_development.Servo_driver.servo
+from Servo_Driver import servo
+from Camera_Interpreter import camera
 
-print(os.getcwd())
-
-handLUTInst = handLUTControl()
+handLUTInst = servo.handLUTControl()
 
 #while True:
     #Determine the current state we're in 
@@ -19,9 +17,9 @@ handLUTInst = handLUTControl()
         #Object detected & not currently in grasp mode    -> Select grip from database
         #Object detected & currently in grasp mode        -> User is actuating current grasp, do not change current grip
 
-handLUTInst.loopHandLUTControl()
+#handLUTInst.loopHandLUTControl()
 
 #update handLUTInst grips using this:
-handLUTInst.grip_config = "pencil"
+#handLUTInst.grip_config = "pencil"
 
 print("No errors occured.")
