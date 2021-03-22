@@ -4,8 +4,8 @@ import os
 from adafruit_servokit import ServoKit
 
 #import other files
-# from os import ~.limbotics_github.transradial_development.Servo_driver.servo
-from .Servo_Driver.servo import *
+#from os import "~/limbotics_github/transradial_development/Servo_driver/servo.py"
+import Servo_driver
 from .Camera_Interpreter.camera import *
 
 print(os.getcwd())
