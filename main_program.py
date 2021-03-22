@@ -8,7 +8,10 @@ from adafruit_servokit import ServoKit
 from Servo_Driver import servo
 from Camera_Interpreter import camera
 
-handLUTInst = servo.handLUTControl()
+#handLUTInst = servo.handLUTControl()
+
+c = camera.camera_interface()
+c.get_my_var()
 
 #while True:
     #Determine the current state we're in 
