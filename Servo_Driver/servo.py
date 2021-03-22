@@ -48,17 +48,19 @@ class handServoControl:
 
 #this child class is the look up table and needs the most real world tuning
 class handLUTControl(handServoControl):
-
-    dispatch = {
-        grips.openGrip: openGrip,
-        grips.fist: closeGrip,
-        grips.pencil: pencilGrip,
-        grips.cup: cupGrip,
-    }
     
     def __init__(self, grip_config=grips.openGrip):
         super().__init__()
         self.grip_config = grip_config
+
+        #Initialize the dispatcher
+        dispatch = {
+            grips.openGrip: self.openGrip,
+            grips.fist:     self.closeGrip,
+            grips.pencil:   self.pencilGrip,
+            grips.cup:      self.cupGrip,
+        }
+        self.dispatch = dispatch
 
     def openGrip(self):
         self.moveThumb(0)
