@@ -27,7 +27,7 @@ class camera_interface():
     # https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
 
     def __init__(self):
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(-1)
         print("Created video capture object")
         # QR code detection object
         self.detector = cv2.QRCodeDetector()
