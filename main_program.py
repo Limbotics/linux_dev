@@ -17,11 +17,12 @@ mi = muscle.muscle_interface()
 
 #Servo control initialization
 #servs = servo.handLUTControl()
-
-while True:
+count = 0
+while (count < 10):
     cam.read_cam_display_out()
 
     time.sleep(1)
+    count += 1
     #Determine the current state we're in 
         #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
         #No object detected & not currently in grasp mode -> Continue looking for object
@@ -30,7 +31,7 @@ while True:
         #Object detected & currently in grasp mode        -> User is actuating current grasp, do not change current grip
 
 #handLUTInst.loopHandLUTControl()
-
+cam.end_camera_session()
 #update handLUTInst grips using this:
 #handLUTInst.grip_config = "pencil"
 
