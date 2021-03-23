@@ -5,6 +5,8 @@ import numpy as np
 import argparse
 import imutils
 import time
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 import cv2
 
 import sys
@@ -27,6 +29,7 @@ class camera_interface():
     # https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
 
     def __init__(self):
+        self.count = 0
         self.cap = cv2.VideoCapture(0)
         print("Created video capture object")
         # QR code detection object
@@ -56,7 +59,8 @@ class camera_interface():
         # cv2.imshow("code detector", img)
 
         # save the image
-        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+        cv2.imwrite("frame%d.jpg" % self.count, img)     # save frame as JPEG file
+        self.count += 1
 
     def end_camera_session(self):
         #Release the camera object
