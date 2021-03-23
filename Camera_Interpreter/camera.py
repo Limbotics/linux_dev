@@ -54,7 +54,10 @@ class camera_interface():
             if data:
                 print("data found: ", data)
         # display the image preview
-        cv2.imshow("code detector", img)
+        # cv2.imshow("code detector", img)
+
+        # save the image
+        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
 
     def end_camera_session(self):
         #Release the camera object
