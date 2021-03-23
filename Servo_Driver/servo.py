@@ -2,8 +2,13 @@ from adafruit_servokit import ServoKit
 
 from enum import Enum
 
-from ..Hand_Classes import hand_interface
-from hand_interface import fingers, grips
+import sys
+import os
+sys.path.append(os.path.abspath('../Hand_Classes'))
+#from hand_interface import fingers, grips
+from Hand_Classes import hand_interface
+fingers = hand_interface.fingers
+grips = hand_interface.grips
 
 class handServoControl:
     """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
@@ -35,7 +40,7 @@ class handServoControl:
 #this child class is the look up table and needs the most real world tuning
 class handLUTControl(handServoControl):
     
-    def __init__(self, grip_config=hand_interface.grips.openGrip):
+    def __init__(self, grip_config=grips.openGrip):
         super().__init__()
         self.grip_config = grip_config
 

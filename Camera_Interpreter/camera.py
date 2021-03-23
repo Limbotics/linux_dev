@@ -8,16 +8,14 @@ import time
 import cv2
 
 import sys
-sys.path.append(".") # Adds higher directory to python modules path.
+import os
+sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to python modules path.
 
 from enum import Enum
 
-from ..Hand_Classes import hand_interface
-from hand_interface import fingers, grips
-
-class object_states(Enum):
-    pencil = "pencil grip configuration"
-    cup = "cup grip configuration"
+from Hand_Classes import hand_interface
+fingers = hand_interface.fingers
+grips = hand_interface.grips
 
 #https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/
 #https://www.pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/
