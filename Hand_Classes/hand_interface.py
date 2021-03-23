@@ -1,3 +1,4 @@
+from enum import Enum 
 
 class fingers(Enum):
     """ This class defines which servo corresponds to which finger. """

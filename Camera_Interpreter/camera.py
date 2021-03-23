@@ -7,9 +7,12 @@ import imutils
 import time
 import cv2
 
+import sys
+sys.path.append(".") # Adds higher directory to python modules path.
+
 from enum import Enum
 
-
+from ..Hand_Classes import hand_interfaces
 
 class object_states(Enum):
     pencil = "pencil grip configuration"
