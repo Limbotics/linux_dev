@@ -2,10 +2,8 @@ from adafruit_servokit import ServoKit
 
 from enum import Enum
 
-import sys
-sys.path.append("..") # Adds higher directory to python modules path.
-
-from Hand_Classes import hand_interface
+from ..Hand_Classes import hand_interface
+from hand_interface import fingers, grips
 
 class handServoControl:
     """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
@@ -17,7 +15,7 @@ class handServoControl:
         self.kit = ServoKit(channels=16)
 
     def moveThumb(self, angle):
-        self.kit.servo[hand_interface.fingers.thumb].angle = angle
+        self.kit.servo[fingers.thumb].angle = angle
 
     def moveIndex(self, angle):
         self.kit.servo[fingers.index].angle = angle

@@ -12,7 +12,8 @@ sys.path.append(".") # Adds higher directory to python modules path.
 
 from enum import Enum
 
-from ..Hand_Classes import hand_interfaces
+from ..Hand_Classes import hand_interface
+from hand_interface import fingers, grips
 
 class object_states(Enum):
     pencil = "pencil grip configuration"
@@ -24,7 +25,7 @@ class object_states(Enum):
 
 
 class camera_interface():
-    """Provides the main interface for using the camera and determining the grip we need to be in."""
+    """The main interface for using the camera and determining the grip we need to be in."""
     # https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
 
     def __init__(self):
@@ -44,7 +45,7 @@ class camera_interface():
 
     def read_cam_display_out(self):
         #Call the standard method to get the qr data / bounding box
-        data, bbox = self.read_cam()
+        data, bbox, img = self.read_cam()
         # if there is a bounding box, draw one, along with the data
         if(bbox is not None):
             for i in range(len(bbox)):
