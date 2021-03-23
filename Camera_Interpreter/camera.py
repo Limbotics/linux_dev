@@ -10,7 +10,6 @@ import cv2
 import sys
 import os
 sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to python modules path.
-cap = cv2.VideoCapture(0)
 
 from enum import Enum
 
@@ -28,13 +27,14 @@ class camera_interface():
     # https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
 
     def __init__(self):
-
+        self.cap = cv2.VideoCapture(0)
+        print("Created video capture object")
         # QR code detection object
         self.detector = cv2.QRCodeDetector()
         
     def read_cam(self):
         # get the image
-        _, img = cap.read()
+        _, img = self.cap.read()
         # get bounding box coords and data
         data, bbox, _ = self.detector.detectAndDecode(img)
         #return the information we got from the camera
@@ -60,6 +60,6 @@ class camera_interface():
 
     def end_camera_session(self):
         #Release the camera object
-        cap.release()
+        self.cap.release()
         #Destroy all displayed windows
         cv2.destroyAllWindows()
