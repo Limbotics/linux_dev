@@ -40,6 +40,8 @@ class camera_interface():
         _, img = self.cap.read()
         # get bounding box coords and data
         data, bbox, _ = self.detector.detectAndDecode(img)
+        if data:
+            print("data found: ", data)
         #return the information we got from the camera
         return data, bbox, img
 

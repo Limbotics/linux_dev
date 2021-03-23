@@ -13,5 +13,5 @@ class grips(Enum):
     openGrip = "open"
     fist = "fist"
     pencil = "pencil"
-    cup = "cup"
+    cup = "cup grip"
 
