@@ -9,10 +9,14 @@ from Servo_Driver import servo
 from Camera_Interpreter import camera
 from Muscle_Driver import muscle
 
-#handLUTInst = servo.()
-
+#Camera initialization
 cam = camera.camera_interface()
+
+#Muscle sensor initialization
 mi = muscle.muscle_interface()
+
+#Servo control initialization
+#servs = servo.handLUTControl()
 
 #while True:
     #Determine the current state we're in 
