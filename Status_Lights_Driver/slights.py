@@ -72,6 +72,8 @@ class slights_interface():
         #Update current status
         self.current_status = status
 
+        print("Updated current LED status to " + str(self.current_status))
+
     def get_current_status(self):
         return self.current_status
 
