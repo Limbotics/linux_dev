@@ -46,7 +46,8 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            GPIO.setup(pinout,GPIO.OUT)
+            print(str(pinout))
+            #GPIO.setup(pinout,GPIO.OUT)
 
         #Set initial status
         self.set_status(False, False)
