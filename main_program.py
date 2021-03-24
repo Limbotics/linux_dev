@@ -23,7 +23,7 @@ mi = muscle.muscle_interface()
 statuslights = slights.slights_interface()
 
 count = 0
-while (count < 1000):
+while (count < 100):
     _, _, _, is_object =  cam.read_cam()
     user_gripping = False
     statuslights.set_status(is_object, user_gripping)

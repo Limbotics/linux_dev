@@ -46,8 +46,7 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            print(str(pinout.value))
-            #GPIO.setup(pinout,GPIO.OUT)
+            GPIO.setup(pinout.value,GPIO.OUT)
 
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
@@ -67,9 +66,7 @@ class slights_interface():
 
         #Update the pins given the guidelines in the display state
         for pin in status:
-            print(str(pin.value))
-            print("\n" + str(status[pin]))
-            #GPIO.setup(pin, status[pin])
+            GPIO.output(pin.value, status[pin].value)
 
         #Update current status
         self.current_status = status
