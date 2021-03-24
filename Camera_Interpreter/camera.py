@@ -40,14 +40,18 @@ class camera_interface():
         _, img = self.cap.read()
         # get bounding box coords and data
         data, bbox, _ = self.detector.detectAndDecode(img)
+        #Define a parameter we can easily read later if anything is detected
+        is_object = False
+        #Update parameter/output the data we found, if any
         if data:
             print("data found: ", data)
+            is_object = True
         #return the information we got from the camera
-        return data, bbox, img
+        return data, bbox, img, is_object
 
     def read_cam_display_out(self):
         #Call the standard method to get the qr data / bounding box
-        data, bbox, img = self.read_cam()
+        data, bbox, img, _ = self.read_cam()
         # if there is a bounding box, draw one, along with the data
         if(bbox is not None):
             for i in range(len(bbox)):
