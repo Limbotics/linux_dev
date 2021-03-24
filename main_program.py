@@ -29,6 +29,7 @@ while (count < 100):
     statuslights.set_status(is_object, user_gripping)
     time.sleep(0.01)
     count += 1
+    print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
     #No object detected & not currently in grasp mode -> Continue looking for object
