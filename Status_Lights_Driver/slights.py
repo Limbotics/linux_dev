@@ -66,7 +66,9 @@ class slights_interface():
 
         #Update the pins given the guidelines in the display state
         for pin in status:
-            GPIO.setup(pin, status[pin])
+            print(str(pin))
+            print("\n" + str(status[pin]))
+            #GPIO.setup(pin, status[pin])
 
         #Update current status
         self.current_status = status
