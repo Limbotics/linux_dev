@@ -46,11 +46,8 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            print(str(pinout))
+            print(str(pinout.value))
             #GPIO.setup(pinout,GPIO.OUT)
-
-        #Set initial status
-        self.set_status(False, False)
 
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
@@ -61,14 +58,17 @@ class slights_interface():
             (True, False):  status_states.object_detected,
         }
 
+        #Set initial status
+        self.set_status(False, False)
+
     def set_status(self, object_detected, is_activated):
         #Correlate the state of the arm to a status light display state
         status = self.status_dispatcher[(object_detected, is_activated)]
 
         #Update the pins given the guidelines in the display state
         for pin in status:
-            print(str(pin))
-            print("\n" + str(status[pin]))
+            print(str(pin.value))
+            print("\n" + str(status[pin].value))
             #GPIO.setup(pin, status[pin])
 
         #Update current status
