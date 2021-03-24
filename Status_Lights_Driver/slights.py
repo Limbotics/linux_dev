@@ -9,11 +9,13 @@ sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to p
 from enum import Enum
 
 class pinouts(Enum):
+    """The pin number for a given LED color."""
     white: 11   #GPIO 0
     yellow: 13  #GPIO 2
     blue: 15    #GPIO 3
 
 class status_states(Enum):
+    """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
     no_object: {
         pinouts.white: GPIO.LOW,
         pinouts.yellow: GPIO.HIGH,
@@ -34,6 +36,8 @@ class status_states(Enum):
 
 class slights_interface():
 
+    status_dispatcher = {}
+
     def __init__(self):
         #Set the GPIO pin naming convention
         GPIO.setmode(GPIO.BCM)
@@ -45,7 +49,7 @@ class slights_interface():
             GPIO.setup(pinout,GPIO.OUT)
 
         #Set initial status
-        self.set_status(status_states.no_object)
+        self.set_status(False, False)
 
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
