@@ -10,9 +10,29 @@ from enum import Enum
 
 class pinouts(Enum):
     """The pin number for a given LED color."""
-    white: 11   #GPIO 0
-    yellow: 13  #GPIO 2
-    blue: 15    #GPIO 3
+    white  = 11   #GPIO 0
+    yellow = 13  #GPIO 2
+    blue   = 15    #GPIO 3
+
+class status_states(Enum):
+    """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
+    no_object = {
+        pinouts.white: GPIO.LOW,
+        pinouts.yellow: GPIO.HIGH,
+        pinouts.blue: GPIO.LOW
+    }
+
+    object_detected = {
+        pinouts.white: GPIO.LOW,
+        pinouts.yellow: GPIO.LOW,
+        pinouts.blue: GPIO.HIGH
+    }
+
+    object_detected_and_user_activated = {
+        pinouts.white: GPIO.HIGH,
+        pinouts.yellow: GPIO.LOW,
+        pinouts.blue: GPIO.LOW
+    }
 
 class slights_interface():
 
@@ -28,37 +48,16 @@ class slights_interface():
         for pinout in pinouts:
             GPIO.setup(pinout,GPIO.OUT)
 
-        #Define the status states
-        self.status_states = Enum('status_states',{
-        'no_object': {
-        pinouts.white: GPIO.LOW,
-        pinouts.yellow: GPIO.HIGH,
-        pinouts.blue: GPIO.LOW
-        },
-
-        'object_detected': {
-            pinouts.white: GPIO.LOW,
-            pinouts.yellow: GPIO.LOW,
-            pinouts.blue: GPIO.HIGH
-        },
-
-        'object_detected_and_user_activated': {
-            pinouts.white: GPIO.HIGH,
-            pinouts.yellow: GPIO.LOW,
-            pinouts.blue: GPIO.LOW
-        }
-        })
-
         #Set initial status
         self.set_status(False, False)
 
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
             #(object_detected, user_activated): display_state
-            (False, False): self.status_states.no_object,
-            (False, True): self.status_states.object_detected_and_user_activated, #TODO: New status for this?
-            (True, True):  self.status_states.object_detected_and_user_activated,
-            (True, False):  self.status_states.object_detected,
+            (False, False): status_states.no_object,
+            (False, True): status_states.object_detected_and_user_activated, #TODO: New status for this?
+            (True, True):  status_states.object_detected_and_user_activated,
+            (True, False):  status_states.object_detected,
         }
 
     def set_status(self, object_detected, is_activated):
@@ -72,7 +71,7 @@ class slights_interface():
         #Update current status
         self.current_status = status
 
-        print("Updated current LED status to " + str(self.current_status))
+        print("Updated LED status to " + str(self.current_status))
 
     def get_current_status(self):
         return self.current_status
