@@ -52,10 +52,10 @@ class slights_interface():
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
             #(object_detected, user_activated): display_state
-            (False, False): status_states.no_object,
-            (False, True): status_states.object_detected_and_user_activated, #TODO: New status for this?
-            (True, True):  status_states.object_detected_and_user_activated,
-            (True, False):  status_states.object_detected,
+            (False, False): status_states.no_object.value,
+            (False, True): status_states.object_detected_and_user_activated.value, #TODO: New status for this?
+            (True, True):  status_states.object_detected_and_user_activated.value,
+            (True, False):  status_states.object_detected.value,
         }
 
         #Set initial status
