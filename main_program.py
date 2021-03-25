@@ -24,26 +24,34 @@ statuslights = slights.slights_interface()
 
 count = 0
 status_T0 = 0
+previous_grip = None
 delta_required_for_status_change = 35
-previous_status = None
-print("Sequence start")
+print("Main Program Start.")
 while (count < 1000):
     try:
         grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
         user_gripping = False
-        # if(grip_picked):
-        #     servs.grip_config = grip_picked
-        #     servs.process_command()
-        # else:
-        #     servs.process_command()
-        if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked != previous_status)):
+        if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
+            #Update grip configuration, if we should
+            #servs.grip_config = grip_picked
+            #servs.process_grip_change()
+
+            #Update status lights
             statuslights.set_status(is_object, user_gripping)
-            previous_status = grip_picked
             status_T0 = count
+
+            #Save grip pick
+            previous_grip = grip_picked
+
+            if(grip_picked is not ""):
+                print("Changed grip configuration to "+ grip_picked)
+            else:
+                print("No object detected - changed to open grip.")
+        
         time.sleep(0.001)
         count += 1
     except KeyboardInterrupt:
-        print("Script quit command detected - closing IO objects.")
+        print("\nScript quit command detected - closing IO objects.")
         break
     #print(count)
 #Determine the current state we're in 
@@ -56,7 +64,5 @@ while (count < 1000):
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
 statuslights.safe_shutdown()
-#update handLUTInst grips using this:
-#
 
-print("No errors occured.")
+print("Program ended.")

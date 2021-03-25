@@ -25,8 +25,16 @@ grips = hand_interface.grips
 
 
 class camera_interface():
-    """The main interface for using the camera and determining the grip we need to be in."""
-    # https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
+    """
+    The main interface for using the camera and determining the grip we need to be in.
+    https://www.hackster.io/gatoninja236/scan-qr-codes-in-real-time-with-raspberry-pi-a5268b
+      
+    Attributes:
+        count (int): Count of saved screenshots. File titles are frame'count'.jpg.
+        cap (cv2 VideoCapture): The VideoCapture object.
+        detector (QRCodeDetector): The QR Code detecting object.
+    """
+    
 
     def __init__(self):
         self.count = 0
@@ -59,14 +67,14 @@ class camera_interface():
                         0, 255), thickness=2)
             cv2.putText(img, data, (int(bbox[0][0][0]), int(bbox[0][0][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, (0, 255, 0), 2)
-            if data:
-                print("data found: ", data)
+            #if data:
+                #print("data found: ", data)
         # display the image preview
-        # cv2.imshow("code detector", img)
+        cv2.imshow("code detector", img)
 
         # save the image
-        cv2.imwrite("frame%d.jpg" % self.count, img)     # save frame as JPEG file
-        self.count += 1
+        #cv2.imwrite("frame%d.jpg" % self.count, img)     # save frame as JPEG file
+        #self.count += 1
 
     def end_camera_session(self):
         #Release the camera object
