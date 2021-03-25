@@ -31,6 +31,7 @@ while (count < 1000):
     try:
         grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
         user_gripping = False
+        print(grip_picked)
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
             #servs.grip_config = grip_picked
@@ -43,7 +44,10 @@ while (count < 1000):
             #Save grip pick
             previous_grip = grip_picked
 
-            print("Changed grip configuration to "+ grip_picked)
+            if(grip_picked is not None):
+                print("Changed grip configuration to "+ grip_picked)
+            else:
+                print("No object detected - changed to open grip.")
         
         time.sleep(0.001)
         count += 1
