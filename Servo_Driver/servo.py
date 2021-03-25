@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath('../Hand_Classes'))
 from Hand_Classes import hand_interface
 fingers = hand_interface.fingers
 grips = hand_interface.grips
+grip_finger_angles = hand_interface.grip_finger_angles
 
 class handServoControl:
     """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
@@ -20,67 +21,49 @@ class handServoControl:
         #16 channel piHat
         self.kit = ServoKit(channels=16)
 
-    def moveThumb(self, angle):
-        self.kit.servo[fingers.thumb].angle = angle
+        #Initialize stored angles
+        self.angles = {
+            fingers.thumb: 0,
+            fingers.index: 0,
+            fingers.middle: 0,
+            fingers.ring: 0,
+            fingers.pinky: 0
+        }
 
-    def moveIndex(self, angle):
-        self.kit.servo[fingers.index].angle = angle
+    def moveFinger(self, finger, angle):
+        self.kit.servo[finger].angle = angle
+        self.angles[finger] = angle
 
-    def moveMiddle(self, angle):
-        self.kit.servo[fingers.middle].angle = angle
-
-    def moveRing(self, angle):
-        self.kit.servo[fingers.ring].angle = angle
-
-    def movePinky(self, angle):
-        self.kit.servo[fingers.pinky].angle = angle
-
+    def get_angle_set(self):
+        return self.angles
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
 #this child class is the look up table and needs the most real world tuning
 class handLUTControl(handServoControl):
     
-    def __init__(self, grip_config=grips.openGrip):
+    def __init__(self, grip_config=grips.openGrip.value):
         super().__init__()
         self.grip_config = grip_config
 
         #Initialize the dispatcher
         dispatch = {
-            grips.openGrip.value: self.openGrip,
-            grips.fist.value:     self.closeGrip,
-            grips.pencil.value:   self.pencilGrip,
-            grips.cup.value:      self.cupGrip,
+            grips.openGrip.value: grip_finger_angles.openGrip,
+            grips.fist.value:     grip_finger_angles.closeGrip,
+            grips.pencil.value:   grip_finger_angles.pencil,
+            grips.cup.value:      grip_finger_angles.cup,
         }
         self.dispatch = dispatch
 
-    def openGrip(self):
-        self.moveThumb(0)
-        self.moveIndex(0)
-        self.moveMiddle(0)
-        self.moveRing(0)
-        self.movePinky(0)
-    
-    def closeGrip(self):
-        self.moveThumb(180)
-        self.moveIndex(180)
-        self.moveMiddle(180)
-        self.moveRing(180)
-        self.movePinky(180)
+        #Run the dispatcher
+        self.process_command()
 
-    def pencilGrip(self):
-        self.moveThumb(150)
-        self.moveIndex(120)
-        self.moveMiddle(180)
-        self.moveRing(180)
-        self.movePinky(180)
-
-    def cupGrip(self):
-        self.moveThumb(140)
-        self.moveIndex(160)
-        self.moveMiddle(160)
-        self.moveRing(160)
-        self.movePinky(160)
-
+    """Process the current grip config set in the class object."""
     def process_command(self):
-        self.dispatch[self.grip_config]()
+        finger_angles = self.dispatch[self.grip_config]
+        for finger in finger_angles:
+            self.moveFinger(finger, finger_angles[finger])  
+
+    """Checks if all the angles are set to zero by the user."""
+    def authorized_to_change_grips(self):
+        return 

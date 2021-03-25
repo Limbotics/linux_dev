@@ -6,6 +6,9 @@ import sys
 import os
 sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to python modules path.
 
+from Hand_Classes import hand_interface
+grips = hand_interface.grips
+
 from enum import Enum
 
 class pinouts(Enum):
