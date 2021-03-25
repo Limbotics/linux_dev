@@ -24,8 +24,13 @@ statuslights = slights.slights_interface()
 
 count = 0
 while (count < 100):
-    _, _, _, is_object =  cam.read_cam()
+    grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
     user_gripping = False
+    # if(grip_picked):
+    #     servs.grip_config = grip_picked
+    #     servs.process_command()
+    # else:
+    #     servs.process_command()
     statuslights.set_status(is_object, user_gripping)
     time.sleep(0.01)
     count += 1
@@ -40,6 +45,6 @@ while (count < 100):
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
 #update handLUTInst grips using this:
-#handLUTInst.grip_config = "pencil"
+#
 
 print("No errors occured.")
