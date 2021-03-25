@@ -12,7 +12,7 @@ grips = hand_interface.grips
 from enum import Enum
 
 class pinouts(Enum):
-    """The pin number for a given LED color."""
+    """The pin number for a given LED color. BCM Coordinate system"""
     white  = 17   #GPIO 0
     yellow = 27  #GPIO 2
     blue   = 22    #GPIO 3
@@ -38,12 +38,19 @@ class status_states(Enum):
     }
 
 class slights_interface():
-
-    status_dispatcher = {}
+    """
+    Status Lights interfacing for startup, shutdown, and different operational modes.
+      
+    Attributes:
+        status_dispatcher (dict): Correlates a tuple of (object_detected, user_activated) to a state of the status lights.
+        current_status (dict): The current state of all the lights, an enum in status_states. 
+        
+    """
 
     def __init__(self):
         #Set the GPIO pin naming convention
         GPIO.setmode(GPIO.BCM)
+
         #Disable warnings (not for development use)
         # GPIO.setwarnings(False)
 
@@ -67,6 +74,7 @@ class slights_interface():
         self.set_status(False, False)
 
     def set_status(self, object_detected, is_activated):
+        """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
         status = self.status_dispatcher[(object_detected, is_activated)]
 
@@ -83,6 +91,7 @@ class slights_interface():
         return self.current_status
 
     def startup_sequence(self):
+        """Funky startup sequence to indicate to the user the arm is starting up."""
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.HIGH)
             time.sleep(0.1)
@@ -91,6 +100,7 @@ class slights_interface():
             time.sleep(0.1)
 
     def safe_shutdown(self):
+        """Funky shutdown sequence to indicate to the user the arm is shutting down."""
         #Set them all to off
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.LOW)

@@ -1,7 +1,7 @@
 from enum import Enum 
 
 class fingers(Enum):
-    """ This class defines which servo corresponds to which finger. """
+    """ Defines which servo corresponds to which finger. """
     thumb = 0
     index = 1
     middle = 2
@@ -9,14 +9,14 @@ class fingers(Enum):
     pinky = 4
 
 class grips(Enum):
-    """ This class defines the different grips available."""
+    """ Defines the different grips available."""
     openGrip = "open grip"
     fist = "fist grip"
     pencil = "pencil grip"
     cup = "cup grip"
 
 class grip_finger_angles(Enum):
-    """This enum class stores the angle each finger goes to for a given grip."""
+    """Stores the angle each finger goes to initially for a given grip."""
     openGrip = {
         fingers.thumb:   0,
         fingers.index:   0,

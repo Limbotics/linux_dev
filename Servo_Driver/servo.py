@@ -6,15 +6,21 @@ from enum import Enum
 import sys
 import os
 sys.path.append(os.path.abspath('../Hand_Classes'))
-#from hand_interface import fingers, grips
+
+#Import interface enums from hand_interface
 from Hand_Classes import hand_interface
 fingers = hand_interface.fingers
 grips = hand_interface.grips
 grip_finger_angles = hand_interface.grip_finger_angles
 
 class handServoControl:
-    """ This class provides a functional interface in order to command the servos for a given finger to move to a given position."""
-
+    """
+    Low-level servo control in terms of specific servo channels and angle commands.
+      
+    Attributes:
+        angles (dict): The current angle that each finger (servo) is set to.
+        kit (ServoKit): The Servokit object.
+    """
     def __init__(self):
 
         #this class is the lookup table servo control because the functions kind of do everything already 
@@ -31,16 +37,29 @@ class handServoControl:
         }
 
     def moveFinger(self, finger, angle):
+        """Command a given finger to a certain angle.
+        
+        Parameters:
+            finger (int): One of the hand_interfaces.fingers values to dictate which channel to command a servo.
+
+            angle (int):  The angle to which to command the given servo to.
+
+        """
         self.kit.servo[finger].angle = angle
         self.angles[finger] = angle
-
-    def get_angle_set(self):
-        return self.angles
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
 #this child class is the look up table and needs the most real world tuning
 class handLUTControl(handServoControl):
+    """
+    High-level servo control in terms of hand manipulation.
+      
+    Attributes:
+        dispatch (dict): Correlates different grips to their respective servo angle definitions.
+        grip_config (string): The current hand_interfaces.grips (values) parameter the system is set to.
+        
+    """
     
     def __init__(self, grip_config=grips.openGrip.value):
         super().__init__()
@@ -56,14 +75,30 @@ class handLUTControl(handServoControl):
         self.dispatch = dispatch
 
         #Run the dispatcher
-        self.process_command()
+        self.process_grip_change()
 
-    """Process the current grip config set in the class object."""
-    def process_command(self):
+    def process_grip_change(self):
+        """Process the current grip config set in the class object."""
+        #Use the dispatcher to correlate the current grip to the angles for that grip
         finger_angles = self.dispatch[self.grip_config]
+
+        #Iterate through the fingers and set them to their respective angle
         for finger in finger_angles:
             self.moveFinger(finger, finger_angles[finger])  
 
-    """Checks if all the angles are set to zero by the user."""
+    def user_input_actuation(self, percent):
+        """Convert myoelectric input into servo actuation for the current grip."""
+        pass
+
+    def __list_diff(self, li1, li2):
+        """Math helper function for authorized_to_change_grips"""
+        return (list(list(set(li1)-set(li2)) + list(set(li2)-set(li1))))
+
     def authorized_to_change_grips(self):
-        return 
+        """Checks if all the angles are set to zero by the user, implying the computer has priority to change the grip."""
+        
+        #Get the difference between the current list of angles and the initial angles in the current grip
+        delta_vals = self.__list_diff(list(self.angles.values()), list(self.dispatch[self.grip_config].values()))
+
+        #return True if all are zero, or False if any are not zero.
+        return all(value == 0 for value in delta_vals)

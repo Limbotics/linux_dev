@@ -30,17 +30,17 @@ while (count < 1000):
     try:
         grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
         user_gripping = False
-        # if(grip_picked):
-        #     servs.grip_config = grip_picked
-            # servs.process_command()
-        # else:
-        #     servs.process_command()
-        if((abs(count - status_T0) > delta_required_for_status_change) and not user_gripping):
+        if((abs(count - status_T0) > delta_required_for_status_change) and servs.authorized_to_change_grips()):
             #Update grip configuration, if we should
+            #servs.grip_config = grip_picked
+            #servs.process_grip_change()
 
             #Update status lights
             statuslights.set_status(is_object, user_gripping)
             status_T0 = count
+
+            print("Changed grip configuration to %s", grip_picked)
+        
         time.sleep(0.001)
         count += 1
     except KeyboardInterrupt:
