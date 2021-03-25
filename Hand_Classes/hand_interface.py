@@ -10,8 +10,8 @@ class fingers(Enum):
 
 class grips(Enum):
     """ This class defines the different grips available."""
-    openGrip = "open"
-    fist = "fist"
-    pencil = "pencil"
+    openGrip = "open grip"
+    fist = "fist grip"
+    pencil = "pencil grip"
     cup = "cup grip"
 

@@ -23,12 +23,27 @@ mi = muscle.muscle_interface()
 statuslights = slights.slights_interface()
 
 count = 0
+status_T0 = 0
+delta_required_for_status_change = 35
+previous_status = None
+print("Sequence start")
 while (count < 1000):
-    _, _, _, is_object =  cam.read_cam()
+    grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
     user_gripping = False
-    statuslights.set_status(is_object, user_gripping)
-    time.sleep(0.01)
+    # if(grip_picked):
+    #     servs.grip_config = grip_picked
+    #     servs.process_command()
+    # else:
+    #     servs.process_command()
+    if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked != previous_status)):
+        statuslights.set_status(is_object, user_gripping)
+        previous_status = grip_picked
+        status_T0 = count
+    time.sleep(0.001)
     count += 1
+
+    #TODO: Add manual terminal event that can safely exit this loop without ctrl+c
+    #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
     #No object detected & not currently in grasp mode -> Continue looking for object
@@ -38,7 +53,8 @@ while (count < 1000):
 
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
+statuslights.safe_shutdown()
 #update handLUTInst grips using this:
-#handLUTInst.grip_config = "pencil"
+#
 
 print("No errors occured.")
