@@ -28,20 +28,23 @@ delta_required_for_status_change = 35
 previous_status = None
 print("Sequence start")
 while (count < 1000):
-    grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
-    user_gripping = False
-    # if(grip_picked):
-    #     servs.grip_config = grip_picked
-    #     servs.process_command()
-    # else:
-    #     servs.process_command()
-    if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked != previous_status)):
-        statuslights.set_status(is_object, user_gripping)
-        previous_status = grip_picked
-        status_T0 = count
-    time.sleep(0.001)
-    count += 1
-
+    try:
+        grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
+        user_gripping = False
+        # if(grip_picked):
+        #     servs.grip_config = grip_picked
+        #     servs.process_command()
+        # else:
+        #     servs.process_command()
+        if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked != previous_status)):
+            statuslights.set_status(is_object, user_gripping)
+            previous_status = grip_picked
+            status_T0 = count
+        time.sleep(0.001)
+        count += 1
+    except KeyboardInterrupt:
+        print("Script quit command detected - closing IO objects.")
+        break
     #TODO: Add manual terminal event that can safely exit this loop without ctrl+c
     #print(count)
 #Determine the current state we're in 
