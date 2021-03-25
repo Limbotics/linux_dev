@@ -57,6 +57,9 @@ class slights_interface():
             (True, False):  status_states.object_detected.value,
         }
 
+        #Run the startup sequence
+        self.startup_sequence()
+
         #Set initial status
         self.set_status(False, False)
 
@@ -75,6 +78,14 @@ class slights_interface():
 
     def get_current_status(self):
         return self.current_status
+
+    def startup_sequence(self):
+        for pinout in pinouts:
+            GPIO.output(pinout.value,GPIO.HIGH)
+            time.sleep(0.1)
+        for pinout in pinouts:
+            GPIO.output(pinout.value,GPIO.LOW)
+            time.sleep(0.1)
 
     def safe_shutdown(self):
         for pinout in pinouts:
