@@ -74,7 +74,7 @@ class handLUTControl(handServoControl):
         }
         self.dispatch = dispatch
 
-        #Run the dispatcher
+        #Run the dispatcher to initialize servo position
         self.process_grip_change()
 
     def process_grip_change(self):
