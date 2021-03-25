@@ -45,7 +45,6 @@ while (count < 1000):
     except KeyboardInterrupt:
         print("Script quit command detected - closing IO objects.")
         break
-    #TODO: Add manual terminal event that can safely exit this loop without ctrl+c
     #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view

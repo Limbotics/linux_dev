@@ -1,4 +1,5 @@
 from adafruit_servokit import ServoKit
+#https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library#controlling-servos-3013804-22
 
 from enum import Enum
 
@@ -46,10 +47,10 @@ class handLUTControl(handServoControl):
 
         #Initialize the dispatcher
         dispatch = {
-            grips.openGrip: self.openGrip,
-            grips.fist:     self.closeGrip,
-            grips.pencil:   self.pencilGrip,
-            grips.cup:      self.cupGrip,
+            grips.openGrip.value: self.openGrip,
+            grips.fist.value:     self.closeGrip,
+            grips.pencil.value:   self.pencilGrip,
+            grips.cup.value:      self.cupGrip,
         }
         self.dispatch = dispatch
 
