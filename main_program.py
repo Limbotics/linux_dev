@@ -24,9 +24,8 @@ statuslights = slights.slights_interface()
 
 count = 0
 status_T0 = 0
-delta_required_for_status_change = 15
+delta_required_for_status_change = 35
 previous_status = None
-tic
 print("Sequence start")
 while (count < 1000):
     grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
@@ -57,4 +56,3 @@ statuslights.safe_shutdown()
 #
 
 print("No errors occured.")
-toc
