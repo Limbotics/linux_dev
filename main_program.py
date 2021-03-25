@@ -39,7 +39,7 @@ while (count < 1000):
             statuslights.set_status(is_object, user_gripping)
             status_T0 = count
 
-            print("Changed grip configuration to %s", grip_picked)
+            print("Changed grip configuration to "+ grip_picked)
         
         time.sleep(0.001)
         count += 1
@@ -58,4 +58,4 @@ while (count < 1000):
 cam.end_camera_session()
 statuslights.safe_shutdown()
 
-print("No errors occured.")
+print("Program ended.")
