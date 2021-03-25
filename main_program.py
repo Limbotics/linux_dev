@@ -23,7 +23,8 @@ mi = muscle.muscle_interface()
 statuslights = slights.slights_interface()
 
 count = 0
-while (count < 100):
+print("Sequence start")
+while (count < 5000):
     grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
     user_gripping = False
     # if(grip_picked):
@@ -32,9 +33,9 @@ while (count < 100):
     # else:
     #     servs.process_command()
     statuslights.set_status(is_object, user_gripping)
-    time.sleep(0.01)
+    time.sleep(0.001)
     count += 1
-    print(count)
+    #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
     #No object detected & not currently in grasp mode -> Continue looking for object

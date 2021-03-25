@@ -10,9 +10,9 @@ from enum import Enum
 
 class pinouts(Enum):
     """The pin number for a given LED color."""
-    white  = 11   #GPIO 0
-    yellow = 13  #GPIO 2
-    blue   = 15    #GPIO 3
+    white  = 17   #GPIO 0
+    yellow = 27  #GPIO 2
+    blue   = 22    #GPIO 3
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
@@ -71,7 +71,7 @@ class slights_interface():
         #Update current status
         self.current_status = status
 
-        print("Updated LED status to " + str(self.current_status))
+        #print("Updated LED status to " + str(self.current_status))
 
     def get_current_status(self):
         return self.current_status
