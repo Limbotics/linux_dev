@@ -88,6 +88,16 @@ class slights_interface():
             time.sleep(0.1)
 
     def safe_shutdown(self):
+        #Set them all to off
+        for pinout in pinouts:
+            GPIO.output(pinout.value,GPIO.LOW)
+        #Set them all to high, sequentially
+        for pinout in pinouts:
+            GPIO.output(pinout.value,GPIO.HIGH)
+            time.sleep(0.1)
+        #Pause for effect
+        time.sleep(0.25)
+        #Turn them all off
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.LOW)
 
