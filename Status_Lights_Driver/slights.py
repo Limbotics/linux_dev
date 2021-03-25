@@ -76,4 +76,8 @@ class slights_interface():
     def get_current_status(self):
         return self.current_status
 
+    def safe_shutdown(self):
+        for pinout in pinouts:
+            GPIO.output(pinout.value,GPIO.LOW)
+
     

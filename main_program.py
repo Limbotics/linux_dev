@@ -23,8 +23,12 @@ mi = muscle.muscle_interface()
 statuslights = slights.slights_interface()
 
 count = 0
+status_T0 = 0
+delta_required_for_status_change = 15
+previous_status = None
+tic
 print("Sequence start")
-while (count < 5000):
+while (count < 1000):
     grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
     user_gripping = False
     # if(grip_picked):
@@ -32,7 +36,10 @@ while (count < 5000):
     #     servs.process_command()
     # else:
     #     servs.process_command()
-    statuslights.set_status(is_object, user_gripping)
+    if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked != previous_status)):
+        statuslights.set_status(is_object, user_gripping)
+        previous_status = grip_picked
+        status_T0 = count
     time.sleep(0.001)
     count += 1
     #print(count)
@@ -45,7 +52,9 @@ while (count < 5000):
 
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
+statuslights.safe_shutdown()
 #update handLUTInst grips using this:
 #
 
 print("No errors occured.")
+toc
