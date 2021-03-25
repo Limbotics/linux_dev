@@ -43,7 +43,7 @@ while (count < 1000):
             #Save grip pick
             previous_grip = grip_picked
 
-            if(grip_picked is not None):
+            if(grip_picked is not ""):
                 print("Changed grip configuration to "+ grip_picked)
             else:
                 print("No object detected - changed to open grip.")
