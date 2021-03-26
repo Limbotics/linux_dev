@@ -64,9 +64,9 @@ class camera_interface():
 
     def decode_image_thread(self):
         while not self.killed_thread:
-            t = time.time()
             #Detect and decode the stored image if it's ready
-            if(self.cam_image is not None):
+            if(self.cam_image is not None and previous_image != self.cam_image):
+                previous_image = self.cam_image
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
@@ -76,9 +76,11 @@ class camera_interface():
                     is_object = True
                 self.cam_data = data
                 self.object_spotted = is_object
+
+                print("Decoded new image!")
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            print("Time to decode image: " + (str(t-time.time())))
+            # print("Time to decode image: " + (str(t-time.time())))
 
     def read_cam_thread(self):
         while not self.killed_thread:
