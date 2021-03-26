@@ -35,7 +35,6 @@ class camera_interface():
         cap (cv2 VideoCapture): The VideoCapture object.
         detector (QRCodeDetector): The QR Code detecting object.
     """
-    
 
     def __init__(self):
         self.count = 0
@@ -45,14 +44,24 @@ class camera_interface():
         self.detector = cv2.QRCodeDetector()
         self.cam_data = ""
         self.object_spotted = False
+        self.test_count = 0
 
     async def cam_reading_code(self):
         await asyncio.sleep(0.25)
-        data, _, _, is_object = self.read_cam()
-        self.cam_data = data
-        self.object_spotted = is_object
-        if(is_object):
-            print("Async function cam_reading_code spots an object!")
+        if (self.test_count<4):
+            data, _, _, is_object = self.read_cam()
+            self.cam_data = data
+            self.object_spotted = is_object
+            if(is_object):
+                print("Async function cam_reading_code spots an object!")
+        else:
+            data, _, _, is_object = self.read_cam()
+            self.cam_data = ""
+            self.object_spotted = False
+            print("Async function does not see an object.")
+            self.test_count = -1
+        self.test_count += 1
+
 
     def read_cam(self):
         # get the image
