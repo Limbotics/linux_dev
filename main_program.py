@@ -14,8 +14,7 @@ from Hand_Classes import hand_interface
 
 #Camera initialization
 cam = camera.camera_interface()
-cam_thread = threading.Thread(target=cam.cam_reading_code, args=())
-cam_thread.start()
+
 
 #Muscle sensor initialization
 mi = muscle.muscle_interface()
@@ -34,6 +33,9 @@ loop_time_step = 0.001
 delta_required_for_status_change = 125*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
 print("Main Program Start.")
 try:
+    #Initialize camera thread
+    cam_thread = threading.Thread(target=cam.cam_reading_code, args=())
+    cam_thread.start()
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
