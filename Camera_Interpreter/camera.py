@@ -48,13 +48,13 @@ class camera_interface():
 
     async def cam_reading_code(self):
         while True:
-            if (self.test_count<4):
+            if (self.test_count<7):
                 data, _, _, is_object = self.read_cam()
                 self.cam_data = data
                 self.object_spotted = is_object
                 if(is_object):
                     print("Async function cam_reading_code spots an object!")
-            else:
+            elif (self.test_count<13):
                 data, _, _, is_object = self.read_cam()
                 self.cam_data = ""
                 self.object_spotted = False

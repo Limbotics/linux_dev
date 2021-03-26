@@ -15,7 +15,7 @@ from Hand_Classes import hand_interface
 
 #Camera initialization
 cam = camera.camera_interface()
-asyncio.run(cam.cam_reading_code())
+loop.create_task(cam.cam_reading_code())
 loop.run_forever()
 
 #Muscle sensor initialization
