@@ -15,7 +15,6 @@ from Hand_Classes import hand_interface
 #Camera initialization
 cam = camera.camera_interface()
 
-
 #Muscle sensor initialization
 mi = muscle.muscle_interface()
 

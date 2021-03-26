@@ -8,6 +8,7 @@ import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
+import threading
 
 import sys
 import os
@@ -47,24 +48,44 @@ class camera_interface():
         self.killed_thread = False
 
     def camera_read_threader(self):
+        #Start the read cam thread
+        read_cam = threading.Thread(target=self.read_cam_thread, args=())
+        read_cam.start()
+        #Start the image decode thread
+        decoder = threading.Thread(target=self.decode_image_thread, args=())
+        decoder.start()
+        while not self.killed_thread and read_cam.is_alive() and decoder.is_alive():
+            pass
+            time.sleep(0.25)
+        #Flag is thrown or error, so ensure flag is thrown and wait for threads to join
+        self.killed_thread = True
+        read_cam.join()
+        decoder.join()
+
+    def decode_image_thread(self):
         while not self.killed_thread:
-            t = time.time()
-            if (self.test_count<7):
-                data, _, _, is_object = self.read_cam()
+            #Detect and decode the stored image if it's ready
+            if(self.cam_image is not None):
+                data, _, _ = self.detector.detectAndDecode(self.cam_image)
+                #Define a parameter we can easily read later if anything is detected
+                is_object = False
+                #Update parameter/output the data we found, if any
+                if data:
+                    #print("data found: ", data)
+                    is_object = True
                 self.cam_data = data
                 self.object_spotted = is_object
-                if(is_object):
-                    print("Async function cam_reading_code spots an object!")
-            elif (self.test_count<13):
-                data, _, _, is_object = self.read_cam()
-                self.cam_data = ""
-                self.object_spotted = False
-                print("Async function does not see an object.")
-            else:
-                self.test_count = -1
-            self.test_count += 1
+                
+                #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
+
+    def read_cam_thread(self):
+        while not self.killed_thread:
+            #Get the image
+            _, img = self.cap.read()
+            #Store the image in the class variable
+            self.cam_image = img
+            #Pause temply
             time.sleep(0.1)
-            print("Time elapsed on one pass: " + str(time.time() - t))
 
     def read_cam(self):
         # get the image
@@ -78,7 +99,7 @@ class camera_interface():
             #print("data found: ", data)
             is_object = True
         #return the information we got from the camera
-        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+        # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
         return data, bbox, img, is_object
 
     def read_cam_display_out(self):
