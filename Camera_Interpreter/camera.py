@@ -51,6 +51,8 @@ class camera_interface():
         data, _, _, is_object = self.read_cam()
         self.cam_data = data
         self.object_spotted = is_object
+        if(is_object):
+            print("Async function cam_reading_code spots an object!")
 
     def read_cam(self):
         # get the image
