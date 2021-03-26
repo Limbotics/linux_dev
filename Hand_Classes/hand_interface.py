@@ -18,34 +18,34 @@ class grips(Enum):
 class grip_finger_angles(Enum):
     """Stores the angle each finger goes to initially for a given grip."""
     openGrip = {
-        fingers.thumb:   0,
-        fingers.index:   0,
-        fingers.middle:  0,
-        fingers.ring:    0,
-        fingers.pinky:   0
+        fingers.thumb.value:   0,
+        # fingers.index.value:   0,
+        # fingers.middle.value:  0,
+        # fingers.ring.value:    0,
+        # fingers.pinky.value:   0
     }
 
     closeGrip = {
-        fingers.thumb:   0,
-        fingers.index:   180,
-        fingers.middle:  180,
-        fingers.ring:    180,
-        fingers.pinky:   180
+        fingers.thumb.value:   0,
+        # fingers.index.value:   180,
+        # fingers.middle.value:  180,
+        # fingers.ring.value:    180,
+        # fingers.pinky.value:   180
     }
 
     pencil = {
-        fingers.thumb:   150,
-        fingers.index:   120,
-        fingers.middle:  180,
-        fingers.ring:    180,
-        fingers.pinky:   180
+        fingers.thumb.value:   150,
+        # fingers.index.value:   120,
+        # fingers.middle.value:  180,
+        # fingers.ring.value:    180,
+        # fingers.pinky.value:   180
     }
 
     cup = {
-        fingers.thumb:   140,
-        fingers.index:   160,
-        fingers.middle:  160,
-        fingers.ring:    160,
-        fingers.pinky:   160
+        fingers.thumb.value:   140,
+        # fingers.index.value:   160,
+        # fingers.middle.value:  160,
+        # fingers.ring.value:    160,
+        # fingers.pinky.value:   160
     }
 
