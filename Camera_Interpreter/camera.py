@@ -47,20 +47,21 @@ class camera_interface():
         self.test_count = 0
 
     async def cam_reading_code(self):
-        if (self.test_count<4):
-            data, _, _, is_object = self.read_cam()
-            self.cam_data = data
-            self.object_spotted = is_object
-            if(is_object):
-                print("Async function cam_reading_code spots an object!")
-        else:
-            data, _, _, is_object = self.read_cam()
-            self.cam_data = ""
-            self.object_spotted = False
-            print("Async function does not see an object.")
-            self.test_count = -1
-        self.test_count += 1
-        await asyncio.sleep(0.25)
+        while True:
+            if (self.test_count<4):
+                data, _, _, is_object = self.read_cam()
+                self.cam_data = data
+                self.object_spotted = is_object
+                if(is_object):
+                    print("Async function cam_reading_code spots an object!")
+            else:
+                data, _, _, is_object = self.read_cam()
+                self.cam_data = ""
+                self.object_spotted = False
+                print("Async function does not see an object.")
+                self.test_count = -1
+            self.test_count += 1
+            await asyncio.sleep(0.25)
 
 
     def read_cam(self):
