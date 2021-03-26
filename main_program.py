@@ -1,6 +1,7 @@
 import time
 import os
 import asyncio
+loop = asyncio.get_event_loop()
 
 from adafruit_servokit import ServoKit
 
@@ -15,6 +16,7 @@ from Hand_Classes import hand_interface
 #Camera initialization
 cam = camera.camera_interface()
 asyncio.run(cam.cam_reading_code())
+loop.run_forever()
 
 #Muscle sensor initialization
 mi = muscle.muscle_interface()
