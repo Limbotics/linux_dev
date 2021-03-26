@@ -26,11 +26,13 @@ statuslights = slights.slights_interface()
 count = 0
 status_T0 = 0
 previous_grip = ""
+grip_picked = ""
 delta_required_for_status_change = 35
 print("Main Program Start.")
 while (count < 1000):
     try:
-        grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
+        if((count%100)==0):
+            grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
