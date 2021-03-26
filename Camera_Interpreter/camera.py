@@ -66,7 +66,7 @@ class camera_interface():
         previous_image = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            if((self.cam_image is not None) and (previous_image != self.cam_image)):
+            if((self.cam_image != None) and (previous_image != self.cam_image)):
                 previous_image = self.cam_image
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
                 #Define a parameter we can easily read later if anything is detected
@@ -90,7 +90,7 @@ class camera_interface():
             #Store the image in the class variable
             self.cam_image = img
             #Pause temply
-            time.sleep(0.1)
+            time.sleep(0.05)
 
     def read_cam(self):
         # get the image
