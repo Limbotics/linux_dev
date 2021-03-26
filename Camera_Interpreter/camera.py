@@ -46,6 +46,7 @@ class camera_interface():
         self.object_spotted = False
         self.test_count = 0
         self.killed_thread = False
+        self.cam_image = None
 
     def camera_read_threader(self):
         #Start the read cam thread
