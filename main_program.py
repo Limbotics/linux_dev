@@ -33,8 +33,8 @@ delta_required_for_status_change = 125
 print("Main Program Start.")
 while (count < 10000000):
     try:
-        grip_picked = cam.object_spotted
-        is_object = cam.cam_data
+        grip_picked = cam.cam_data
+        is_object = cam.object_spotted
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
