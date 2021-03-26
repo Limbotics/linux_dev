@@ -52,6 +52,7 @@ class camera_interface():
         #Start the read cam thread
         read_cam = threading.Thread(target=self.read_cam_thread, args=())
         read_cam.start()
+        time.sleep(0.1) #Wait to ensure cam_image is not none (boolean check doesn't work wtf)
         #Start the image decode thread
         decoder = threading.Thread(target=self.decode_image_thread, args=())
         decoder.start()
@@ -66,7 +67,7 @@ class camera_interface():
         previous_image = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            if((self.cam_image)  and (previous_image != self.cam_image)):
+            if(previous_image != self.cam_image):
                 previous_image = self.cam_image
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
                 #Define a parameter we can easily read later if anything is detected
