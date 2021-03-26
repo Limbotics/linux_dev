@@ -1,5 +1,6 @@
 import time
 import os
+import asyncio
 
 from adafruit_servokit import ServoKit
 
@@ -13,6 +14,7 @@ from Hand_Classes import hand_interface
 
 #Camera initialization
 cam = camera.camera_interface()
+cam.cam_reading_code()
 
 #Muscle sensor initialization
 mi = muscle.muscle_interface()
@@ -31,9 +33,8 @@ delta_required_for_status_change = 125
 print("Main Program Start.")
 while (count < 10000000):
     try:
-        if((count%100)==0):
-            grip_picked, _, _, is_object =  cam.read_cam() #NOTE: grip_picked is just the QR code data being read
-            print("Count: " + str(count) + " and grip_picked: " + str(grip_picked))
+        grip_picked = cam.object_spotted
+        is_object = cam.cam_data
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should

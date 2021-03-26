@@ -8,6 +8,7 @@ import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
+import asyncio
 
 import sys
 import os
@@ -42,7 +43,15 @@ class camera_interface():
         print("Created video capture object")
         # QR code detection object
         self.detector = cv2.QRCodeDetector()
-        
+        self.cam_data = ""
+        self.object_spotted = False
+
+    async def cam_reading_code(self):
+        await asyncio.sleep(0.25)
+        data, _, _, is_object = self.read_cam()
+        self.cam_data = data
+        self.object_spotted = is_object
+
     def read_cam(self):
         # get the image
         _, img = self.cap.read()
@@ -52,7 +61,7 @@ class camera_interface():
         is_object = False
         #Update parameter/output the data we found, if any
         if data:
-            print("data found: ", data)
+            #print("data found: ", data)
             is_object = True
         #return the information we got from the camera
         return data, bbox, img, is_object
