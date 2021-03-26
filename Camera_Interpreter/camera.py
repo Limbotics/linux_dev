@@ -63,6 +63,7 @@ class camera_interface():
         decoder.join()
 
     def decode_image_thread(self):
+        previous_image = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
             if(self.cam_image is not None and previous_image != self.cam_image):
