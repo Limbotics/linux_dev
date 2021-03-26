@@ -34,7 +34,7 @@ delta_required_for_status_change = 125*(loop_time_step/0.001) #Units of n are in
 print("Main Program Start.")
 try:
     #Initialize camera thread
-    cam_thread = threading.Thread(target=cam.cam_reading_code, args=())
+    cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
     cam_thread.start()
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
@@ -49,7 +49,8 @@ try:
             if (grip_picked == ""):
                 grip_picked = hand_interface.grips.openGrip.value
             servs.grip_config = grip_picked
-            servs.process_grip_change()
+            servo_command = threading.Thread(target = servs.process_grip_change, args=())
+            # servs.process_grip_change()
 
             #Update status lights
             statuslights.set_status(is_object, user_gripping)

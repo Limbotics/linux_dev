@@ -46,7 +46,7 @@ class camera_interface():
         self.test_count = 0
         self.killed_thread = False
 
-    def cam_reading_code(self):
+    def camera_read_threader(self):
         while not self.killed_thread:
             t = time.time()
             if (self.test_count<7):
@@ -65,8 +65,6 @@ class camera_interface():
             self.test_count += 1
             time.sleep(0.1)
             print("Time elapsed on one pass: " + str(time.time() - t))
-        print("Camera thread flag end detected.")
-
 
     def read_cam(self):
         # get the image
