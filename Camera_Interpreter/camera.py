@@ -47,6 +47,7 @@ class camera_interface():
         self.test_count = 0
         self.killed_thread = False
         self.cam_image = None
+        self.cam_image_index = 0
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -64,11 +65,11 @@ class camera_interface():
         decoder.join()
 
     def decode_image_thread(self):
-        previous_image = None
+        previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            if(previous_image != self.cam_image):
-                previous_image = self.cam_image
+            if(previous_index != self.cam_image_index):
+                previous_index = self.cam_image_index
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
@@ -91,6 +92,7 @@ class camera_interface():
             #Store the image in the class variable
             print(str(img))
             self.cam_image = img
+            self.cam_image_index += 1
             #Pause temply
             time.sleep(0.05)
 
