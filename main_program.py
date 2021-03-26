@@ -33,8 +33,8 @@ grip_picked = ""
 loop_time_step = 0.001
 delta_required_for_status_change = 125*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
 print("Main Program Start.")
-while ((count < 10000000) and cam_thread.is_alive()):
-    try:
+try:
+    while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
         # if(is_object and (count%250 ==0)):
@@ -63,9 +63,8 @@ while ((count < 10000000) and cam_thread.is_alive()):
         
         time.sleep(loop_time_step)
         count += 1
-    except KeyboardInterrupt:
-        print("\nScript quit command detected - closing IO objects.")
-        break
+except KeyboardInterrupt:
+    print("\nScript quit command detected - closing IO objects.")
     #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
