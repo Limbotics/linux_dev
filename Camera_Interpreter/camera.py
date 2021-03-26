@@ -66,7 +66,7 @@ class camera_interface():
         previous_image = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            if((self.cam_image != None)):
+            if((self.cam_image)  and (previous_image != self.cam_image)):
                 previous_image = self.cam_image
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
                 #Define a parameter we can easily read later if anything is detected
