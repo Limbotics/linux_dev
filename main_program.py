@@ -9,6 +9,7 @@ from Servo_Driver import servo
 from Camera_Interpreter import camera
 from Muscle_Driver import muscle
 from Status_Lights_Driver import slights
+from Hand_Classes import hand_interface
 
 #Camera initialization
 cam = camera.camera_interface()
@@ -33,6 +34,8 @@ while (count < 1000):
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
+            if (grip_picked == ""):
+                grip_picked = hand_interface.grips.openGrip
             servs.grip_config = grip_picked
             servs.process_grip_change()
 
@@ -52,6 +55,9 @@ while (count < 1000):
         count += 1
     except KeyboardInterrupt:
         print("\nScript quit command detected - closing IO objects.")
+        break
+    except Exception as e:
+        print(str(e))
         break
     #print(count)
 #Determine the current state we're in 
