@@ -64,7 +64,7 @@ class camera_interface():
                 self.test_count = -1
             self.test_count += 1
             time.sleep(0.1)
-            print("Time elapsed on one pass: " + (time.time() - t))
+            print("Time elapsed on one pass: " + str(time.time() - t))
         print("Camera thread flag end detected.")
 
 
