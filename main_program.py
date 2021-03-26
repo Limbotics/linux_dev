@@ -38,7 +38,7 @@ while (count < 10000000):
         is_object = cam.object_spotted
         if(is_object and (count%250 ==0)):
             print("Main thread spots an object!")
-        else if(count%250==0):
+        elif(count%250==0):
             print("Main thread, no object.")
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
