@@ -67,10 +67,10 @@ class handLUTControl(handServoControl):
 
         #Initialize the dispatcher
         dispatch = {
-            grips.openGrip.value: grip_finger_angles.openGrip,
-            grips.fist.value:     grip_finger_angles.closeGrip,
-            grips.pencil.value:   grip_finger_angles.pencil,
-            grips.cup.value:      grip_finger_angles.cup,
+            grips.openGrip.value: grip_finger_angles.openGrip.value,
+            grips.fist.value:     grip_finger_angles.closeGrip.value,
+            grips.pencil.value:   grip_finger_angles.pencil.value,
+            grips.cup.value:      grip_finger_angles.cup.value,
         }
         self.dispatch = dispatch
 
