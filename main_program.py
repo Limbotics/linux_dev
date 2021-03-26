@@ -24,7 +24,7 @@ statuslights = slights.slights_interface()
 
 count = 0
 status_T0 = 0
-previous_grip = None
+previous_grip = ""
 delta_required_for_status_change = 35
 print("Main Program Start.")
 while (count < 1000):
