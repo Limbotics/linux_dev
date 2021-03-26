@@ -104,7 +104,7 @@ class camera_interface():
     def end_camera_session(self):
         #Stop the camera thread 
         self.killed_thread = True
-        time.sleep(1)
+        time.sleep(0.1)
         #Release the camera object
         self.cap.release()
         #Destroy all displayed windows
