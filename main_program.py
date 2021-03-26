@@ -60,9 +60,6 @@ while (count < 10000000):
     except KeyboardInterrupt:
         print("\nScript quit command detected - closing IO objects.")
         break
-    except Exception as e:
-        print(str(e))
-        break
     #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
