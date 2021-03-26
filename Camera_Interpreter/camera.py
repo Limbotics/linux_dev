@@ -8,7 +8,6 @@ import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
-import asyncio
 
 import sys
 import os
@@ -45,9 +44,10 @@ class camera_interface():
         self.cam_data = ""
         self.object_spotted = False
         self.test_count = 0
+        self.killed_thread = False
 
-    async def cam_reading_code(self):
-        while True:
+    def cam_reading_code(self):
+        while not self.killed_thread:
             if (self.test_count<7):
                 data, _, _, is_object = self.read_cam()
                 self.cam_data = data
@@ -59,9 +59,11 @@ class camera_interface():
                 self.cam_data = ""
                 self.object_spotted = False
                 print("Async function does not see an object.")
+            else:
                 self.test_count = -1
             self.test_count += 1
-            await asyncio.sleep(0.25)
+            time.sleep(0.25)
+        print("Camera thread flag end detected.")
 
 
     def read_cam(self):
@@ -98,6 +100,9 @@ class camera_interface():
         #self.count += 1
 
     def end_camera_session(self):
+        #Stop the camera thread 
+        self.killed_thread = True
+        time.sleep(1)
         #Release the camera object
         self.cap.release()
         #Destroy all displayed windows
