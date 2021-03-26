@@ -102,3 +102,5 @@ class handLUTControl(handServoControl):
 
         #return True if all are zero, or False if any are not zero.
         return all(value == 0 for value in delta_vals)
+
+    def safe_shutdown(self):
