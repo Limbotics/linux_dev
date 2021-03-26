@@ -53,7 +53,8 @@ class camera_interface():
         #Start the read cam thread
         read_cam = threading.Thread(target=self.read_cam_thread, args=())
         read_cam.start()
-        time.sleep(0.1) #Wait to ensure cam_image is not none (boolean check doesn't work wtf)
+        while(self.cam_image_index == 0):
+            time.sleep(0.05)
         #Start the image decode thread
         decoder = threading.Thread(target=self.decode_image_thread, args=())
         decoder.start()
@@ -90,7 +91,6 @@ class camera_interface():
             #Get the image
             _, img = self.cap.read()
             #Store the image in the class variable
-            print(str(img))
             self.cam_image = img
             self.cam_image_index += 1
             #Pause temply
