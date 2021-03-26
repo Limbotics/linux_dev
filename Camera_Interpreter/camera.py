@@ -89,6 +89,7 @@ class camera_interface():
             #Get the image
             _, img = self.cap.read()
             #Store the image in the class variable
+            print(str(img))
             self.cam_image = img
             #Pause temply
             time.sleep(0.05)
