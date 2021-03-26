@@ -78,6 +78,7 @@ class camera_interface():
             #print("data found: ", data)
             is_object = True
         #return the information we got from the camera
+        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
         return data, bbox, img, is_object
 
     def read_cam_display_out(self):
@@ -96,7 +97,7 @@ class camera_interface():
         cv2.imshow("code detector", img)
 
         # save the image
-        #cv2.imwrite("frame%d.jpg" % self.count, img)     # save frame as JPEG file
+        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
         #self.count += 1
 
     def end_camera_session(self):
