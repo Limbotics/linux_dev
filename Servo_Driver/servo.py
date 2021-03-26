@@ -80,11 +80,14 @@ class handLUTControl(handServoControl):
     def process_grip_change(self):
         """Process the current grip config set in the class object."""
         #Use the dispatcher to correlate the current grip to the angles for that grip
-        finger_angles = self.dispatch[self.grip_config]
+        try:
+            finger_angles = self.dispatch[self.grip_config]
 
-        #Iterate through the fingers and set them to their respective angle
-        for finger in finger_angles:
-            self.moveFinger(finger, finger_angles[finger])  
+            #Iterate through the fingers and set them to their respective angle
+            for finger in finger_angles:
+                self.moveFinger(finger, finger_angles[finger])  
+        except Exception as e:
+            print(str(e))
 
     def user_input_actuation(self, percent):
         """Convert myoelectric input into servo actuation for the current grip."""
