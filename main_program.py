@@ -71,6 +71,7 @@ while (count < 10000000):
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
 servs.safe_shutdown()
+time.sleep(0.5)
 statuslights.safe_shutdown()
 
 
