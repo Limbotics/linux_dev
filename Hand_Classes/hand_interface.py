@@ -42,8 +42,8 @@ class grip_finger_angles(Enum):
     }
 
     cup = { 
-        fingers.thumb.value:   170,
-        fingers.index.value:   170,
+        fingers.thumb.value:   180,
+        fingers.index.value:   180,
         # fingers.middle.value:  180,
     #     fingers.ring.value:    160,
     #     fingers.pinky.value:   160
