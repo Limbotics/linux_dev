@@ -104,4 +104,6 @@ class handLUTControl(handServoControl):
         return all(value == 0 for value in delta_vals)
 
     def safe_shutdown(self):
-        pass
+        self.grip_config = grips.openGrip.value
+
+        self.process_grip_change()
