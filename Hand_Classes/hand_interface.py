@@ -22,7 +22,7 @@ class grip_finger_angles(Enum):
         fingers.index.value:   0,
         fingers.middle.value:  0,
         fingers.ring.value:    0,
-        # fingers.pinky.value:   0
+        fingers.pinky.value:   0
     }
 
     closeGrip = {
@@ -30,7 +30,7 @@ class grip_finger_angles(Enum):
         fingers.index.value:   180,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
-        # fingers.pinky.value:   180
+        fingers.pinky.value:   180
     }
 
     pencil = {
@@ -38,7 +38,7 @@ class grip_finger_angles(Enum):
         fingers.index.value:   120,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
-        # fingers.pinky.value:   180
+        fingers.pinky.value:   180
     }
 
     cup = {
@@ -46,6 +46,6 @@ class grip_finger_angles(Enum):
         fingers.index.value:   160,
         fingers.middle.value:  160,
         fingers.ring.value:    160,
-        # fingers.pinky.value:   160
+        fingers.pinky.value:   160
     }
 
