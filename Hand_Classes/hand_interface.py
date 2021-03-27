@@ -26,7 +26,7 @@ class grip_finger_angles(Enum):
     }
 
     closeGrip = {
-        fingers.thumb.value:   0,
+        fingers.thumb.value:   45,
         # fingers.index.value:   180,
         # fingers.middle.value:  180,
         # fingers.ring.value:    180,
@@ -34,7 +34,7 @@ class grip_finger_angles(Enum):
     }
 
     pencil = {
-        fingers.thumb.value:   150,
+        fingers.thumb.value:   45,
         # fingers.index.value:   120,
         # fingers.middle.value:  180,
         # fingers.ring.value:    180,
