@@ -38,17 +38,18 @@ try:
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
-        # if(is_object and (count%250 ==0)):
-        #     print("Main thread spots an object!")
-        # elif(count%250==0):
-        #     print("Main thread, no object.")
+        if(is_object and (count%250 ==0)):
+            print("Main thread spots an object!")
+        elif(count%250==0):
+            print("Main thread, no object.")
         user_gripping = False
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
             if (grip_picked == ""):
                 grip_picked = hand_interface.grips.openGrip.value
             servs.grip_config = grip_picked
-            servo_command = threading.Thread(target = servs.process_grip_change, args=())
+            # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+            servs.process_grip_change()
 
             #Update status lights
             statuslights.set_status(is_object, user_gripping)
