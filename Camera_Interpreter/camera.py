@@ -66,6 +66,7 @@ class camera_interface():
         decoder.join()
 
     def decode_image_thread(self):
+        #TODO: #10 Add minimum number of frames across timespan of detection to qualify changing class attribute
         previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
