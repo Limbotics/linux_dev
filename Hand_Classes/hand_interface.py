@@ -20,7 +20,7 @@ class grip_finger_angles(Enum):
     openGrip = {
         fingers.thumb.value:   0,
         fingers.index.value:   0,
-        # fingers.middle.value:  0,
+        fingers.middle.value:  0,
         # fingers.ring.value:    0,
         # fingers.pinky.value:   0
     }
@@ -42,9 +42,9 @@ class grip_finger_angles(Enum):
     }
 
     cup = { 
-        fingers.thumb.value:   130,
-        fingers.index.value:   130,
-    #     fingers.middle.value:  160,
+        fingers.thumb.value:   90,
+        fingers.index.value:   90,
+        fingers.middle.value:  45,
     #     fingers.ring.value:    160,
     #     fingers.pinky.value:   160
     }
