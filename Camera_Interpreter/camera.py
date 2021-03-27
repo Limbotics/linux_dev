@@ -81,7 +81,7 @@ class camera_interface():
                 self.cam_data = data
                 self.object_spotted = is_object
 
-                print("Decoded new image!")
+                # print(str(self.object_spotted))
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("Time to decode image: " + (str(t-time.time())))
