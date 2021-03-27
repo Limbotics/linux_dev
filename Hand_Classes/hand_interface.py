@@ -47,5 +47,5 @@ class grip_finger_angles(Enum):
     #     fingers.middle.value:  160,
     #     fingers.ring.value:    160,
     #     fingers.pinky.value:   160
-    # }
+    }
 
