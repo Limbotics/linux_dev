@@ -86,7 +86,7 @@ class camera_interface():
                 # print(str(self.object_spotted))
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            print("Time to decode image: " + (str(t-time.time())))
+            print("Time to decode image: " + (str(time.time() - t)))
 
     def read_cam_thread(self):
         while not self.killed_thread:
