@@ -44,9 +44,9 @@ class muscle_interface():
         #turns out theres a fifo module, refernece linked below
         #https://www.guru99.com/python-queue-example.html
         if self.fifo.full():
-            previousAnalog = self.fifo.get()
+            previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
             currentAnalog = self.chan.value
-            self.fifo.put(self.chan.value)
+            self.fifo.put(self.chan.value)              #adds the value from the ADC to the rear of the FIFO buffer
 
             #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
             if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
@@ -54,7 +54,8 @@ class muscle_interface():
             else:
                 return False
         
-        self.fifo.put(self.chan.value)
+        self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
+        
         return False
 
 
