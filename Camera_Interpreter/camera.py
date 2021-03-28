@@ -91,13 +91,13 @@ class camera_interface():
     def read_cam_thread(self):
         while not self.killed_thread:
             #Get camera image, rescale, and store in class variable
-            self.cam_image = self.rescale_image(self.cap.read())
+            self.cam_image = self.rescale_image(*self.cap.read())
             #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
             time.sleep(0.01)
 
-    def rescale_image(self, img):
+    def rescale_image(self, _, img):
         # t = time.time()
         scale_percent = 50 # percent of original size
         width = int(img.shape[1] * scale_percent / 100)
