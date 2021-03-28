@@ -70,7 +70,7 @@ class handLUTControl(handServoControl):
             grips.openGrip.value: grip_finger_angles.openGrip.value,
             grips.small.value:     grip_finger_angles.small.value,
             grips.bottle.value:   grip_finger_angles.bottle.value,
-            grips.oven.value:      grip_finger_angles.oven.value,
+            grips.bowl.value:      grip_finger_angles.bowl.value,
         }
         self.dispatch = dispatch
 
