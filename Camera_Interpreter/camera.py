@@ -91,22 +91,24 @@ class camera_interface():
         while not self.killed_thread:
             #Get the image
             _, img = self.cap.read()
-            #Rescale image
-            #Store the image in the class variable
-            self.cam_image = img
+            #Rescale image and store in class variable
+            self.cam_image = self.rescale_image(img)
+            #INcrease index by 1
             self.cam_image_index += 1
             #Pause temply
             time.sleep(0.05)
 
     def rescale_image(self, img):
-        scale_percent = 60 # percent of original size
+        scale_percent = 50 # percent of original size
         width = int(img.shape[1] * scale_percent / 100)
         height = int(img.shape[0] * scale_percent / 100)
         dim = (width, height)
 
         # resize image
         resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+        cv2.imwrite("full_scale.jpg", img)     # save frame as JPEG file
+        cv2.imwrite("half_scale.jpg", resized)
+        return resized
 
     def read_cam(self):
         # get the image

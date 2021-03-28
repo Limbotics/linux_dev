@@ -19,7 +19,7 @@ cam = camera.camera_interface()
 mi = muscle.muscle_interface()
 
 #Servo control initialization
-servs = servo.handLUTControl()
+# servs = servo.handLUTControl()
 
 #Status Lights initialization
 statuslights = slights.slights_interface()
@@ -47,9 +47,9 @@ try:
             #Update grip configuration, if we should
             if (grip_picked == ""):
                 grip_picked = hand_interface.grips.openGrip.value
-            servs.grip_config = grip_picked
+            # servs.grip_config = grip_picked
             # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-            servs.process_grip_change()
+            # servs.process_grip_change()
 
             #Update status lights
             statuslights.set_status(is_object, user_gripping)
