@@ -11,9 +11,10 @@ class fingers(Enum):
 class grips(Enum):
     """ Defines the different grips available."""
     openGrip = "open grip"
-    fist = "fist grip"
-    pencil = "pencil grip"
-    cup = "cup grip"
+    small = "small grip"
+    bottle = "bottle grip"
+    oven = "oven handle grip"
+
 
 class grip_finger_angles(Enum):
     """Stores the angle each finger goes to initially for a given grip."""
@@ -24,8 +25,7 @@ class grip_finger_angles(Enum):
         # fingers.ring.value:    0,
         # fingers.pinky.value:   0
     }
-
-    closeGrip = {
+    oven = {
         # fingers.thumb.value:   45,
         # fingers.index.value:   180,
         # fingers.middle.value:  180,
@@ -33,7 +33,7 @@ class grip_finger_angles(Enum):
         # fingers.pinky.value:   180
     }
 
-    pencil = {
+    small = {
         # fingers.thumb.value:   45,
         # fingers.index.value:   120,
         # fingers.middle.value:  180,
@@ -41,9 +41,9 @@ class grip_finger_angles(Enum):
         # fingers.pinky.value:   180
     }
 
-    cup = { 
-        fingers.thumb.value:   180,
-        fingers.index.value:   180,
+    bottle = { 
+        fingers.thumb.value:   0,
+        fingers.index.value:   0,
         # fingers.middle.value:  180,
     #     fingers.ring.value:    160,
     #     fingers.pinky.value:   160
