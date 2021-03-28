@@ -99,7 +99,7 @@ class camera_interface():
 
     def read_cam(self):
         # get the image
-        _, img = self.cap.read()
+        _, img = self.cap.read() #TODO: #14 Downscale the resolution for faster processing
         # get bounding box coords and data
         data, bbox, _ = self.detector.detectAndDecode(img)
         #Define a parameter we can easily read later if anything is detected
