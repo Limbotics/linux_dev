@@ -13,7 +13,7 @@ class grips(Enum):
     openGrip = "open grip"
     small = "small grip"
     bottle = "bottle grip"
-    oven = "oven handle grip"
+    bowl = "bowl grip"
 
 
 class grip_finger_angles(Enum):
@@ -25,7 +25,7 @@ class grip_finger_angles(Enum):
         # fingers.ring.value:    0,
         # fingers.pinky.value:   0
     }
-    oven = {
+    bowl = {
         # fingers.thumb.value:   45,
         # fingers.index.value:   180,
         # fingers.middle.value:  180,
