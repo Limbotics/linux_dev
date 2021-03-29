@@ -1,7 +1,7 @@
 
 import machine
 from machine import Pin
-import queue
+#import queue
 import utime
 
 
@@ -9,14 +9,14 @@ import utime
 class muscle_interface():
     """This provides the inputs from the user muscle sensors."""
     def __init__(self):
-        self.chan = machine.ADC(26)                 #GPIO26 chan0
+        self.chan = machine.ADC(0)                 #GPIO26 chan0
 
         self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
-        self.fifo = queue.Queue(self.fifoLength)
+        #self.fifo = queue.Queue(self.fifoLength)
 
-        self.conversionFactor = 3.3/ (65535)
+        self.conversionFactor = 4095/ (65535)
 
-        self.analogThreshold = 1.1
+        self.analogThreshold = 2058
         self.analogRatioThreshold = 3               #adjust to tune advanced trigger sensitvity
 
     def AnalogRead(self):
@@ -24,12 +24,14 @@ class muscle_interface():
 
     def triggered(self):
         if self.AnalogRead() > self.analogThreshold:
+            print(self.AnalogRead())
             return True
         else:
+            print(self.AnalogRead())
             return False
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
-    def advancedTriggered(self):
+"""    def advancedTriggered(self):
         #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
         #turns out theres a fifo module, refernece linked below
         #https://www.guru99.com/python-queue-example.html
@@ -46,13 +48,16 @@ class muscle_interface():
         
         self.fifo.put(self.AnalogRead())                  #adds the value from the ADC to the rear of the FIFO buffer
         
-        return False
+        return False"""
 
 led = Pin(25, Pin.OUT)
 
 Muscle = muscle_interface()
 while True:
     if Muscle.triggered():
+        print("Triggered")
         led.value(1)
-        utime.sleep(1)
+        utime.sleep(2)
+    led.value(0)
+    
     
