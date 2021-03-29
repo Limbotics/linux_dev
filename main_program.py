@@ -38,6 +38,11 @@ try:
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
+
+        if mi.triggered():
+            print("MyoSensor Triggered")
+            #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
+
         if(is_object and (count%250 ==0)):
             print("Main thread spots an object!")
         elif(count%250==0):
