@@ -72,19 +72,31 @@ class handLUTControl(handServoControl):
             grips.bottle.value:   grip_finger_angles.bottle.value,
             grips.bowl.value:      grip_finger_angles.bowl.value,
         }
+        user_dispatch = {
+            grips.bottle.value: grip_finger_angles.bottle_full_closed.value
+        }
+        self.user_dispatch = user_dispatch
         self.dispatch = dispatch
 
         #Run the dispatcher to initialize servo position
         self.process_grip_change()
 
-    def process_grip_change(self):
+    def process_grip_change(self, user_grip=False):
         """Process the current grip config set in the class object."""
-        #Use the dispatcher to correlate the current grip to the angles for that grip
-        finger_angles = self.dispatch[self.grip_config]
+        if(not user_grip):
+            #Use the dispatcher to correlate the current grip to the angles for that grip
+            finger_angles = self.dispatch[self.grip_config]
 
-        #Iterate through the fingers and set them to their respective angle
-        for finger in finger_angles:
-            self.moveFinger(finger, finger_angles[finger])  
+            #Iterate through the fingers and set them to their respective angle
+            for finger in finger_angles:
+                self.moveFinger(finger, finger_angles[finger])  
+        else:
+            #Use the dispatcher to correlate the current grip to the angles for that grip
+            finger_angles = self.user_dispatch[self.grip_config]
+
+            #Iterate through the fingers and set them to their respective angle
+            for finger in finger_angles:
+                self.moveFinger(finger, finger_angles[finger])  
 
     def user_input_actuation(self, percent):
         """Convert myoelectric input into servo actuation for the current grip."""

@@ -28,8 +28,10 @@ count = 0
 status_T0 = 0
 previous_grip = ""
 grip_picked = ""
+user_activated_grip = False
+user_activated_grip_T0 = 0
 loop_time_step = 0.001
-delta_required_for_status_change = 125*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
+delta_required_for_status_change = 250*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
 print("Main Program Start.")
 try:
     #Initialize camera thread
@@ -42,23 +44,33 @@ try:
         if mi.triggered():
             print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
-            statuslights.set_status(is_object, user_gripping)
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
             user_gripping = False
-            statuslights.set_status(is_object, user_gripping)
 
         if(is_object and (count%250 ==0)):
             print("Main thread spots an object! " + str(count))
         elif(count%250==0):
             print("Main thread, no object." + str(count))
-        if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
+        if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
-            if (grip_picked == ""):
-                grip_picked = hand_interface.grips.openGrip.value
-            servs.grip_config = grip_picked
-            # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-            servs.process_grip_change()
+            if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
+                if (grip_picked is not previous_grip):
+                    if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
+                        grip_picked = hand_interface.grips.openGrip.value
+                    servs.grip_config = grip_picked
+                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+                    servs.process_grip_change()
+            elif(user_activated_grip and not user_gripping): #User wants to stay in this grip, 
+                pass
+            elif(user_activated_grip and user_gripping): #User might be wanting to quit grip, so check delta time
+                if((t.time() - user_activated_grip_T0) > 0.5): #Remove user priority
+                    user_activated_grip = False
+            elif(not user_activated_grip and user_gripping):
+                user_activated_grip = True
+                servs.grip_config = grip_picked
+                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+                servs.process_grip_change()
 
             #Update status lights
             # statuslights.set_status(is_object, user_gripping)
@@ -67,11 +79,7 @@ try:
             #Save grip pick
             previous_grip = grip_picked
 
-            # if(grip_picked is not ""):
-            #     print("Changed grip configuration to "+ grip_picked)
-            # else:
-            #     print("No object detected - changed to open grip.")
-        
+        statuslights.set_status(is_object, user_gripping)
         time.sleep(loop_time_step)
         count += 1
 except KeyboardInterrupt:
