@@ -52,6 +52,8 @@ try:
             print("Main thread spots an object! " + str(count))
         elif(count%250==0):
             print("Main thread, no object." + str(count))
+        
+        #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
             if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
@@ -62,7 +64,7 @@ try:
                     servs.grip_config = grip_picked
                      # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change()
-            elif(user_activated_grip and not user_gripping): #User wants to stay in this grip, 
+            elif(user_activated_grip and not user_gripping): #User previously activated this grip, so stay here
                 print("Activation, no gripping")
                 pass
             elif(user_activated_grip and user_gripping): #User might be wanting to quit grip, so check delta time
@@ -74,10 +76,12 @@ try:
                     servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
             elif(not user_activated_grip and user_gripping):
                 print("No Activation, gripping")
-                user_activated_grip = True
-                servs.grip_config = grip_picked
-                # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                servs.process_grip_change(user_grip=True)
+                if(grip_picked != ""):
+                    user_activated_grip = True
+                    servs.grip_config = grip_picked
+                    # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+                    servs.process_grip_change(user_grip=True)
+            print("Current grip: " + grip_picked)
 
             #Update status lights
             # statuslights.set_status(is_object, user_gripping)

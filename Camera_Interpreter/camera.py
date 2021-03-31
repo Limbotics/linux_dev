@@ -49,7 +49,8 @@ class camera_interface():
         self.killed_thread = False
         self.cam_image = None
         self.cam_image_index = 0
-        self.spot_history = []
+        self.object_spotted_T0 = time.time()
+        self.object_not_spotted_delta_req = 2
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -68,7 +69,6 @@ class camera_interface():
         decoder.join()
 
     def decode_image_thread(self):
-        #TODO: #10 Add minimum number of frames across timespan of detection to qualify changing class attribute
         previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
@@ -82,13 +82,21 @@ class camera_interface():
                 if data:
                     #print("data found: ", data)
                     is_object = True
-                self.spot_history.insert(0, data)
-                if(len(self.spot_history) > 6):
-                    self.spot_history.pop()
-                self.cam_data = self.Most_Common(self.spot_history)
-                self.object_spotted = is_object
+                #Poll averaging method (possibly deprecated)
+                # self.spot_history.insert(0, data)
+                # if(len(self.spot_history) > 6):
+                #     self.spot_history.pop()
+                # self.cam_data = self.Most_Common(self.spot_history)
 
-                # print(str(self.object_spotted))
+                #If the camera sees an object, skip the time requirement
+                if(data != ""):
+                    self.cam_data = data
+                    self.object_spotted_T0 = time.time()
+                #If the camera doesn't see an object, require a delay before reporting nothing
+                else:
+                    if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
+                        self.cam_data = data
+                self.object_spotted = is_object
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("Time to decode image: " + (str(time.time() - t)))
@@ -104,7 +112,7 @@ class camera_interface():
             #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
-            time.sleep(0.01)
+            time.sleep(0.05)
 
     def rescale_image(self, _, img):
         # t = time.time()
