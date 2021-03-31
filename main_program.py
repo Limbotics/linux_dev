@@ -55,7 +55,6 @@ try:
         
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
-            #Update grip configuration, if we should
             if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
                 print("No activation, no gripping")
                 if (grip_picked is not previous_grip):
@@ -64,27 +63,30 @@ try:
                     servs.grip_config = grip_picked
                      # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change()
+                    statuslights.set_status(user_activated_grip, user_gripping)
             elif(user_activated_grip and not user_gripping): #User previously activated this grip, so stay here
                 print("Activation, no gripping")
                 pass
-            elif(user_activated_grip and user_gripping): #User might be wanting to quit grip, so check delta time
+            elif(user_activated_grip and user_gripping): #User gripping after activating a grip is the exit command
                 print("Activation, gripping")
-                if((time.time() - user_activated_grip_T0) > 0.5): #Remove user priority
+                if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
                     user_activated_grip = False
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
+                    statuslights.set_status(user_activated_grip, user_gripping)
             elif(not user_activated_grip and user_gripping):
                 print("No Activation, gripping")
                 if(grip_picked != ""):
                     user_activated_grip = True
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change(user_grip=True)
+                    servs.process_grip_change(user_grip=user_activated_grip)
+                    statuslights.set_status(user_activated_grip, user_gripping)
             print("Current grip: " + grip_picked)
 
             #Update status lights
-            # statuslights.set_status(is_object, user_gripping)
+            # 
             status_T0 = count
 
             #Save grip pick
