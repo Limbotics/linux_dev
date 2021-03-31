@@ -44,6 +44,9 @@ try:
             user_gripping = True
             statuslights.set_status(is_object, user_gripping)
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
+        else:
+            user_gripping = False
+            statuslights.set_status(is_object, user_gripping)
 
         if(is_object and (count%250 ==0)):
             print("Main thread spots an object!")
@@ -58,7 +61,7 @@ try:
             servs.process_grip_change()
 
             #Update status lights
-            statuslights.set_status(is_object, user_gripping)
+            # statuslights.set_status(is_object, user_gripping)
             status_T0 = count
 
             #Save grip pick
