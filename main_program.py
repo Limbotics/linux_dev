@@ -42,7 +42,7 @@ try:
         is_object = cam.object_spotted
 
         if mi.triggered():
-            # print("MyoSensor Triggered, value: " , mi.AnalogRead())
+            print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
