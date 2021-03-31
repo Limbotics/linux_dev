@@ -74,7 +74,7 @@ try:
                 user_activated_grip = True
                 servs.grip_config = grip_picked
                      # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                servs.process_grip_change()
+                servs.process_grip_change(user_grip=True)
 
             #Update status lights
             # statuslights.set_status(is_object, user_gripping)
