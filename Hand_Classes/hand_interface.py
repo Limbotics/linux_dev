@@ -21,10 +21,11 @@ class grip_finger_angles(Enum):
     openGrip = {
         fingers.thumb.value:   0,
         fingers.index.value:   0,
-        # fingers.middle.value:  0,
-        # fingers.ring.value:    0,
+        fingers.middle.value:  0,
+        fingers.ring.value:    0,
         # fingers.pinky.value:   0
     }
+
     bowl = {
         # fingers.thumb.value:   45,
         # fingers.index.value:   180,
@@ -42,18 +43,18 @@ class grip_finger_angles(Enum):
     }
 
     bottle = { 
-        fingers.thumb.value:   0,
-        fingers.index.value:   0,
-        # fingers.middle.value:  180,
-    #     fingers.ring.value:    160,
+        fingers.thumb.value:   90,
+        fingers.index.value:   90,
+        fingers.middle.value:  75,
+        fingers.ring.value:    75,
     #     fingers.pinky.value:   160
     }
 
     bottle_full_closed = {
-        fingers.thumb.value:   0,
-        fingers.index.value:   0,
-        # fingers.middle.value:  180,
-    #     fingers.ring.value:    160,
+        fingers.thumb.value:   180,
+        fingers.index.value:   180,
+        fingers.middle.value:  120,
+        fingers.ring.value:    120,
     #     fingers.pinky.value:   160
     }
 
