@@ -29,7 +29,7 @@ status_T0 = 0
 previous_grip = ""
 grip_picked = ""
 user_activated_grip = False
-user_activated_grip_T0 = t.time()
+user_activated_grip_T0 = time.time()
 loop_time_step = 0.001
 delta_required_for_status_change = 250*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
 print("Main Program Start.")
