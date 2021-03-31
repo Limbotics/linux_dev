@@ -3,6 +3,7 @@ from enum import Enum
 import board
 import busio
 import queue
+import time
 
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
@@ -29,6 +30,9 @@ class muscle_interface():
         self.analogThreshold = 9000
         self.analogRatioThreshold = 3               #adjust to tune advanced trigger sensitvity
 
+        self.no_grip_delta_t_req = 1
+        self.grip_T0 = time.time()
+
     def AnalogRead(self):
         return self.chan.value
 
@@ -51,8 +55,12 @@ class muscle_interface():
             #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
             if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
                 return True
+                self.grip_T0 = time.time()
             else:
-                return False
+                if((time.time() - self.grip_T0) > self.no_grip_delta_t_req):
+                    return False
+                else:
+                    return True
         
         self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
         
