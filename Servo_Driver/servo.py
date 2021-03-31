@@ -99,7 +99,7 @@ class handLUTControl(handServoControl):
                 for finger in finger_angles:
                     self.moveFinger(finger, finger_angles[finger])  
         except Exception as e:
-            pass
+            print(e)
 
     def user_input_actuation(self, percent):
         """Convert myoelectric input into servo actuation for the current grip."""

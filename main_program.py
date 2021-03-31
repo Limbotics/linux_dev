@@ -42,7 +42,7 @@ try:
         is_object = cam.object_spotted
 
         if mi.triggered():
-            print("MyoSensor Triggered, value: " , mi.AnalogRead())
+            # print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
@@ -55,6 +55,7 @@ try:
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
             if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
+                print("No activation, no gripping")
                 if (grip_picked is not previous_grip):
                     if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
                         grip_picked = hand_interface.grips.openGrip.value
@@ -62,11 +63,14 @@ try:
                      # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change()
             elif(user_activated_grip and not user_gripping): #User wants to stay in this grip, 
+                print("Activation, no gripping")
                 pass
             elif(user_activated_grip and user_gripping): #User might be wanting to quit grip, so check delta time
+                print("Activation, gripping")
                 if((time.time() - user_activated_grip_T0) > 0.5): #Remove user priority
                     user_activated_grip = False
             elif(not user_activated_grip and user_gripping):
+                print("No Activation, gripping")
                 user_activated_grip = True
                 servs.grip_config = grip_picked
                      # servo_command = threading.Thread(target = servs.process_grip_change, args=())
