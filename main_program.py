@@ -69,11 +69,14 @@ try:
                 print("Activation, gripping")
                 if((time.time() - user_activated_grip_T0) > 0.5): #Remove user priority
                     user_activated_grip = False
+                    servs.grip_config = grip_picked
+                    # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+                    servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
             elif(not user_activated_grip and user_gripping):
                 print("No Activation, gripping")
                 user_activated_grip = True
                 servs.grip_config = grip_picked
-                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
+                # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                 servs.process_grip_change(user_grip=True)
 
             #Update status lights
