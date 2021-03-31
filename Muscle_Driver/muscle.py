@@ -54,8 +54,8 @@ class muscle_interface():
 
             #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
             if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
-                return True
                 self.grip_T0 = time.time()
+                return True
             else:
                 if((time.time() - self.grip_T0) > self.no_grip_delta_t_req):
                     return False
