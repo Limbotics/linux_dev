@@ -50,7 +50,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = time.time()
-        self.object_not_spotted_delta_req = 3
+        self.object_not_spotted_delta_req = 10
 
     def camera_read_threader(self):
         #Start the read cam thread
