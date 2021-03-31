@@ -71,6 +71,8 @@ try:
                 print("Activation, gripping")
                 if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
                     user_activated_grip = False
+                    if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
+                        grip_picked = hand_interface.grips.openGrip.value
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
