@@ -9,6 +9,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import threading
+from collections import Counter
 
 import sys
 import os
@@ -48,6 +49,7 @@ class camera_interface():
         self.killed_thread = False
         self.cam_image = None
         self.cam_image_index = 0
+        self.spot_history = []
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -80,13 +82,20 @@ class camera_interface():
                 if data:
                     #print("data found: ", data)
                     is_object = True
-                self.cam_data = data
+                self.spot_history.insert(0, data)
+                if(len(self.spot_history) > 6):
+                    self.spot_history.pop()
+                self.cam_data = self.Most_Common(self.spot_history)
                 self.object_spotted = is_object
 
                 # print(str(self.object_spotted))
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("Time to decode image: " + (str(time.time() - t)))
+
+    def Most_Common(self, lst):
+        data = Counter(lst)
+        return data.most_common(1)[0][0]
 
     def read_cam_thread(self):
         while not self.killed_thread:
