@@ -2,6 +2,7 @@ from adafruit_servokit import ServoKit
 #https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library#controlling-servos-3013804-22
 
 from enum import Enum
+import time
 
 import sys
 import os
@@ -47,6 +48,7 @@ class handServoControl:
         """
         self.kit.servo[finger].angle = angle
         self.angles[finger] = angle
+        time.sleep(0.25)
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
@@ -73,7 +75,8 @@ class handLUTControl(handServoControl):
             grips.bowl.value:      grip_finger_angles.bowl.value,
         }
         user_dispatch = {
-            grips.bottle.value: grip_finger_angles.bottle_full_closed.value
+            grips.bottle.value: grip_finger_angles.bottle_full_closed.value,
+            grips.small.value:     grip_finger_angles.small_full_closed.value,
         }
         self.user_dispatch = user_dispatch
         self.dispatch = dispatch

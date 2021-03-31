@@ -11,9 +11,9 @@ class fingers(Enum):
 class grips(Enum):
     """ Defines the different grips available."""
     openGrip = "open grip"
-    small = "small grip"
-    bottle = "cup grip"
-    bowl = "bowl grip"
+    small =    "small grip"
+    bottle =   "cup grip"
+    bowl =     "bowl grip"
 
 
 class grip_finger_angles(Enum):
@@ -35,10 +35,18 @@ class grip_finger_angles(Enum):
     }
 
     small = {
-        # fingers.thumb.value:   45,
-        # fingers.index.value:   120,
-        # fingers.middle.value:  180,
-        # fingers.ring.value:    180,
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   180
+    }
+
+    small_full_closed = {
+        fingers.thumb.value:   180,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
         # fingers.pinky.value:   180
     }
 
