@@ -70,6 +70,7 @@ class camera_interface():
         previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
+            # t = time.time()
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
                 data, _, _ = self.detector.detectAndDecode(self.cam_image)
@@ -85,21 +86,32 @@ class camera_interface():
                 # print(str(self.object_spotted))
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            # print("Time to decode image: " + (str(t-time.time())))
+            # print("Time to decode image: " + (str(time.time() - t)))
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            #Get the image
-            _, img = self.cap.read()
-            #Store the image in the class variable
-            self.cam_image = img
+            #Get camera image, rescale, and store in class variable
+            self.cam_image = self.rescale_image(*self.cap.read())
+            #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
-            time.sleep(0.05)
+            time.sleep(0.01)
+
+    def rescale_image(self, _, img):
+        # t = time.time()
+        scale_percent = 50 # percent of original size
+        width = int(img.shape[1] * scale_percent / 100)
+        height = int(img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+
+        # resize image
+        resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        # print("Time to rescale: " + str(time.time() - t))
+        return resized
 
     def read_cam(self):
         # get the image
-        _, img = self.cap.read()
+        _, img = self.cap.read() #TODO: #14 Downscale the resolution for faster processing
         # get bounding box coords and data
         data, bbox, _ = self.detector.detectAndDecode(img)
         #Define a parameter we can easily read later if anything is detected

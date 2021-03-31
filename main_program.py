@@ -49,9 +49,9 @@ try:
             statuslights.set_status(is_object, user_gripping)
 
         if(is_object and (count%250 ==0)):
-            print("Main thread spots an object!")
+            print("Main thread spots an object! " + str(count))
         elif(count%250==0):
-            print("Main thread, no object.")
+            print("Main thread, no object." + str(count))
         if((abs(count - status_T0) > delta_required_for_status_change) and (grip_picked is not previous_grip)): # and servs.authorized_to_change_grips()
             #Update grip configuration, if we should
             if (grip_picked == ""):
