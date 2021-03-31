@@ -59,7 +59,7 @@ class grip_finger_angles(Enum):
     }
 
     bottle_full_closed = {
-        fingers.thumb.value:   130,
+        fingers.thumb.value:   120,
         fingers.index.value:   130,
         fingers.middle.value:  160,
         fingers.ring.value:    160,
