@@ -41,6 +41,8 @@ try:
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
 
+        print("MyoSensor value: " , mi.AnalogRead())
+
         if mi.triggered():
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
