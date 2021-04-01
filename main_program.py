@@ -55,7 +55,7 @@ try:
         print("MyoSensor value: " , mi.AnalogRead())
 
        
-        mapAnalogtoServo()
+        # mapAnalogtoServo()
 
         if mi.triggered():
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
