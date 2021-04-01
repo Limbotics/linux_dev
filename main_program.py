@@ -24,6 +24,16 @@ servs = servo.handLUTControl()
 #Status Lights initialization
 statuslights = slights.slights_interface()
 
+outValue = 0
+def mapAnalogtoServo():
+     #servs is object function to move is servs.moveFinger(self, finger, angle)
+     #8000 in to 13000
+     outValue = (mi.AnalogRead()-8000)*180/5000
+     servs.moveFinger(0, int(outValue))
+     servs.moveFinger(1, int(outValue))
+     servs.moveFinger(2, int(outValue))
+
+
 count = 0
 status_T0 = 0
 previous_grip = ""
@@ -42,6 +52,9 @@ try:
         is_object = cam.object_spotted
 
         print("MyoSensor value: " , mi.AnalogRead())
+
+       
+        mapAnalogtoServo()
 
         if mi.triggered():
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
