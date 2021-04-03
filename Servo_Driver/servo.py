@@ -48,7 +48,7 @@ class handServoControl:
         """
         self.kit.servo[finger].angle = angle
         self.angles[finger] = angle
-        time.sleep(0.25)
+        time.sleep(0.1)
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
