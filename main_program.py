@@ -37,7 +37,7 @@ def mapAnalogtoServo():
 count = 0
 status_T0 = 0
 previous_grip = ""
-grip_picked = ""
+grip_picked = ""   #
 user_activated_grip = False
 user_activated_grip_T0 = time.time()
 loop_time_step = 0.001
@@ -54,7 +54,6 @@ try:
 
         print("MyoSensor value: " , mi.AnalogRead())
 
-       
         # mapAnalogtoServo()
 
         if mi.triggered():
