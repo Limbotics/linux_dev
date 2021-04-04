@@ -30,7 +30,7 @@ class muscle_interface():
         self.analogThreshold = 7500
         self.analogRatioThreshold = 3               #adjust to tune advanced trigger sensitvity
 
-        self.no_grip_delta_t_req = 5
+        self.off_buffer_delay = 0.75
         self.grip_T0 = time.time()
 
     def AnalogRead(self):
@@ -38,33 +38,34 @@ class muscle_interface():
 
     def triggered(self):
         if self.chan.value > self.analogThreshold:
+            self.grip_T0 = time.time()
             return True
-        else:
+        elif (time.time() - self.grip_T0 > self.off_buffer_delay):
             return False
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
-    def advancedTriggered(self):
-        #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
-        #turns out theres a fifo module, refernece linked below
-        #https://www.guru99.com/python-queue-example.html
-        if self.fifo.full():
-            previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
-            currentAnalog = self.chan.value
-            self.fifo.put(self.chan.value)              #adds the value from the ADC to the rear of the FIFO buffer
+    # def advancedTriggered(self):
+    #     #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
+    #     #turns out theres a fifo module, refernece linked below
+    #     #https://www.guru99.com/python-queue-example.html
+    #     if self.fifo.full():
+    #         previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
+    #         currentAnalog = self.chan.value
+    #         self.fifo.put(self.chan.value)              #adds the value from the ADC to the rear of the FIFO buffer
 
-            #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
-            if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
-                self.grip_T0 = time.time()
-                return True
-            else:
-                if((time.time() - self.grip_T0) > self.no_grip_delta_t_req):
-                    return False
-                else:
-                    return True
+    #         #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
+    #         if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
+    #             self.grip_T0 = time.time()
+    #             return True
+    #         else:
+    #             if((time.time() - self.grip_T0) > self.no_grip_delta_t_req):
+    #                 return False
+    #             else:
+    #                 return True
         
-        self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
+    #     self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
         
-        return False
+    #     return False
 
 
     
