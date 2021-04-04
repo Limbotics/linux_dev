@@ -98,14 +98,6 @@ class slights_interface():
         for pin in status:
             GPIO.output(pin.value, status[pin])
 
-        #Update current status
-        self.current_status = status
-
-        #print("Updated LED status to " + str(self.current_status))
-
-    def get_current_status(self):
-        return self.current_status
-
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""
         for pinout in pinouts:
