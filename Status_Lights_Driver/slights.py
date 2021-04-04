@@ -13,27 +13,43 @@ from enum import Enum
 
 class pinouts(Enum):
     """The pin number for a given LED color. BCM Coordinate system"""
-    white  = 17   #GPIO 0
+    green  = 17   #GPIO 0
     yellow = 27  #GPIO 2
     blue   = 22    #GPIO 3
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
+    #Blue light = object detection indicator. Blue on means object seen. Blue off means no object seen.
     no_object = {
-        pinouts.white: GPIO.LOW,
-        pinouts.yellow: GPIO.HIGH,
         pinouts.blue: GPIO.LOW
     }
 
     object_detected = {
-        pinouts.white: GPIO.LOW,
-        pinouts.yellow: GPIO.LOW,
-        pinouts.blue: GPIO.HIGH
+        pinouts.blue: GPIO.HIGH,
+        pinouts.yellow: GPIO.LOW
     }
 
-    object_detected_and_user_activated = {
-        pinouts.white: GPIO.HIGH,
-        pinouts.yellow: GPIO.LOW,
+    #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
+    user_active = {
+        pinouts.green: GPIO.HIGH,
+        pinouts.yellow: GPIO.LOW
+    }
+
+    user_not_active = {
+        pinouts.green: GPIO.LOW
+    }
+
+    #Standby state. Only occurs when there is both no object detected + no user input detected. 
+    standby = {
+        pinouts.yellow: GPIO.HIGH,
+        pinouts.green: GPIO.LOW,
+        pinouts.blue: GPIO.LOW
+    }
+
+    #Object activated state. Only occurs when user input is detected AND an object is seen. 
+    fully_active = {
+        pinouts.yellow: GPIO.HIGH,
+        pinouts.green: GPIO.LOW,
         pinouts.blue: GPIO.LOW
     }
 
@@ -61,9 +77,9 @@ class slights_interface():
         #Define a matching set between status states and inputs to set_status
         self.status_dispatcher = {
             #(object_detected, user_activated): display_state
-            (False, False): status_states.no_object.value,
-            (False, True): status_states.object_detected_and_user_activated.value, #TODO: New status for this?
-            (True, True):  status_states.object_detected_and_user_activated.value,
+            (False, False): status_states.standby.value,
+            (False, True): status_states.user_active.value, 
+            (True, True):  status_states.fully_active.value,
             (True, False):  status_states.object_detected.value,
         }
 
