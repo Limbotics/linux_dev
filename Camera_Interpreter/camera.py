@@ -8,6 +8,9 @@ import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
+import matplotlib.pyplot as plt
+import cvlib as cv
+from cvlib.object_detection import draw_bbox
 import threading
 from collections import Counter
 
@@ -24,6 +27,9 @@ grips = hand_interface.grips
 #https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/
 #https://www.pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/
 #https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
+#TODO: Implement the following
+#https://towardsdatascience.com/object-detection-with-less-than-10-lines-of-code-using-python-2d28eebc5b11
+
 
 
 class camera_interface():
@@ -75,18 +81,16 @@ class camera_interface():
             # t = time.time()
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
-                data, _, _ = self.detector.detectAndDecode(self.cam_image)
+                # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
+                _, data, conf = cv.detect_common_objects(self.cam_image)
+                print(str(data))
+                print(str(conf))
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
                 #Update parameter/output the data we found, if any
                 if data:
                     #print("data found: ", data)
                     is_object = True
-                #Poll averaging method (possibly deprecated)
-                # self.spot_history.insert(0, data)
-                # if(len(self.spot_history) > 6):
-                #     self.spot_history.pop()
-                # self.cam_data = self.Most_Common(self.spot_history)
 
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
