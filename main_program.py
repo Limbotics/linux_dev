@@ -124,6 +124,10 @@ try:
         count += 1
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
+    statuslights.startup_complete = False
+    slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
+    slights_startup_thread.start()
+
     #print(count)
 #Determine the current state we're in 
     #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
@@ -137,6 +141,10 @@ cam.end_camera_session()
 cam_thread.join() #Don't continue until the thread is closed 
 servs.safe_shutdown()
 time.sleep(0.5)
+
+#Everything else is complete, so do status lights last
+statuslights.startup_complete = True
+slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 
