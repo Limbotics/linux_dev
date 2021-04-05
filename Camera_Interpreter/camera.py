@@ -46,6 +46,8 @@ class camera_interface():
     def __init__(self):
         self.count = 0
         self.cap = cv2.VideoCapture(0)
+        #Wait for the camera to startup for two seconds
+        time.sleep(2)
         print("Created video capture object")
         # QR code detection object
         # self.detector = cv2.QRCodeDetector()
