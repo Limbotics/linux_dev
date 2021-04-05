@@ -55,7 +55,7 @@ class camera_interface():
         self.killed_thread = False
         self.cam_image = None
         self.cam_image_index = 0
-        self.object_spotted_T0 = time.time()
+        self.object_spotted_T0 = 0
         self.object_not_spotted_delta_req = 10
 
     def camera_read_threader(self):
@@ -85,6 +85,7 @@ class camera_interface():
                 _, data, conf = cv.detect_common_objects(self.cam_image)
                 print(str(data))
                 print(str(conf))
+                data = ""
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
                 #Update parameter/output the data we found, if any
