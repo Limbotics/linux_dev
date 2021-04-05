@@ -78,7 +78,7 @@ class camera_interface():
         previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            # t = time.time()
+            t = time.time()
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
@@ -105,7 +105,7 @@ class camera_interface():
                 self.object_spotted = is_object
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            # print("Time to decode image: " + (str(time.time() - t)))
+            print("Time to decode image: " + (str(time.time() - t)))
 
     def Most_Common(self, lst):
         data = Counter(lst)
@@ -113,12 +113,14 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
+            t = time.time()
             #Get camera image, rescale, and store in class variable
             self.cam_image = self.rescale_image(*self.cap.read())
             #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
             time.sleep(0.05)
+            print("Time to save new image: " + (str(time.time() - t)))
 
     def rescale_image(self, _, img):
         # t = time.time()

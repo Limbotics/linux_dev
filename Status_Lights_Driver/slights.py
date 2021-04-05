@@ -49,8 +49,8 @@ class status_states(Enum):
     #Object activated state. Only occurs when user input is detected AND an object is seen. 
     fully_active = {
         pinouts.yellow: GPIO.HIGH,
-        pinouts.green: GPIO.LOW,
-        pinouts.blue: GPIO.LOW
+        pinouts.green: GPIO.HIGH,
+        pinouts.blue: GPIO.HIGH
     }
 
 class slights_interface():
