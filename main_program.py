@@ -2,6 +2,14 @@ import time
 import os
 import threading
 
+from Status_Lights_Driver import slights
+
+#Status Lights initialization
+statuslights = slights.slights_interface()
+#Tell the user that we're in the startup sequence
+slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
+slights_startup_thread.start()
+
 from adafruit_servokit import ServoKit
 
 #import other files
@@ -9,15 +17,8 @@ from adafruit_servokit import ServoKit
 from Servo_Driver import servo
 from Camera_Interpreter import camera
 from Muscle_Driver import muscle
-from Status_Lights_Driver import slights
 from Hand_Classes import hand_interface
 
-
-#Status Lights initialization
-statuslights = slights.slights_interface()
-#Tell the user that we're in the startup sequence
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
 
 #Camera initialization
 cam = camera.camera_interface()
