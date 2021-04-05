@@ -52,7 +52,7 @@ try:
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
 
-        print("MyoSensor value: " , mi.AnalogRead())
+        # print("MyoSensor value: " , mi.AnalogRead())
 
         # mapAnalogtoServo()
 
