@@ -31,8 +31,10 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # implementation)
 image = cv2.imread(args["image"])
 (h, w) = image.shape[:2]
-blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843,
-	(300, 300), 127.5)
+# blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843,
+# 	(300, 300), 127.5)
+blob = cv2.dnn.blobFromImage(image, 0.007843,
+ 	(300, 300), 127.5)
 
 # pass the blob through the network and obtain the detections and
 # predictions
