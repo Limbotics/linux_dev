@@ -4,7 +4,7 @@ CAFFE2_ROOT = "~/pytorch"
 CAFFE_MODELS = "~/pytorch/caffe2/python/models"
 # if you have a mean file, place it in the same dir as the model
 
-%matplotlib inline
+#%matplotlib inline
 from caffe2.proto import caffe2_pb2
 import numpy as np
 import skimage.io
