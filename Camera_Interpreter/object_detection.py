@@ -26,7 +26,7 @@ MODEL = 'squeezenet', 'init_net.pb', 'predict_net.pb', 'ilsvrc_2012_mean.npy', 2
 # codes - these help decypher the output and source from a list from AlexNet's object codes to provide an result like "tabby cat" or "lemon" depending on what's in the picture you submit to the neural network.
 # The list of output codes for the AlexNet models (also squeezenet)
 codes =  "https://gist.githubusercontent.com/aaronmarkham/cd3a6b6ac071eca6f7b4a6e40e6038aa/raw/9edb4038a37da6b5a44c3b5bc52e448ff09bfe5b/alexnet_codes"
-print "Config set!"
+print("Config set!")
 
 def crop_center(img,cropx,cropy):
     y,x,c = img.shape
@@ -55,7 +55,7 @@ def rescale(img, input_height, input_width):
     pyplot.title('Rescaled image')
     print("New image shape:" + str(imgScaled.shape) + " in HWC")
     return imgScaled
-print "Functions set."
+print("Functions set.")
 
 # set paths and variables from model choice and prep image
 CAFFE2_ROOT = os.path.expanduser(CAFFE2_ROOT)
@@ -69,7 +69,7 @@ if not os.path.exists(MEAN_FILE):
 else:
     mean = np.load(MEAN_FILE).mean(1).mean(1)
     mean = mean[:, np.newaxis, np.newaxis]
-print "mean was set to: ", mean
+print("mean was set to: ", mean)
 
 # some models were trained with different image sizes, this helps you calibrate your image
 INPUT_IMAGE_SIZE = MODEL[4]
@@ -78,38 +78,38 @@ INPUT_IMAGE_SIZE = MODEL[4]
 if not os.path.exists(CAFFE2_ROOT):
     print("Houston, you may have a problem.")
 INIT_NET = os.path.join(CAFFE_MODELS, MODEL[0], MODEL[1])
-print 'INIT_NET = ', INIT_NET
+print('INIT_NET = ', INIT_NET)
 PREDICT_NET = os.path.join(CAFFE_MODELS, MODEL[0], MODEL[2])
-print 'PREDICT_NET = ', PREDICT_NET
+print('PREDICT_NET = ', PREDICT_NET)
 if not os.path.exists(INIT_NET):
     print(INIT_NET + " not found!")
 else:
-    print "Found ", INIT_NET, "...Now looking for", PREDICT_NET
+    print("Found ", INIT_NET, "...Now looking for", PREDICT_NET)
     if not os.path.exists(PREDICT_NET):
-        print "Caffe model file, " + PREDICT_NET + " was not found!"
+        print("Caffe model file, " + PREDICT_NET + " was not found!")
     else:
-        print "All needed files found! Loading the model in the next block."
+        print("All needed files found! Loading the model in the next block.")
 
 # load and transform image
 img = skimage.img_as_float(skimage.io.imread(IMAGE_LOCATION)).astype(np.float32)
 img = rescale(img, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE)
 img = crop_center(img, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE)
-print "After crop: " , img.shape
-pyplot.figure()
-pyplot.imshow(img)
-pyplot.axis('on')
-pyplot.title('Cropped')
+print("After crop: " , img.shape)
+# pyplot.figure()
+# pyplot.imshow(img)
+# pyplot.axis('on')
+# pyplot.title('Cropped')
 
 # switch to CHW
 img = img.swapaxes(1, 2).swapaxes(0, 1)
 pyplot.figure()
-for i in range(3):
-    # For some reason, pyplot subplot follows Matlab's indexing
-    # convention (starting with 1). Well, we'll just follow it...
-    pyplot.subplot(1, 3, i+1)
-    pyplot.imshow(img[i])
-    pyplot.axis('off')
-    pyplot.title('RGB channel %d' % (i+1))
+# for i in range(3):
+#     # For some reason, pyplot subplot follows Matlab's indexing
+#     # convention (starting with 1). Well, we'll just follow it...
+#     pyplot.subplot(1, 3, i+1)
+#     pyplot.imshow(img[i])
+#     pyplot.axis('off')
+#     pyplot.title('RGB channel %d' % (i+1))
 
 # switch to BGR
 img = img[(2, 1, 0), :, :]
@@ -119,7 +119,7 @@ img = img * 255 - mean
 
 # add batch size
 img = img[np.newaxis, :, :, :].astype(np.float32)
-print "NCHW: ", img.shape
+print("NCHW: ", img.shape)
 
 # initialize the neural net
 
@@ -135,7 +135,7 @@ results = p.run({'data': img})
 
 # turn it into something we can play with and examine which is in a multi-dimensional array
 results = np.asarray(results)
-print "results shape: ", results.shape
+print("results shape: ", results.shape)
 
 # the rest of this is digging through the results
 
@@ -153,7 +153,7 @@ for i, r in enumerate(results):
         highest = r
         index = i
 
-print index, " :: ", highest
+print(str(index), " :: ", str(highest))
 
 # lookup the code and return the result
 # top 3 results
