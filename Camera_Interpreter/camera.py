@@ -119,7 +119,7 @@ class camera_interface():
             #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
-            time.sleep(0.05)
+            time.sleep(2)
             print("Time to save new image: " + (str(time.time() - t)))
 
     def rescale_image(self, _, img):
