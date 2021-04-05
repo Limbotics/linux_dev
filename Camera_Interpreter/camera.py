@@ -2,7 +2,6 @@
 from imutils.video import VideoStream
 from imutils.video import FPS
 import numpy as np
-import argparse
 import imutils
 import time
 from picamera.array import PiRGBArray
@@ -45,10 +44,13 @@ class camera_interface():
 
     def __init__(self):
         self.count = 0
-        self.cap = cv2.VideoCapture(0)
+        # self.cap = cv2.VideoCapture(0)
+        self.vs = VideoStream(src=0).start()
         #Wait for the camera to startup for two seconds
         time.sleep(2)
-        print("Created video capture object")
+        print("[INFO] Created video capture object")
+        print("[INFO] loading model...")
+        self.net = cv2.dnn.readNetFromCaffe(prototext_path, model_path)
         # QR code detection object
         # self.detector = cv2.QRCodeDetector()
         self.cam_data = ""
@@ -84,8 +86,9 @@ class camera_interface():
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
-                _, data, conf = cv.detect_common_objects(self.cam_image)
-                print("Camera objects: ")
+                (h, w) = self.cam_image.shape[:2]
+                blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 0.007843, (300, 300), 127.5)
+                print("[INFO] Camera objects: ")
                 print("\t" + str(data))
                 print("\t" + str(conf))
                 data = ""
@@ -107,7 +110,7 @@ class camera_interface():
                 self.object_spotted = is_object
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            print("Time to decode image: " + (str(time.time() - t)))
+            print("[INFO] Time to decode image: " + (str(time.time() - t)))
 
     def Most_Common(self, lst):
         data = Counter(lst)
@@ -115,28 +118,20 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            t = time.time()
+            # t = time.time()
             #Get camera image, rescale, and store in class variable
-            self.cam_image = self.rescale_image(*self.cap.read())
+            frame = self.vs.read()
+            self.cam_image = imutils.resize(frame, width=400)
+            
             #Increase index by 1
             self.cam_image_index += 1
             #Pause temply
-            time.sleep(2)
-            print("Time to save new image: " + (str(time.time() - t)))
+            time.sleep(0.2)
+            # print("Time to save/resize new image: " + (str(time.time() - t)))
 
     def rescale_image(self, _, img):
-        # t = time.time()
-        scale_percent = 25 # percent of original size
-        # width = int(img.shape[1] * scale_percent / 100)
-        # height = int(img.shape[0] * scale_percent / 100)
-        
-        width = int(224)
-        height = int(224)
-        dim = (width, height)
-
         # resize image
-        resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-        # print("Time to rescale: " + str(time.time() - t))
+        resized = cv2.resize(img, (224, 224))
         return resized
 
     def read_cam(self):
