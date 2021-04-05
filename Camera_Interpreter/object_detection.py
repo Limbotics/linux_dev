@@ -166,4 +166,4 @@ response = urllib2.urlopen(codes)
 for line in response:
     code, result = line.partition(":")[::2]
     if (code.strip() == str(index)):
-        print result.strip()[1:-2]
+        print(str(result.strip()[1:-2]))
