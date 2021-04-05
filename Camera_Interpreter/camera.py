@@ -127,8 +127,11 @@ class camera_interface():
     def rescale_image(self, _, img):
         # t = time.time()
         scale_percent = 25 # percent of original size
-        width = int(img.shape[1] * scale_percent / 100)
-        height = int(img.shape[0] * scale_percent / 100)
+        # width = int(img.shape[1] * scale_percent / 100)
+        # height = int(img.shape[0] * scale_percent / 100)
+        
+        width = int(224)
+        height = int(224)
         dim = (width, height)
 
         # resize image
