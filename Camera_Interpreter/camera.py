@@ -48,7 +48,7 @@ class camera_interface():
         self.cap = cv2.VideoCapture(0)
         print("Created video capture object")
         # QR code detection object
-        self.detector = cv2.QRCodeDetector()
+        # self.detector = cv2.QRCodeDetector()
         self.cam_data = ""
         self.object_spotted = False
         self.test_count = 0
@@ -83,8 +83,9 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 _, data, conf = cv.detect_common_objects(self.cam_image)
-                print(str(data))
-                print(str(conf))
+                print("Camera objects: ")
+                print("\t" + str(data))
+                print("\t" + str(conf))
                 data = ""
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False

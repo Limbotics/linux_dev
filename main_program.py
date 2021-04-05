@@ -63,15 +63,15 @@ try:
         else:
             user_gripping = False
 
-        if(is_object and (count%250 ==0)):
-            print("Main thread spots an object! " + str(count))
-        elif(count%250==0):
-            print("Main thread, no object." + str(count))
+        # if(is_object and (count%250 ==0)):
+        #     print("Main thread spots an object! " + str(count))
+        # elif(count%250==0):
+        #     print("Main thread, no object." + str(count))
         
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
             if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
-                print("No activation, no gripping")
+                # print("No activation, no gripping")
                 if (grip_picked is not previous_grip):
                     if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
                         grip_picked = hand_interface.grips.openGrip.value
@@ -80,10 +80,10 @@ try:
                     servs.process_grip_change()
                     statuslights.set_status(user_activated_grip, user_gripping)
             elif(user_activated_grip and not user_gripping): #User previously activated this grip, so stay here
-                print("Activation, no gripping")
+                # print("Activation, no gripping")
                 pass
             elif(user_activated_grip and user_gripping): #User gripping after activating a grip is the exit command
-                print("Activation, gripping")
+                # print("Activation, gripping")
                 if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
                     user_activated_grip = False
                     if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
@@ -93,14 +93,14 @@ try:
                     servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
                     statuslights.set_status(user_activated_grip, user_gripping)
             elif(not user_activated_grip and user_gripping):
-                print("No Activation, gripping")
+                # print("No Activation, gripping")
                 if(grip_picked != ""):
                     user_activated_grip = True
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change(user_grip=user_activated_grip)
                     statuslights.set_status(user_activated_grip, user_gripping)
-            print("Current grip: " + grip_picked)
+            # print("Current grip: " + grip_picked)
 
             #Update status lights
             # 
