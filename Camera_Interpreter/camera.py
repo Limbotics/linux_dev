@@ -149,22 +149,18 @@ class camera_interface():
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
                 # print("[INFO] Camera objects: " + data)
-                #Define a parameter we can easily read later if anything is detected
-                is_object = False
-                #Update parameter/output the data we found, if any
-                if data:
-                    #print("data found: ", data)
-                    is_object = True
 
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
                     self.cam_data = data
                     self.object_spotted_T0 = time.time()
+                    self.object_spotted = True
                 #If the camera doesn't see an object, require a delay before reporting nothing
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
+                        print("[DEBUG] Delta Req passed; reporting no object now")
                         self.cam_data = data
-                self.object_spotted = is_object
+                        self.object_spotted = False
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
