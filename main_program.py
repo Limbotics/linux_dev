@@ -47,7 +47,7 @@ user_activated_grip = False
 user_activated_grip_T0 = time.time()
 loop_time_step = 0.01
 # delta_required_for_status_change = 115*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
-delta_required_for_status_change = 15 #Units of n are in milliseconds, regardless of loop time step
+delta_required_for_status_change = 100 #Units of n are in milliseconds, regardless of loop time step
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
