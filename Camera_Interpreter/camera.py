@@ -149,7 +149,6 @@ class camera_interface():
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
                 # print("[INFO] Camera objects: " + data)
-                data = ""
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
                 #Update parameter/output the data we found, if any

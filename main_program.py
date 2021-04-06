@@ -73,10 +73,10 @@ try:
         else:
             user_gripping = False
 
-        if(is_object and (count%250 ==0)):
+        if(is_object and (count%10 ==0)):
             print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
-        elif(count%250==0):
-            print("[INFO] Main thread, no object." + str(count))
+        elif(count%10==0):
+            print("[INFO] Main thread, no object.\t" + str(count))
         
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
