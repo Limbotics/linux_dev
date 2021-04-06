@@ -49,8 +49,8 @@ class status_states(Enum):
     #Object activated state. Only occurs when user input is detected AND an object is seen. 
     fully_active = {
         pinouts.yellow: GPIO.HIGH,
-        pinouts.green: GPIO.LOW,
-        pinouts.blue: GPIO.LOW
+        pinouts.green: GPIO.HIGH,
+        pinouts.blue: GPIO.HIGH
     }
 
 class slights_interface():
@@ -84,10 +84,11 @@ class slights_interface():
         }
 
         #Run the startup sequence
-        self.startup_sequence()
+        # self.startup_sequence()
 
         #Set initial status
         self.set_status(False, False)
+        self.startup_complete = False
 
     def set_status(self, object_detected, is_activated):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
@@ -106,6 +107,16 @@ class slights_interface():
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.LOW)
             time.sleep(0.1)
+
+    def startup_wait(self):
+        #run indefinitely until flag is thrown that the rest of the system is ready
+        while not self.startup_complete:
+            for pinout in pinouts:
+                GPIO.output(pinout.value,GPIO.HIGH)
+                time.sleep(0.2)
+            for pinout in pinouts:
+                GPIO.output(pinout.value,GPIO.LOW)
+                time.sleep(0.2)
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
