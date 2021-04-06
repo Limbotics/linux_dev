@@ -81,13 +81,13 @@ class camera_interface():
 
         # Load the label map
         with open(PATH_TO_LABELS, 'r') as f:
-            labels = [line.strip() for line in f.readlines()]
+            self.labels = [line.strip() for line in f.readlines()]
 
         # Have to do a weird fix for label map if using the COCO "starter model" from
         # https://www.tensorflow.org/lite/models/object_detection/overview
         # First label is '???', which has to be removed.
-        if labels[0] == '???':
-            del(labels[0])
+        if self.labels[0] == '???':
+            del(self.labels[0])
 
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
@@ -197,7 +197,7 @@ class camera_interface():
         for i in range(len(scores)):
             if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score)):
                 # Draw label
-                object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+                object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
                 highest_scoring_label = object_name
                 highest_score = scores[i]
 
