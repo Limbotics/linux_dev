@@ -143,12 +143,12 @@ class camera_interface():
         previous_index = None
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
-            t = time.time()
+            # t = time.time()
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-                print("[INFO] Camera objects: " + data)
+                # print("[INFO] Camera objects: " + data)
                 data = ""
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
@@ -168,7 +168,7 @@ class camera_interface():
                 self.object_spotted = is_object
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
-            print("[INFO] Time to decode image: " + (str(time.time() - t)))
+            # print("[INFO] Time to decode image: " + (str(time.time() - t)))
 
     def detect_main_object(self, frame1):
         min_conf_threshold = 0.5
@@ -255,6 +255,6 @@ class camera_interface():
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
-        self.vs.release()
+        self.vs.stop()
         #Destroy all displayed windows
         # cv2.destroyAllWindows()
