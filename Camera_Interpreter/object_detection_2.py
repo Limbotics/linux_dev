@@ -224,5 +224,5 @@ while True:
         break
 
 # Clean up
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()
 videostream.stop()
