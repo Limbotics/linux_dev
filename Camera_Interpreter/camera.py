@@ -69,7 +69,7 @@ class camera_interface():
         #Load the tflite model and labelmap
         # Get path to current working directory
         GRAPH_NAME = "detect.tflite"
-        MODEL_NAME = "Coco"
+        MODEL_NAME = "Camera_Interpreter/Coco"
         LABELMAP_NAME = "labelmap.txt"
         CWD_PATH = os.getcwd()
 
