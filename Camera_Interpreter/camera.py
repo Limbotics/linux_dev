@@ -102,12 +102,12 @@ class camera_interface():
         self.interpreter.allocate_tensors()
 
         # Get model details
-        self.input_details = interpreter.get_input_details()
-        self.output_details = interpreter.get_output_details()
-        self.height = input_details[0]['shape'][1]
-        self.width = input_details[0]['shape'][2]
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
+        self.height = self.input_details[0]['shape'][1]
+        self.width = self.input_details[0]['shape'][2]
 
-        self.floating_model = (input_details[0]['dtype'] == np.float32)
+        self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
         self.input_mean = 127.5
         self.input_std = 127.5
