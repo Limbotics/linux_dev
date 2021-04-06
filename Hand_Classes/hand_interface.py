@@ -12,8 +12,8 @@ class grips(Enum):
     """ Defines the different grips available."""
     openGrip = "open grip"
     small =    "small grip"
-    bottle =   "cup grip"
-    bowl =     "bowl grip"
+    bottle =   "banana"
+    bowl =     "scissors"
 
 
 class grip_finger_angles(Enum):

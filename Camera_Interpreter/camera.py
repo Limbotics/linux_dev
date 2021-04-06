@@ -255,6 +255,6 @@ class camera_interface():
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
-        self.cap.release()
+        self.vs.release()
         #Destroy all displayed windows
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
