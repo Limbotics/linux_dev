@@ -23,8 +23,6 @@ import time
 from threading import Thread
 import importlib.util
 
-print("Got to here")
-
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
 class VideoStream:
@@ -159,7 +157,6 @@ freq = cv2.getTickFrequency()
 # Initialize video stream
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
-print("Made it past here")
 
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
@@ -191,9 +188,10 @@ while True:
     #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
 
     # Loop over all detections and draw detection box if confidence is above minimum threshold
+    any_objects = False
     for i in range(len(scores)):
         if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
-
+            any_objects = True
             # Get bounding box coordinates and draw box
             # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
             ymin = int(max(1,(boxes[i][0] * imH)))
@@ -205,17 +203,21 @@ while True:
 
             # Draw label
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+            print("Found object: " + object_name + " at " + str(scores[i]))
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
             cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
             cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
+    if(not any_objects):
+        print("Didn't spot any objects.")
     # Draw framerate in corner of frame
     cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
     # All the results have been drawn on the frame, so it's time to display it.
-    cv2.imwrite('output.jpg', frame)
+    # cv2.imshow('Object detector', frame)
+    cv2.imwrite("output.jpg", frame)
 
     # Calculate framerate
     t2 = cv2.getTickCount()

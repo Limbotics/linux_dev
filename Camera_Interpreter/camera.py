@@ -9,9 +9,19 @@ from picamera import PiCamera
 import cv2
 import matplotlib.pyplot as plt
 import cvlib as cv
-from cvlib.object_detection import draw_bbox
 import threading
 from collections import Counter
+
+import importlib.util
+pkg = importlib.util.find_spec('tflite_runtime')
+if pkg:
+    from tflite_runtime.interpreter import Interpreter
+    # if use_TPU:
+    #     from tflite_runtime.interpreter import load_delegate
+else:
+    from tensorflow.lite.python.interpreter import Interpreter
+    # if use_TPU:
+    #     from tensorflow.lite.python.interpreter import load_delegate
 
 import sys
 import os
@@ -42,15 +52,65 @@ class camera_interface():
         detector (QRCodeDetector): The QR Code detecting object.
     """
 
-    def __init__(self):
+    def __init__(self,resolution=(640,480),framerate=30):
         self.count = 0
         # self.cap = cv2.VideoCapture(0)
-        self.vs = VideoStream(src=0).start()
-        #Wait for the camera to startup for two seconds
-        time.sleep(2)
+        self.vs = VideoStream(resolution=(1280,720),framerate=30).start()
+        # self.stream = cv2.VideoCapture(0)
+        # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+        # ret = self.stream.set(3,resolution[0])
+        # ret = self.stream.set(4,resolution[1])
+
+        #Wait for the camera to startup for one seconds
+        time.sleep(1)
         print("[INFO] Created video capture object")
         print("[INFO] loading model...")
-        self.net = cv2.dnn.readNetFromCaffe(prototext_path, model_path)
+
+        #Load the tflite model and labelmap
+        # Get path to current working directory
+        GRAPH_NAME = "detect.tflite"
+        MODEL_NAME = "Coco"
+        LABELMAP_NAME = "labelmap.txt"
+        CWD_PATH = os.getcwd()
+
+        # Path to .tflite file, which contains the model that is used for object detection
+        PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
+
+        # Path to label map file
+        PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
+
+        # Load the label map
+        with open(PATH_TO_LABELS, 'r') as f:
+            labels = [line.strip() for line in f.readlines()]
+
+        # Have to do a weird fix for label map if using the COCO "starter model" from
+        # https://www.tensorflow.org/lite/models/object_detection/overview
+        # First label is '???', which has to be removed.
+        if labels[0] == '???':
+            del(labels[0])
+
+        # Load the Tensorflow Lite model.
+        # If using Edge TPU, use special load_delegate argument
+        if use_TPU:
+            self.interpreter = Interpreter(model_path=PATH_TO_CKPT,
+                                    experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
+            print(PATH_TO_CKPT)
+        else:
+            self.interpreter = Interpreter(model_path=PATH_TO_CKPT)
+
+        self.interpreter.allocate_tensors()
+
+        # Get model details
+        self.input_details = interpreter.get_input_details()
+        self.output_details = interpreter.get_output_details()
+        self.height = input_details[0]['shape'][1]
+        self.width = input_details[0]['shape'][2]
+
+        self.floating_model = (input_details[0]['dtype'] == np.float32)
+
+        self.input_mean = 127.5
+        self.input_std = 127.5
+        
         # QR code detection object
         # self.detector = cv2.QRCodeDetector()
         self.cam_data = ""
@@ -60,7 +120,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 10
+        self.object_not_spotted_delta_req = 3
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -86,11 +146,8 @@ class camera_interface():
             if(previous_index != self.cam_image_index):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
-                (h, w) = self.cam_image.shape[:2]
-                blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 0.007843, (300, 300), 127.5)
-                print("[INFO] Camera objects: ")
-                print("\t" + str(data))
-                print("\t" + str(conf))
+                data, score = self.detect_main_object(self.cam_image)
+                print("[INFO] Camera objects: " + data)
                 data = ""
                 #Define a parameter we can easily read later if anything is detected
                 is_object = False
@@ -112,9 +169,38 @@ class camera_interface():
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             print("[INFO] Time to decode image: " + (str(time.time() - t)))
 
-    def Most_Common(self, lst):
-        data = Counter(lst)
-        return data.most_common(1)[0][0]
+    def detect_main_object(self, frame1):
+        min_conf_threshold = 0.5
+
+        # Acquire frame and resize to expected shape [1xHxWx3]
+        frame = frame1.copy()
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
+        input_data = np.expand_dims(frame_resized, axis=0)
+
+        # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
+        if self.floating_model:
+            input_data = (np.float32(input_data) - self.input_mean) / self.input_std
+
+        # Perform the actual detection by running the model with the image as input
+        self.interpreter.set_tensor(self.input_details[0]['index'],input_data)
+        self.interpreter.invoke()
+
+        # Retrieve detection results
+        # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
+        classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0] # Class index of detected objects
+        scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
+
+        highest_scoring_label = ""
+        highest_score = 0
+        for i in range(len(scores)):
+            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score)):
+                # Draw label
+                object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+                highest_scoring_label = object_name
+                highest_score = scores[i]
+
+        return (highest_scoring_label, highest_score)
 
     def read_cam_thread(self):
         while not self.killed_thread:
@@ -129,44 +215,39 @@ class camera_interface():
             time.sleep(0.2)
             # print("Time to save/resize new image: " + (str(time.time() - t)))
 
-    def rescale_image(self, _, img):
-        # resize image
-        resized = cv2.resize(img, (224, 224))
-        return resized
+    # def read_cam(self):
+    #     # get the image
+    #     _, img = self.cap.read() #TODO: #14 Downscale the resolution for faster processing
+    #     # get bounding box coords and data
+    #     data, bbox, _ = self.detector.detectAndDecode(img)
+    #     #Define a parameter we can easily read later if anything is detected
+    #     is_object = False
+    #     #Update parameter/output the data we found, if any
+    #     if data:
+    #         #print("data found: ", data)
+    #         is_object = True
+    #     #return the information we got from the camera
+    #     # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+    #     return data, bbox, img, is_object
 
-    def read_cam(self):
-        # get the image
-        _, img = self.cap.read() #TODO: #14 Downscale the resolution for faster processing
-        # get bounding box coords and data
-        data, bbox, _ = self.detector.detectAndDecode(img)
-        #Define a parameter we can easily read later if anything is detected
-        is_object = False
-        #Update parameter/output the data we found, if any
-        if data:
-            #print("data found: ", data)
-            is_object = True
-        #return the information we got from the camera
-        # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
-        return data, bbox, img, is_object
+    # def read_cam_display_out(self):
+    #     #Call the standard method to get the qr data / bounding box
+    #     data, bbox, img, _ = self.read_cam()
+    #     # if there is a bounding box, draw one, along with the data
+    #     if(bbox is not None):
+    #         for i in range(len(bbox)):
+    #             cv2.line(img, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255,
+    #                     0, 255), thickness=2)
+    #         cv2.putText(img, data, (int(bbox[0][0][0]), int(bbox[0][0][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX,
+    #                     0.5, (0, 255, 0), 2)
+    #         #if data:
+    #             #print("data found: ", data)
+    #     # display the image preview
+    #     cv2.imshow("code detector", img)
 
-    def read_cam_display_out(self):
-        #Call the standard method to get the qr data / bounding box
-        data, bbox, img, _ = self.read_cam()
-        # if there is a bounding box, draw one, along with the data
-        if(bbox is not None):
-            for i in range(len(bbox)):
-                cv2.line(img, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255,
-                        0, 255), thickness=2)
-            cv2.putText(img, data, (int(bbox[0][0][0]), int(bbox[0][0][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5, (0, 255, 0), 2)
-            #if data:
-                #print("data found: ", data)
-        # display the image preview
-        cv2.imshow("code detector", img)
-
-        # save the image
-        cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
-        #self.count += 1
+    #     # save the image
+    #     cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+    #     #self.count += 1
 
     def end_camera_session(self):
         #Stop the camera thread 
