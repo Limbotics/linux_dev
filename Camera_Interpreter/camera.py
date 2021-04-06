@@ -91,6 +91,7 @@ class camera_interface():
 
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
+        use_TPU = False
         if use_TPU:
             self.interpreter = Interpreter(model_path=PATH_TO_CKPT,
                                     experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
