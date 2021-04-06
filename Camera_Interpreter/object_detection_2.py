@@ -30,9 +30,9 @@ class VideoStream:
     def __init__(self,resolution=(640,480),framerate=30):
         # Initialize the PiCamera and the camera image stream
         self.stream = cv2.VideoCapture(0)
-        # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-        # ret = self.stream.set(3,resolution[0])
-        # ret = self.stream.set(4,resolution[1])
+        ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+        ret = self.stream.set(3,resolution[0])
+        ret = self.stream.set(4,resolution[1])
             
         # Read first frame from the stream
         (self.grabbed, self.frame) = self.stream.read()
@@ -154,9 +154,11 @@ input_std = 127.5
 frame_rate_calc = 1
 freq = cv2.getTickFrequency()
 
+print("Got to here")
 # Initialize video stream
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
+print("Made it past here")
 
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
