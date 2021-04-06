@@ -74,7 +74,7 @@ try:
             user_gripping = False
 
         if(is_object and (count%250 ==0)):
-            print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" str(count))
+            print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
         elif(count%250==0):
             print("[INFO] Main thread, no object." + str(count))
         
