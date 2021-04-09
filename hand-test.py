@@ -67,9 +67,11 @@ try:
         ans = input()
         if ans == "y":
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
-            user_gripping = True
+            user_gripping = False
+            grip_picked = "test"
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
+            grip_picked = ""
             user_gripping = False
 
         if(is_object and (count%10 ==0)):

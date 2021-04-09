@@ -14,6 +14,7 @@ class grips(Enum):
     small =    "scissors"
     bottle =   "banana"
     bowl =     "bowl grip"
+    test = "test"
 
 
 class grip_finger_angles(Enum):
@@ -63,6 +64,14 @@ class grip_finger_angles(Enum):
         fingers.index.value:   130,
         fingers.middle.value:  160,
         fingers.ring.value:    150,
+    #     fingers.pinky.value:   160
+    }
+
+    test = {
+        fingers.thumb.value:   180,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
     #     fingers.pinky.value:   160
     }
 
