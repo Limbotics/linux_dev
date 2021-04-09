@@ -158,7 +158,7 @@ class camera_interface():
                 #If the camera doesn't see an object, require a delay before reporting nothing
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
-                        print("[DEBUG] Delta Req passed; reporting no object now")
+                        # print("[DEBUG] Delta Req passed; reporting no object now")
                         self.cam_data = data
                         self.object_spotted = False
                 
