@@ -60,10 +60,11 @@ try:
     cam_thread.start()
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
+        is_object = cam.object_spotted
         #Set grip_picked to "" if it's not in the database of known objects
         if(grip_picked not in hand_interface.grips._value2member_map_):
             grip_picked = ""
-        is_object = cam.object_spotted
+            is_object = False
 
         # print("MyoSensor value: " , mi.AnalogRead())
 
