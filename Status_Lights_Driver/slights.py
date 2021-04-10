@@ -14,8 +14,9 @@ from enum import Enum
 class pinouts(Enum):
     """The pin number for a given LED color. BCM Coordinate system"""
     green  = 17   #GPIO 0
-    yellow = 27  #GPIO 2
     blue   = 22    #GPIO 3
+    yellow = 27  #GPIO 2
+    
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""

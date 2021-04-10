@@ -2,10 +2,10 @@ from enum import Enum
 
 class fingers(Enum):
     """ Defines which servo corresponds to which finger. """
-    thumb = 0
-    index = 1
-    middle = 2
-    ring = 3
+    thumb = 1
+    index = 0
+    middle = 3
+    ring = 2
     pinky = 4
 
 class grips(Enum):
