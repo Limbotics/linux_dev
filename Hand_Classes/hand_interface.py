@@ -15,6 +15,7 @@ class grips(Enum):
     bottle =   "banana"
     bowl =     "bowl grip"
     test = "test"
+    cell = "cell phone"
 
 
 class grip_finger_angles(Enum):
@@ -63,6 +64,22 @@ class grip_finger_angles(Enum):
         fingers.thumb.value:   130,
         fingers.index.value:   130,
         fingers.middle.value:  160,
+        fingers.ring.value:    150,
+    #     fingers.pinky.value:   160
+    }
+
+    cell_phone = {
+        fingers.thumb.value:   15,
+        fingers.index.value:   0,
+        fingers.middle.value:  0,
+        fingers.ring.value:    15,
+    #     fingers.pinky.value:   160
+    }
+
+    cell_phone_closed = {
+        fingers.thumb.value:   150,
+        fingers.index.value:   0,
+        fingers.middle.value:  0,
         fingers.ring.value:    150,
     #     fingers.pinky.value:   160
     }
