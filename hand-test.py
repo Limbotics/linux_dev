@@ -65,8 +65,8 @@ try:
 
         # mapAnalogtoServo()
         available = ""
-        for grip_available in hand_interface.grips.values:
-            available += str(grip_available + ", ")
+        for grip_available in hand_interface.grips:
+            available += str(grip_available.value + ", ")
         print("Available to pick: \n")
         print(available)
         ans = input()
