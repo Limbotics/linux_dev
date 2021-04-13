@@ -68,7 +68,7 @@ try:
         if ans == "y":
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = False
-            grip_picked = "test"
+            grip_picked = "cell phone"
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
             grip_picked = ""
