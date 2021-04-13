@@ -65,10 +65,10 @@ try:
 
         # mapAnalogtoServo()
         ans = input()
-        if ans == "y":
+        if ans != "":
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
-            grip_picked = "banana"
+            grip_picked = ans
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
             grip_picked = ""
