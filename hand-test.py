@@ -67,8 +67,8 @@ try:
         ans = input()
         if ans == "y":
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
-            user_gripping = False
-            grip_picked = "cell phone"
+            user_gripping = True
+            grip_picked = "banana"
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
             grip_picked = ""
@@ -95,7 +95,7 @@ try:
                 pass
             elif(user_activated_grip and user_gripping): #User gripping after activating a grip is the exit command
                 # print("Activation, gripping")
-                if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
+                if((time.time() - user_activated_grip_T0) > 0): #Remove user priority
                     user_activated_grip = False
                     if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
                         grip_picked = hand_interface.grips.openGrip.value
@@ -106,7 +106,7 @@ try:
             elif(not user_activated_grip and user_gripping):
                 # print("No Activation, gripping")
                 if(grip_picked != ""):
-                    user_activated_grip = True
+                    user_activated_grip = False
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
                     servs.process_grip_change(user_grip=user_activated_grip)
