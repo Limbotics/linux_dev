@@ -64,6 +64,11 @@ try:
         # print("MyoSensor value: " , mi.AnalogRead())
 
         # mapAnalogtoServo()
+        available = ""
+        for grip_available in hand_interface.grips.values:
+            available += str(grip_available + ", ")
+        print("Available to pick: \n")
+        print(available)
         ans = input()
         if ans != "":
             # print("MyoSensor Triggered, value: " , mi.AnalogRead())
