@@ -169,6 +169,7 @@ while True:
 
     # Acquire frame and resize to expected shape [1xHxWx3]
     frame = frame1.copy()
+    cv2.imwrite("outputnobox.jpg", frame)
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame_resized = cv2.resize(frame_rgb, (width, height))
     input_data = np.expand_dims(frame_resized, axis=0)
@@ -217,7 +218,7 @@ while True:
 
     # All the results have been drawn on the frame, so it's time to display it.
     # cv2.imshow('Object detector', frame)
-    cv2.imwrite("output.jpg", frame)
+    cv2.imwrite("outputbox.jpg", frame)
 
     # Calculate framerate
     t2 = cv2.getTickCount()
