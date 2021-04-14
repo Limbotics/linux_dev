@@ -121,7 +121,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 15
+        self.object_not_spotted_delta_req = 5000
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -148,10 +148,10 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-                # print("[INFO] Camera objects: " + data)
+                print("[INFO] Camera objects: " + data)
 
                 #If the camera sees an object, skip the time requirement
-                if(data != self.cam_data):
+                if(data != ""):
                     self.cam_data = data
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
