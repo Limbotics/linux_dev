@@ -53,8 +53,8 @@ class grip_finger_angles(Enum):
     }
 
     bottle = { 
-        fingers.thumb.value:   90,
-        fingers.index.value:   90,
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
         fingers.middle.value:  75,
         fingers.ring.value:    75,
     #     fingers.pinky.value:   160
