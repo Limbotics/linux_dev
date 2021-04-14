@@ -69,7 +69,7 @@ class grip_finger_angles(Enum):
     }
 
     cell_phone = {
-        fingers.thumb.value:   150,
+        fingers.thumb.value:   75,
         fingers.index.value:   0,
         fingers.middle.value:  0,
         fingers.ring.value:    150,
