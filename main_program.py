@@ -69,18 +69,19 @@ try:
         # print("MyoSensor value: " , mi.AnalogRead())
 
         # mapAnalogtoServo()
-
         if mi.triggered():
-            print("MyoSensor Triggered, value: " , mi.AnalogRead())
+            
             user_gripping = True
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
             user_gripping = False
 
         if(is_object and (count%10 ==0)):
-            print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
+            print("MyoSensor value: " , mi.AnalogRead())
+            # print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
         elif(count%10==0):
-            print("[INFO] Main thread, no object.\t" + str(count))
+            print("MyoSensor value: " , mi.AnalogRead())
+            # print("[INFO] Main thread, no object.\t" + str(count))
         
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
