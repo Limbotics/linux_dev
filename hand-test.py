@@ -114,7 +114,7 @@ try:
                     user_activated_grip = False
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change(user_grip=user_activated_grip)
+                    servs.process_grip_change(user_grip=True)
                     statuslights.set_status(user_activated_grip, user_gripping)
             # print("Current grip: " + grip_picked)
 
