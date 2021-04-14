@@ -151,7 +151,7 @@ class camera_interface():
                 # print("[INFO] Camera objects: " + data)
 
                 #If the camera sees an object, skip the time requirement
-                if(data != ""):
+                if(data != self.cam_data):
                     self.cam_data = data
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
