@@ -80,7 +80,7 @@ class grip_finger_angles(Enum):
         fingers.thumb.value:   150,
         fingers.index.value:   0,
         fingers.middle.value:  0,
-        fingers.ring.value:    170,
+        fingers.ring.value:    180,
     #     fingers.pinky.value:   160
     }
 
