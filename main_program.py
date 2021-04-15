@@ -78,7 +78,7 @@ try:
         if(is_object and (count%10 ==0)):
             # print("MyoSensor value: " , mi.AnalogRead())
             # print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
-            print("[INFO] State: (grip_picked: %s, user_gripping: %s", grip_picked, user_gripping)
+            print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+")")
         elif(count%10==0):
             # print("MyoSensor value: " , mi.AnalogRead())
             # print("[INFO] Main thread, no object.\t" + str(count))
