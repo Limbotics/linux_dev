@@ -80,7 +80,7 @@ try:
             print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
             # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+"). Lights: " + str(statuslights.status))
         elif(count%10==0):
-            # print("MyoSensor value: " , mi.AnalogRead())
+            print("MyoSensor value: " , mi.AnalogRead())
             print("[INFO] Main thread, no object.\t" + str(count))
             # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+") Lights: " + str(statuslights.status))
 
