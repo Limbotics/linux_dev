@@ -30,7 +30,7 @@ class muscle_interface():
         self.analogThreshold = 10000 #17,000
         self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
 
-        self.off_buffer_delay = 0.75
+        self.off_buffer_delay = 1
         self.grip_T0 = time.time()
 
     def AnalogRead(self):
