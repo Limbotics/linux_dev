@@ -64,7 +64,7 @@ class muscle_interface():
                 self.grip_T0 = time.time()
                 return True
             else:
-                if((time.time() - self.grip_T0) > self.no_grip_delta_t_req):
+                if((time.time() - self.grip_T0) > self.off_buffer_delay):
                     return False
                 else:
                     return True
