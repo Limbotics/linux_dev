@@ -94,11 +94,11 @@ class slights_interface():
     def set_status(self, object_detected, is_activated):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
-        status = self.status_dispatcher[(object_detected, is_activated)]
+        self.status = self.status_dispatcher[(object_detected, is_activated)]
 
         #Update the pins given the guidelines in the display state
-        for pin in status:
-            GPIO.output(pin.value, status[pin])
+        for pin in self.status:
+            GPIO.output(pin.value, self.status[pin])
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""

@@ -78,11 +78,11 @@ try:
         if(is_object and (count%10 ==0)):
             # print("MyoSensor value: " , mi.AnalogRead())
             # print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
-            print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+")")
+            print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+"). Lights: " + statuslights.status)
         elif(count%10==0):
             # print("MyoSensor value: " , mi.AnalogRead())
             # print("[INFO] Main thread, no object.\t" + str(count))
-            print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+")")
+            print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+") Lights: " + statuslights.status)
 
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
