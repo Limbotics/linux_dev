@@ -69,7 +69,7 @@ try:
         # print("MyoSensor value: " , mi.AnalogRead())
 
         # mapAnalogtoServo()
-        if mi.advancedTriggered():
+        if mi.triggered():
             user_gripping = True
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
