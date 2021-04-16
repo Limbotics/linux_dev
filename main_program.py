@@ -70,9 +70,11 @@ try:
 
         # mapAnalogtoServo()
         if mi.triggered():
+            print("[DEBUG - USER INPUT] User input detected")
             user_gripping = True
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
+            print("[DEBUG - USER INPUT] No user input")
             user_gripping = False
 
         if(is_object and (count%10 ==0)):
