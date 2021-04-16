@@ -80,8 +80,7 @@ class handLUTControl(handServoControl):
             grips.bottle.value: grip_finger_angles.bottle_full_closed.value,
             grips.small.value:     grip_finger_angles.small_full_closed.value,
             grips.test.value: grip_finger_angles.test.value,
-            grips.cell.value:    grip_finger_angles.cell_phone_closed.value,
-            grips.openGrip.value: grip_finger_angles.openGrip.value
+            grips.cell.value:    grip_finger_angles.cell_phone_closed.value
         }
         self.user_dispatch = user_dispatch
         self.dispatch = dispatch
@@ -107,7 +106,8 @@ class handLUTControl(handServoControl):
                 for finger in finger_angles:
                     self.moveFinger(finger, finger_angles[finger])  
         except Exception as e:
-            print(e)
+            # print("[DEBUG] User command for no specific object")
+            pass
 
     def user_input_actuation(self, percent):
         """Convert myoelectric input into servo actuation for the current grip."""
