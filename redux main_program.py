@@ -95,10 +95,10 @@ try:
         #Testing user flex
         if(count > 1000 and count < 2000):
             user_command_detected = True
-            print("[DEBUG - MS] Sending user input...")
+            print("[DEBUG - MS] Sending user input... cutting in L-" + str(2000-count))
         else:
             user_command_detected = False
-            print("[DEBUG - MS] No ")
+            print("[DEBUG - MS] No user input - L-" + str(1000-count))
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
