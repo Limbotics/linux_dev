@@ -92,9 +92,15 @@ try:
             print("[DEBUG] MyoSensor value: " , mi.AnalogRead())
             print("[INFO] Current state: " + str(state_matrix))
 
+        #Testing user flex
+        if(count > 1000 and count < 2000):
+            user_command_detected = True
+        else:
+            user_command_detected = False
+
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        user_command_detected = mi.triggered()
+        # user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
         #Set grip_picked to "" if it's not in the database of known objects
