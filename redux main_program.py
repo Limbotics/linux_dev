@@ -95,12 +95,15 @@ try:
         #Testing user flex
         start_loop = 100
         end_loop = 200
+        user_command_detected = False
         if(count > start_loop and count < end_loop):
             user_command_detected = True
-            print("[DEBUG - MS] Sending user input... cutting in L-" + str(2000-count))
+            print("[DEBUG - MS] Sending user input... cutting in L-" + str(end_loop-count))
+        elif(count < start_loop):
+            print("[DEBUG - MS] No user input - L-" + str(start_loop-count))
         else:
-            user_command_detected = False
-            print("[DEBUG - MS] No user input - L-" + str(1000-count))
+            print("[DEBUG - MS] Resetting user input sequence")
+            count = 0
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
