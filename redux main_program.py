@@ -124,6 +124,9 @@ try:
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
+        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " str((new_state[3] - state_matrix[3])))
+        print("[DEBUG - USER GRIP] TIME BOOLEAN: " str((new_state[3] - state_matrix[3]) > time_required_for_user_command)))
+
         #Check if the new state is a special one
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
