@@ -122,7 +122,7 @@ try:
                 state_matrix = new_state
         elif(not state_matrix[1]): #No user command processed, so proceed to other checks if we're not in a saved state
             #Time check passed, so maybe allow new camera command
-            if((reported_object is not hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state))): #If we spot an object and we're not gripped currently
+            if((reported_object is not hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)): #If we spot an object and we're not gripped currently
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
