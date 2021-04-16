@@ -42,7 +42,7 @@ def mapAnalogtoServo():
 reported_object = ""
 saved_state = False
 user_command_detected = False
-time_required_for_state_change = 1
+time_required_for_state_change = 5
 servo_sleep = 0.25
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0)]
