@@ -119,6 +119,7 @@ try:
         elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)):
             #Check if the user is commanding us into a reported object
             if(reported_object is not hand_interface.grips.openGrip.value):
+                print("[DEBUG] Trying to enter new save state")
                 #Repair init new state matrix 
                 new_state[1] = True
                 #Confirmed user commanding into reported object
