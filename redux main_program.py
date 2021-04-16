@@ -88,7 +88,7 @@ try:
         time.sleep(0.01)
 
         if(count%10==0):
-            # print("MyoSensor value: " , mi.AnalogRead())
+            print("[DEBUG] MyoSensor value: " , mi.AnalogRead())
             print("[INFO] Current state: " + str(state_matrix))
 
         #Create new state matrix for current moment

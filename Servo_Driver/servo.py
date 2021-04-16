@@ -81,6 +81,7 @@ class handLUTControl(handServoControl):
             grips.small.value:     grip_finger_angles.small_full_closed.value,
             grips.test.value: grip_finger_angles.test.value,
             grips.cell.value:    grip_finger_angles.cell_phone_closed.value
+            grips.openGrip.value: grip_finger_angles.openGrip.value
         }
         self.user_dispatch = user_dispatch
         self.dispatch = dispatch
