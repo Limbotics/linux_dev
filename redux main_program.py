@@ -50,6 +50,8 @@ user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.5
 time_required_for_user_command = 0.25
+new_pulse = (False, time.time())
+old_pulse = new_pulse
 servo_sleep = 0.05
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
@@ -107,6 +109,11 @@ try:
         #Create new state matrix for current moment
         reported_object = cam.cam_data
         user_command_detected = mi.triggered()
+        if(not new_pulse[0] and user_command_detected):
+            new_pulse = (True, time.time())
+        elif(not user_command_detected):
+            old_pulse = new_pulse
+            new_pulse = (False, time.time())
         # user_command_detected = False #Just for testing purposes
 
         #Set grip_picked to "" if it's not in the database of known objects
@@ -125,7 +132,7 @@ try:
 
         #Check if the new state is a special one
         statuslights.set_status(object_id, user_command_detected)
-        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
+        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
             servo_thread.join()
@@ -136,11 +143,11 @@ try:
             time.sleep(servo_sleep)
             #Update current state
             state_matrix = new_state
-        elif(user_command_detected and (not state_matrix[1]) and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)):
+        elif(user_command_detected and (not state_matrix[1]) and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])):
             #Check if the user is commanding us into a reported object
             print("[DEBUG - STATE] Possibly entering new save state")
             if(object_id):
-                print("[DEBUG - STATE] Trying to enter new save state")
+                print("[DEBUG - STATE] Entering new save state")
                 #Repair init new state matrix 
                 new_state[1] = True
                 #Confirmed user commanding into reported object
