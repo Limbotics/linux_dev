@@ -92,7 +92,7 @@ try:
 
         #Set grip_picked to "" if it's not in the database of known objects
         object_id = True
-        if(reported_object not in hand_interface.grips._value2member_map_):
+        if(reported_object not in hand_interface.grips._value2member_map_ or (reported_object == hand_interface.grips.openGrip.value)):
             reported_object = "open grip"
             object_id = False
 

@@ -149,8 +149,8 @@ class camera_interface():
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
                 # print("[INFO] Camera objects: " + data)
-                if(data not in grips._value2member_map_):
-                    data = grips.openGrip.value
+                # if(data not in grips._value2member_map_):
+                #     data = grips.openGrip.value
 
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
