@@ -48,7 +48,7 @@ reported_object = ""
 saved_state = False
 user_command_detected = False
 time_required_for_open_state = 5
-time_required_for_any_state = 0.25
+time_required_for_any_state = 0.45
 time_required_for_user_command = 0.5
 servo_sleep = 0.05
 program_T0 = time.time()
@@ -95,7 +95,6 @@ try:
     statuslights.set_status(False, False)
 
     count = 0
-    t = time.time()
     while (cam_thread.is_alive()):
         count += 1
         time.sleep(0.01)
@@ -107,7 +106,6 @@ try:
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        print("[DEBUG -T] Time to loop: " +  str(time.time() - t) + " s")
         user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
@@ -130,7 +128,7 @@ try:
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
-            # servo_thread.join()
+            servo_thread.join()
             servo_thread = threading.Thread(target=servs.process_grip_change, args=())
             servo_thread.start()
             # servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
@@ -148,8 +146,8 @@ try:
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
-                # servo_thread.join()
-                servo_thread = threading.Thread(target=servs.process_grip_change, args=(True))
+                servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,))
                 servo_thread.start()
                 # servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
                 # statuslights.set_status(object_id, user_command_detected)
