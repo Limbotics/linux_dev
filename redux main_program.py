@@ -96,21 +96,21 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
-        start_loop = 10 #seconds
-        end_loop = 20 #seconds
-        user_command_detected = False
-        if(((time.time() - input_counter) >= start_loop) and (time.time() - input_counter <= end_loop)):
-            user_command_detected = True
-            print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+input_counter))
-        elif((time.time() - input_counter) <= start_loop):
-            print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+input_counter))
-        else:
-            print("[DEBUG - MS] Resetting user input sequence")
-            input_counter = time.time()
+        # start_loop = 10 #seconds
+        # end_loop = 20 #seconds
+        # user_command_detected = False
+        # if(((time.time() - input_counter) >= start_loop) and (time.time() - input_counter <= end_loop)):
+        #     user_command_detected = True
+        #     print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+input_counter))
+        # elif((time.time() - input_counter) <= start_loop):
+        #     print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+input_counter))
+        # else:
+        #     print("[DEBUG - MS] Resetting user input sequence")
+        #     input_counter = time.time()
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        # user_command_detected = mi.triggered()
+        user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
         #Set grip_picked to "" if it's not in the database of known objects
@@ -119,16 +119,16 @@ try:
             reported_object = hand_interface.grips.openGrip.value
             object_id = False
         
-        print("[DEBUG - GRIP] reported object open grip?" + str((reported_object == hand_interface.grips.openGrip.value)))
-        print("[DEBUG - OBJID] Object Identified? " + str(object_id))
+        # print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
+        # print("[DEBUG - OBJID] Object Identified? " + str(object_id))
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
-        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " str((new_state[3] - state_matrix[3])))
-        print("[DEBUG - USER GRIP] TIME BOOLEAN: " str((new_state[3] - state_matrix[3]) > time_required_for_user_command)))
+        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
+        print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command)))
 
         #Check if the new state is a special one
-        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)): #User trying to leave current state
+        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
             servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
@@ -137,7 +137,7 @@ try:
             time.sleep(servo_sleep)
             #Update current state
             state_matrix = new_state
-        elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)):
+        elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)):
             #Check if the user is commanding us into a reported object
             if(object_id):
                 print("[DEBUG - STATE] Trying to enter new save state")
