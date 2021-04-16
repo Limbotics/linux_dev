@@ -48,6 +48,8 @@ class muscle_interface():
             return True
         elif (time.time() - self.grip_T0 > self.off_buffer_delay):
             return False
+        if(time.time() - self.grip_T0 < self.off_buffer_delay):
+            return True
         
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
