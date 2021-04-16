@@ -133,8 +133,8 @@ try:
         #Check if the new state is a special one
         statuslights.set_status(object_id, user_command_detected)
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])): #User trying to leave current state
-            #Update the servo current grip set
-            servs.grip_config = reported_object
+            #Update the servo current grip set to go back to open for this object
+            servs.grip_config = state_matrix[0]
             servo_thread.join()
             servo_thread = threading.Thread(target=servs.process_grip_change, args=())
             servo_thread.start()
