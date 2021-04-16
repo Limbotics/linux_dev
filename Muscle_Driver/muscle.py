@@ -16,22 +16,30 @@ from adafruit_ads1x15.analog_in import AnalogIn
 
 class muscle_interface():
     """This provides the inputs from the user muscle sensors."""
-    def __init__(self):
-        self.i2c = busio.I2C(board.SCL, board.SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
-        self.ads = ADS.ADS1015(self.i2c)
-        #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
-        #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
-        self.chan = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
-        #usage: chan.value, chan.voltage
+    #self disconnected is class variable that states whether or not human input is being used
+    def __init__(self, disconnect=False):
+        if(not disconnect):
+            try:
+                self.i2c = busio.I2C(board.SCL, board.SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
+                self.ads = ADS.ADS1015(self.i2c)
+                #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
+                #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
+                self.chan = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
+                #usage: chan.value, chan.voltage
 
-        self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
-        self.fifo = queue.Queue(self.fifoLength)
+                self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
+                self.fifo = queue.Queue(self.fifoLength)
 
-        self.analogThreshold = 12500 #17,000 for heath
-        self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
-
+                self.analogThreshold = 12500 #17,000 for heath
+                self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
+                self.disconnected = False
+            except Exception as e:
+                print("[DEBUG] Error loading muscle input; defaulting to debug mode")
+                disconnect = True
+        if(disconnect):
+            self.disconnected = True #Flag to not call other things
         self.off_buffer_delay = 1
-        self.grip_T0 = time.time()
+        self.grip_T0 = time.time()    
 
     def AnalogRead(self):
         return self.chan.value
@@ -42,15 +50,35 @@ class muscle_interface():
         #     return True
         # elif (time.time() - self.grip_T0 > self.off_buffer_delay):
         #     return False
-
-        if self.chan.value > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
-            self.grip_T0 = time.time()
-            return True
-        elif (time.time() - self.grip_T0 > self.off_buffer_delay):
-            return False
-        if(time.time() - self.grip_T0 < self.off_buffer_delay):
-            return True
+        try:
+            if(not self.disconnected):
+                if self.chan.value > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
+                    self.grip_T0 = time.time()
+                    return True
+                elif (time.time() - self.grip_T0 > self.off_buffer_delay):
+                    return False
+                if(time.time() - self.grip_T0 < self.off_buffer_delay):
+                    return True
+        except:
+            print("[DEBUG] Muscle sensor reading error - switching to debug mode")
+            self.disconnected = True
         
+        #Periodic user input sequence
+        if(self.disconnected):
+            start_loop = 10 #seconds
+            end_loop = 20 #seconds
+            if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
+                print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
+                return True
+            elif((time.time() - self.grip_T0) <= start_loop):
+                print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))
+                return False
+            else:
+                print("[DEBUG - MS] Resetting user input sequence")
+                self.grip_T0 = time.time()
+                return False
+        
+    def periodic_trigger(self):
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
     def advancedTriggered(self):

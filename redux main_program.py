@@ -24,7 +24,12 @@ from Hand_Classes import hand_interface
 cam = camera.camera_interface()
 
 #Muscle sensor initialization
-mi = muscle.muscle_interface()
+print("Debug muscle sensor? Y/N")
+ans = input()
+if(ans == "Y"):
+    mi = muscle.muscle_interface(disconnect=True)
+else:
+    mi = muscle.muscle_interface()
 
 #Servo control initialization
 servs = servo.handLUTControl()
@@ -94,19 +99,6 @@ try:
         if(count%10==0):
             # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             print("[INFO - State]  " + str(state_matrix))
-
-        #Testing user flex
-        # start_loop = 10 #seconds
-        # end_loop = 20 #seconds
-        # user_command_detected = False
-        # if(((time.time() - input_counter) >= start_loop) and (time.time() - input_counter <= end_loop)):
-        #     user_command_detected = True
-        #     print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+input_counter))
-        # elif((time.time() - input_counter) <= start_loop):
-        #     print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+input_counter))
-        # else:
-        #     print("[DEBUG - MS] Resetting user input sequence")
-        #     input_counter = time.time()
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
