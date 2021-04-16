@@ -24,7 +24,7 @@ from Hand_Classes import hand_interface
 cam = camera.camera_interface()
 
 #Muscle sensor initialization
-# mi = muscle.muscle_interface()
+mi = muscle.muscle_interface()
 
 #Servo control initialization
 servs = servo.handLUTControl()
