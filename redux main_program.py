@@ -43,7 +43,7 @@ reported_object = ""
 saved_state = False
 user_command_detected = False
 time_required_for_open_state = 5
-time_required_for_any_state = 0.5
+time_required_for_any_state = 0.25
 servo_sleep = 0.25
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0)]
@@ -91,8 +91,11 @@ try:
         user_command_detected = False #Just for testing purposes
 
         #Set grip_picked to "" if it's not in the database of known objects
+        object_id = True
         if(reported_object not in hand_interface.grips._value2member_map_):
             reported_object = "open grip"
+            object_id = False
+
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0)]
 
@@ -101,7 +104,7 @@ try:
             #Update the servo current grip set
             servs.grip_config = reported_object
             servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
-            statuslights.set_status(new_state[1], user_command_detected)
+            statuslights.set_status(object_id, user_command_detected)
             #Wait for the servos to finish their current command
             time.sleep(servo_sleep)
             #Update current state
@@ -115,30 +118,30 @@ try:
                 servs.grip_config = reported_object
 
                 servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
-                statuslights.set_status(new_state[1], user_command_detected)
+                statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
                 #Update current state
                 state_matrix = new_state
         elif(not state_matrix[1]): #No user command processed, so proceed to other checks if we're not in a saved state
             #Time check passed, so maybe allow new camera command
-            if((reported_object is not hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)): #If we spot an object and we're not gripped currently
+            if((not object_id) and ((new_state[3] - state_matrix[3]) > time_required_for_any_state)): #If we spot an object and we're not gripped currently
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
                 servs.process_grip_change() #we're entering an initial grip, so no flag
-                statuslights.set_status(new_state[1], user_command_detected)
+                statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
                 #Update current state
                 state_matrix = new_state
-            elif((reported_object is hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)):
+            elif((object_id) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)):
                 #We see nothing and delta time has passed, so ensure we're in the open position
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
                 servs.process_grip_change() #we're entering an initial grip, so no flag
-                statuslights.set_status(new_state[1], user_command_detected)
+                statuslights.set_status(object_id, user_command_detected)
                 #Skip wait b/c it's just open grip
                 # time.sleep(servo_sleep)
                 #Update current state
