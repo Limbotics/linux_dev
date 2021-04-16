@@ -96,7 +96,7 @@ try:
         count += 1
         time.sleep(0.01)
 
-        if(count%10==0):
+        if(count%1==0):
             # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             print("[INFO - State]  " + str(state_matrix))
 
