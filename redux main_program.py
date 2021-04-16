@@ -124,8 +124,8 @@ try:
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
-        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
-        print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
+        # print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
+        # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
         #Check if the new state is a special one
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
@@ -137,7 +137,7 @@ try:
             time.sleep(servo_sleep)
             #Update current state
             state_matrix = new_state
-        elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)):
+        elif(user_command_detected and (not state_matrix[1]) and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)):
             #Check if the user is commanding us into a reported object
             if(object_id):
                 print("[DEBUG - STATE] Trying to enter new save state")
