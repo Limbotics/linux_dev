@@ -130,7 +130,7 @@ try:
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
-            servo_thread.join()
+            # servo_thread.join()
             servo_thread = threading.Thread(target=servs.process_grip_change, args=())
             servo_thread.start()
             # servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
@@ -148,7 +148,7 @@ try:
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
-                servo_thread.join()
+                # servo_thread.join()
                 servo_thread = threading.Thread(target=servs.process_grip_change, args=(user_grip=True))
                 servo_thread.start()
                 # servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
@@ -164,7 +164,7 @@ try:
                 servs.grip_config = reported_object
 
                 # servs.process_grip_change() #we're entering an initial grip, so no flag
-                servo_thread.join()
+                # servo_thread.join()
                 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
                 servo_thread.start()
 
@@ -179,7 +179,7 @@ try:
                 servs.grip_config = reported_object
 
                 # servs.process_grip_change() #we're entering an initial grip, so no flag
-                servo_thread.join()
+                # servo_thread.join()
                 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
                 servo_thread.start()
 
