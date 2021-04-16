@@ -68,7 +68,7 @@ class muscle_interface():
             start_loop = 5 #seconds
             end_loop = 5.5 #seconds
             if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
-                # print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
+                print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
                 return True
             elif((time.time() - self.grip_T0) <= start_loop):
                 # print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))

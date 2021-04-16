@@ -101,7 +101,9 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Create new state matrix for current moment
+        t = time.time()
         reported_object = cam.cam_data
+        print("[DEBUG -T] Time to read cam_data: " +  str(time.time() - t) + " s")
         user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
