@@ -101,7 +101,7 @@ try:
         user_command_detected = False
         if(((time.time() - input_counter) >= start_loop) and (time.time() - input_counter <= end_loop)):
             user_command_detected = True
-            print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-count+input_counter))
+            print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+input_counter))
         elif((time.time() - input_counter) <= start_loop):
             print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+input_counter))
         else:
