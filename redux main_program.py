@@ -111,8 +111,8 @@ try:
             reported_object = hand_interface.grips.openGrip.value
             object_id = False
         
-        # print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
-        # print("[DEBUG - OBJID] Object Identified? " + str(object_id))
+        print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
+        print("[DEBUG - OBJID] Object Identified? " + str(object_id))
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
