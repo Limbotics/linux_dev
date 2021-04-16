@@ -43,11 +43,12 @@ class muscle_interface():
         # elif (time.time() - self.grip_T0 > self.off_buffer_delay):
         #     return False
 
-        if self.chan.value > self.analogThreshold:
+        if self.chan.value > self.analogThreshold or (time.time() - self.grip_T0 < self.off_buffer_delay):
             self.grip_T0 = time.time()
             return True
         elif (time.time() - self.grip_T0 > self.off_buffer_delay):
             return False
+        
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
     def advancedTriggered(self):

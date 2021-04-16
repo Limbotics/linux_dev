@@ -44,8 +44,8 @@ saved_state = False
 user_command_detected = False
 time_required_for_state_change = 1
 servo_sleep = 0.25
-
-state_matrix = [reported_object, saved_state, user_command_detected, time.time()]
+program_T0 = time.time()
+state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0)]
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
@@ -86,13 +86,14 @@ try:
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        user_command_detected = mi.triggered()
+        # user_command_detected = mi.triggered()
+        user_command_detected = False #Just for testing purposes
 
         #Set grip_picked to "" if it's not in the database of known objects
         if(reported_object not in hand_interface.grips._value2member_map_):
             reported_object = "open grip"
         
-        new_state = [reported_object, False, user_command_detected, time.time()]
+        new_state = [reported_object, False, user_command_detected, (time.time()-program_T0)]
 
         #Check if the new state is a special one
         if (user_command_detected and state_matrix[1]): #User trying to leave current state
