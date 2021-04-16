@@ -96,7 +96,7 @@ try:
         start_loop = 1000
         end_loop = 2000
         user_command_detected = False
-        if(count > start_loop and count < end_loop):
+        if(count >= start_loop and count <= end_loop):
             user_command_detected = True
             print("[DEBUG - MS] Sending user input... cutting in L-" + str(end_loop-count))
         elif(count < start_loop):
