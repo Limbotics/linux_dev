@@ -99,7 +99,7 @@ try:
         start_loop = 10 #seconds
         end_loop = 20 #seconds
         user_command_detected = False
-        if((time.time() - input_counter >= start_loop) and (time.time() - input_counter >= end_loop)):
+        if(((time.time() - input_counter) >= start_loop) and (time.time() - input_counter <= end_loop)):
             user_command_detected = True
             print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-count))
         elif(count < start_loop):
