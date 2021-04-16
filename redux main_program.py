@@ -92,6 +92,7 @@ try:
     statuslights.set_status(False, False)
 
     count = 0
+    t = time.time()
     while (cam_thread.is_alive()):
         count += 1
         time.sleep(0.01)
@@ -101,9 +102,9 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Create new state matrix for current moment
-        t = time.time()
         reported_object = cam.cam_data
-        print("[DEBUG -T] Time to read cam_data: " +  str(time.time() - t) + " s")
+        print("[DEBUG -T] Time to loop: " +  str(time.time() - t) + " s")
+        t = time.time()
         user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
