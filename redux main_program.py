@@ -80,6 +80,9 @@ try:
     #Initialize hand positon/state lights
     servs.grip_config = hand_interface.grips.openGrip.value
 
+    #Debug user input variable
+    input_counter = time.time()
+
     servs.process_grip_change() #we're entering an initial grip, so no flag
     statuslights.set_status(False, False)
 
@@ -93,17 +96,17 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
-        start_loop = 1000
-        end_loop = 2000
+        start_loop = 10 #seconds
+        end_loop = 20 #seconds
         user_command_detected = False
-        if(count >= start_loop and count <= end_loop):
+        if((time.time() - input_counter >= start_loop) and (time.time() - input_counter >= end_loop)):
             user_command_detected = True
             print("[DEBUG - MS] Sending user input... cutting in L-" + str(end_loop-count))
         elif(count < start_loop):
             print("[DEBUG - MS] No user input - L-" + str(start_loop-count))
         else:
             print("[DEBUG - MS] Resetting user input sequence")
-            count = 0
+            input_counter = time.time()
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
