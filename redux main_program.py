@@ -76,19 +76,22 @@ slights_startup_thread.join()
             #No saved state? Initialize grip for this object
         #No user input, no reported object?
             #Set servos to open position 
-
+#Initialize hand positon/state lights
+servs.grip_config = hand_interface.grips.openGrip.value
+servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+servo_thread.start()
+servo_thread.join()
 try:
     #Initialize camera thread
     cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
     cam_thread.start()
     print("Main Program Start.")
-    #Initialize hand positon/state lights
-    servs.grip_config = hand_interface.grips.openGrip.value
+    
 
     #Debug user input variable
     input_counter = time.time()
 
-    servs.process_grip_change() #we're entering an initial grip, so no flag
+    # servs.process_grip_change() #we're entering an initial grip, so no flag
     statuslights.set_status(False, False)
 
     count = 0
@@ -96,6 +99,7 @@ try:
     while (cam_thread.is_alive()):
         count += 1
         time.sleep(0.01)
+        print("\n")
 
         if(count%1==0):
             # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
@@ -104,7 +108,6 @@ try:
         #Create new state matrix for current moment
         reported_object = cam.cam_data
         print("[DEBUG -T] Time to loop: " +  str(time.time() - t) + " s")
-        t = time.time()
         user_command_detected = mi.triggered()
         # user_command_detected = False #Just for testing purposes
 
@@ -127,7 +130,10 @@ try:
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
-            servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
+            servo_thread.join()
+            servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+            servo_thread.start()
+            # servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
             #Wait for the servos to finish their current command
             time.sleep(servo_sleep)
             #Update current state
@@ -142,7 +148,10 @@ try:
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
-                servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
+                servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=(user_grip=True))
+                servo_thread.start()
+                # servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
                 # statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
@@ -154,7 +163,11 @@ try:
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
-                servs.process_grip_change() #we're entering an initial grip, so no flag
+                # servs.process_grip_change() #we're entering an initial grip, so no flag
+                servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+                servo_thread.start()
+
                 statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
@@ -165,7 +178,11 @@ try:
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
-                servs.process_grip_change() #we're entering an initial grip, so no flag
+                # servs.process_grip_change() #we're entering an initial grip, so no flag
+                servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+                servo_thread.start()
+
                 statuslights.set_status(object_id, user_command_detected)
                 #Skip wait b/c it's just open grip
                 # time.sleep(servo_sleep)
