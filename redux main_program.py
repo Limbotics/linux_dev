@@ -170,6 +170,7 @@ try:
                 state_matrix = new_state
 
         state_matrix[4] = (time.time()-program_T0)
+        state_matrix[2] = user_command_detected
 
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
