@@ -168,7 +168,7 @@ class camera_interface():
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
 
     def detect_main_object(self, frame1):
-        min_conf_threshold = 0.25
+        min_conf_threshold = 0.35
 
         # Acquire frame and resize to expected shape [1xHxWx3]
         frame = frame1.copy()
