@@ -89,14 +89,16 @@ try:
         time.sleep(0.01)
 
         if(count%10==0):
-            print("[DEBUG] MyoSensor value: " , mi.AnalogRead())
-            print("[INFO] Current state: " + str(state_matrix))
+            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
         if(count > 1000 and count < 2000):
             user_command_detected = True
+            print("[DEBUG - MS] Sending user input...")
         else:
             user_command_detected = False
+            print("[DEBUG - MS] No ")
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
@@ -109,8 +111,8 @@ try:
             reported_object = hand_interface.grips.openGrip.value
             object_id = False
         
-        print("[DEBUG] reported object open grip?" + str((reported_object == hand_interface.grips.openGrip.value)))
-        print("[DEBUG] Object Identified? " + str(object_id))
+        print("[DEBUG - GRIP] reported object open grip?" + str((reported_object == hand_interface.grips.openGrip.value)))
+        print("[DEBUG - OBJID] Object Identified? " + str(object_id))
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
@@ -127,7 +129,7 @@ try:
         elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)):
             #Check if the user is commanding us into a reported object
             if(not object_id):
-                print("[DEBUG] Trying to enter new save state")
+                print("[DEBUG - STATE] Trying to enter new save state")
                 #Repair init new state matrix 
                 new_state[1] = True
                 #Confirmed user commanding into reported object
