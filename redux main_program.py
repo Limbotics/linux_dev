@@ -42,7 +42,8 @@ def mapAnalogtoServo():
 reported_object = ""
 saved_state = False
 user_command_detected = False
-time_required_for_state_change = 5
+time_required_for_open_state = 5
+time_required_for_any_state = 0.5
 servo_sleep = 0.25
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0)]
@@ -120,29 +121,28 @@ try:
                 #Update current state
                 state_matrix = new_state
         elif(not state_matrix[1]): #No user command processed, so proceed to other checks if we're not in a saved state
-            if((new_state[3] - state_matrix[3]) > time_required_for_state_change):
-                #Time check passed, so maybe allow new camera command
-                if((reported_object is not hand_interface.grips.openGrip.value)): #If we spot an object and we're not gripped currently
-                    #Confirmed user commanding into reported object
-                    servs.grip_config = reported_object
+            #Time check passed, so maybe allow new camera command
+            if((reported_object is not hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state))): #If we spot an object and we're not gripped currently
+                #Confirmed user commanding into reported object
+                servs.grip_config = reported_object
 
-                    servs.process_grip_change() #we're entering an initial grip, so no flag
-                    statuslights.set_status(new_state[1], user_command_detected)
-                    #Wait for the servos to finish their current command
-                    time.sleep(servo_sleep)
-                    #Update current state
-                    state_matrix = new_state
-                elif((reported_object is hand_interface.grips.openGrip.value)):
-                    #We see nothing and delta time has passed, so ensure we're in the open position
-                    #Confirmed user commanding into reported object
-                    servs.grip_config = reported_object
+                servs.process_grip_change() #we're entering an initial grip, so no flag
+                statuslights.set_status(new_state[1], user_command_detected)
+                #Wait for the servos to finish their current command
+                time.sleep(servo_sleep)
+                #Update current state
+                state_matrix = new_state
+            elif((reported_object is hand_interface.grips.openGrip.value) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)):
+                #We see nothing and delta time has passed, so ensure we're in the open position
+                #Confirmed user commanding into reported object
+                servs.grip_config = reported_object
 
-                    servs.process_grip_change() #we're entering an initial grip, so no flag
-                    statuslights.set_status(new_state[1], user_command_detected)
-                    #Skip wait b/c it's just open grip
-                    # time.sleep(servo_sleep)
-                    #Update current state
-                    state_matrix = new_state
+                servs.process_grip_change() #we're entering an initial grip, so no flag
+                statuslights.set_status(new_state[1], user_command_detected)
+                #Skip wait b/c it's just open grip
+                # time.sleep(servo_sleep)
+                #Update current state
+                state_matrix = new_state
 
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
