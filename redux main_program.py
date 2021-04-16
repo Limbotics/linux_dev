@@ -93,7 +93,9 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
-        if(count > 1000 and count < 2000):
+        start_loop = 100
+        end_loop = 200
+        if(count > start_loop and count < end_loop):
             user_command_detected = True
             print("[DEBUG - MS] Sending user input... cutting in L-" + str(2000-count))
         else:
