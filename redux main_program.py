@@ -103,7 +103,7 @@ try:
         print("\n")
 
         if(count%1==0):
-            # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             print("[INFO - State]  " + str(state_matrix))
 
         #Create new state matrix for current moment
