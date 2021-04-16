@@ -55,7 +55,7 @@ class muscle_interface():
                 if self.chan.value > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
                     self.grip_T0 = time.time()
                     return True
-                elif (time.time() - self.grip_T0 > self.off_buffer_delay):
+                elif (time.time() - self.grip_T0 >= self.off_buffer_delay):
                     return False
                 if(time.time() - self.grip_T0 < self.off_buffer_delay):
                     return True
