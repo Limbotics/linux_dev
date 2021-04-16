@@ -149,7 +149,7 @@ try:
                 servs.grip_config = reported_object
 
                 # servo_thread.join()
-                servo_thread = threading.Thread(target=servs.process_grip_change, args=(user_grip=True))
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=(True))
                 servo_thread.start()
                 # servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
                 # statuslights.set_status(object_id, user_command_detected)
