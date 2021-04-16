@@ -93,8 +93,8 @@ try:
             print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
-        start_loop = 100
-        end_loop = 200
+        start_loop = 1000
+        end_loop = 2000
         user_command_detected = False
         if(count > start_loop and count < end_loop):
             user_command_detected = True
