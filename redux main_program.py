@@ -44,6 +44,7 @@ saved_state = False
 user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.25
+time_required_for_user_command = 2
 servo_sleep = 0.25
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
@@ -106,7 +107,7 @@ try:
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
         #Check if the new state is a special one
-        if (user_command_detected and state_matrix[1]): #User trying to leave current state
+        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
             servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
@@ -115,7 +116,7 @@ try:
             time.sleep(servo_sleep)
             #Update current state
             state_matrix = new_state
-        elif(user_command_detected and not state_matrix[1]):
+        elif(user_command_detected and not state_matrix[1] and ((new_state[3] - state_matrix[3]) > time_required_for_user_command)):
             #Check if the user is commanding us into a reported object
             if(reported_object is not hand_interface.grips.openGrip.value):
                 #Repair init new state matrix 
