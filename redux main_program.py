@@ -24,19 +24,19 @@ from Hand_Classes import hand_interface
 cam = camera.camera_interface()
 
 #Muscle sensor initialization
-mi = muscle.muscle_interface()
+# mi = muscle.muscle_interface()
 
 #Servo control initialization
 servs = servo.handLUTControl()
 
 outValue = 0
-def mapAnalogtoServo():
-     #servs is object function to move is servs.moveFinger(self, finger, angle)
-     #8000 in to 13000
-     outValue = (mi.AnalogRead()-8000)*180/5000
-     servs.moveFinger(0, int(outValue))
-     servs.moveFinger(1, int(outValue))
-     servs.moveFinger(2, int(outValue))
+# def mapAnalogtoServo():
+#      #servs is object function to move is servs.moveFinger(self, finger, angle)
+#      #8000 in to 13000
+#      outValue = (mi.AnalogRead()-8000)*180/5000
+#      servs.moveFinger(0, int(outValue))
+#      servs.moveFinger(1, int(outValue))
+#      servs.moveFinger(2, int(outValue))
     
 #Save the state of the arm
 reported_object = ""
@@ -89,7 +89,7 @@ try:
         time.sleep(0.01)
 
         if(count%10==0):
-            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             print("[INFO - State]  " + str(state_matrix))
 
         #Testing user flex
