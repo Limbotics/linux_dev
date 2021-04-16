@@ -30,7 +30,7 @@ class muscle_interface():
                 self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
                 self.fifo = queue.Queue(self.fifoLength)
 
-                self.analogThreshold = 12500 #17,000 for heath
+                self.analogThreshold = 16000 #17,000 for heath
                 self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
                 self.disconnected = False
             except Exception as e:
