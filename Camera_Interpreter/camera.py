@@ -192,9 +192,9 @@ class camera_interface():
         highest_scoring_label = ""
         highest_score = 0
         for i in range(len(scores)):
-            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score)):
+            object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
+            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score) and (object_name in in grips._value2member_map_)):
                 # Draw label
-                object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
                 highest_scoring_label = object_name
                 highest_score = scores[i]
 
