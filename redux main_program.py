@@ -103,7 +103,7 @@ try:
             object_id = False
 
         
-        new_state = [reported_object, False, user_command_detected, (time.time()-program_T0)]
+        new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
         #Check if the new state is a special one
         if (user_command_detected and state_matrix[1]): #User trying to leave current state
@@ -152,9 +152,8 @@ try:
                 # time.sleep(servo_sleep)
                 #Update current state
                 state_matrix = new_state
-        else:
-            #Just update the timer on the state matrix
-            state_matrix[4] = (time.time()-program_T0)
+
+        state_matrix[4] = (time.time()-program_T0)
 
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
