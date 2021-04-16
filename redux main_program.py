@@ -75,9 +75,14 @@ try:
     cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
     cam_thread.start()
     print("Main Program Start.")
-
+    count = 0
     while (cam_thread.is_alive()):
+        count += 1
         time.sleep(0.01)
+
+        if(count%10==0):
+            # print("MyoSensor value: " , mi.AnalogRead())
+            print("[INFO] Current state: " + str(state_matrix))
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
