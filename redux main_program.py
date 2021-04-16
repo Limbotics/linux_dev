@@ -106,7 +106,7 @@ try:
             state_matrix = new_state
         elif(user_command_detected and not state_matrix[1]):
             #Check if the user is commanding us into a reported object
-            if(reported_object is not hand_interface.grips.openGrip):
+            if(reported_object is not hand_interface.grips.openGrip.value):
                 #Repair init new state matrix 
                 new_state[1] = True
                 #Confirmed user commanding into reported object
@@ -121,7 +121,7 @@ try:
         else: #No user command processed, so proceed to other checks
             if((new_state[3] - state_matrix[3]) > time_required_for_state_change):
                 #Time check passed, so maybe allow new camera command
-                if((reported_object is not hand_interface.grips.openGrip) and not state_matrix[1]): #If we spot an object and we're not gripped currently
+                if((reported_object is not hand_interface.grips.openGrip.value) and not state_matrix[1]): #If we spot an object and we're not gripped currently
                     #Initialize grip for this 
                     #Repair init new state matrix 
                     new_state[1] = True
@@ -134,7 +134,7 @@ try:
                     time.sleep(servo_sleep)
                     #Update current state
                     state_matrix = new_state
-                elif((reported_object is hand_interface.grips.openGrip) and not state_matrix[1]):
+                elif((reported_object is hand_interface.grips.openGrip.value) and not state_matrix[1]):
                     #We see nothing and delta time has passed, so ensure we're in the open position
                     #Confirmed user commanding into reported object
                     servs.grip_config = reported_object
