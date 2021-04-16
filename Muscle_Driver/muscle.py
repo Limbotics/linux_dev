@@ -77,9 +77,7 @@ class muscle_interface():
                 print("[DEBUG - MS] Resetting user input sequence")
                 self.grip_T0 = time.time()
                 return False
-        
-    def periodic_trigger(self):
-
+    
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
     def advancedTriggered(self):
         #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
