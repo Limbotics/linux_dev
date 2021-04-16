@@ -46,7 +46,7 @@ time_required_for_open_state = 5
 time_required_for_any_state = 0.25
 servo_sleep = 0.25
 program_T0 = time.time()
-state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0)]
+state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
@@ -146,6 +146,9 @@ try:
                 # time.sleep(servo_sleep)
                 #Update current state
                 state_matrix = new_state
+        else:
+            #Just update the timer on the state matrix
+            state_matrix[4] = (time.time()-program_T0)
 
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
