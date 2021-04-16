@@ -44,7 +44,7 @@ saved_state = False
 user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.25
-time_required_for_user_command = 2
+time_required_for_user_command = 1
 servo_sleep = 0.25
 program_T0 = time.time()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
@@ -128,11 +128,11 @@ try:
         # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
         #Check if the new state is a special one
+        statuslights.set_status(object_id, user_command_detected)
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command)): #User trying to leave current state
             #Update the servo current grip set
             servs.grip_config = reported_object
             servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
-            statuslights.set_status(object_id, user_command_detected)
             #Wait for the servos to finish their current command
             time.sleep(servo_sleep)
             #Update current state
@@ -148,7 +148,7 @@ try:
                 servs.grip_config = reported_object
 
                 servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
-                statuslights.set_status(object_id, user_command_detected)
+                # statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
                 #Update current state
