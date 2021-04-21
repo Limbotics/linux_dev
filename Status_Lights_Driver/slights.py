@@ -156,6 +156,8 @@ class slights_interface():
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
+        #Set all pulse LEDs to end threads
+        self.threaded_leds[status_states.grip_saved_id.value][1] = False
         #Set them all to off
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.LOW)
