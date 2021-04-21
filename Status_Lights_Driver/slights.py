@@ -71,13 +71,13 @@ class slights_interface():
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
-            True: status_states.object_detected.value,
-            False: status_states.no_object.value
+            True: status_states.object_detected,
+            False: status_states.no_object
         }
 
         self.user_status_dispatcher = {
-            True: status_states.user_active.value,
-            False: status_states.user_not_active.value
+            True: status_states.user_active,
+            False: status_states.user_not_active
         }
 
         #Run the startup sequence
@@ -109,19 +109,24 @@ class slights_interface():
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
-            print(str(status))
             for pin in status:
                 GPIO.output(pin.value, status[pin])
 
     def pulse_thread(self, thread_key):
+        #Get which LED we're working with from the thread key
         led = self.threaded_leds[thread_key][0]
+        self.threaded_leds[thread_key][1] = True #Set the loop to run 
         while self.threaded_leds[thread_key][1]:
+            #Turn up brightness
             for dc in range(0, 101, 5):
                 led.ChangeDutyCycle(dc)
                 time.sleep(0.1)
+            #Turn down brightness
             for dc in range(100, -1, -5):
                 led.ChangeDutyCycle(dc)
                 time.sleep(0.1)
+        #Reset the duty cycle
+        led.ChangeDutyCycle(100)
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""
