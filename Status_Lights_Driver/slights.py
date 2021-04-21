@@ -88,7 +88,7 @@ class slights_interface():
         self.startup_complete = False
 
         #Stored list of led objects if on a threaded pulse
-        self.threaded_leds = {status_states.grip_saved: [GPIO.PWM(pinouts.yellow.value, 500), False]}
+        self.threaded_leds = {status_states.grip_saved.value: [GPIO.PWM(pinouts.yellow.value, 500), False]}
 
     def set_status(self, object_detected, is_activated, saved_state):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
@@ -98,13 +98,15 @@ class slights_interface():
         statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
 
         #Lastly, do the saved state led
+        thread_key = status_states.grip_saved.value
         if (not saved_state):
-            if self.threaded_leds[status_states.grip_saved][1]:
-                self.threaded_leds[status_states.grip_saved][1] = False
+            if self.threaded_leds[thread_key][1]:
+                self.threaded_leds[thread_key][1] = False
             statuses.append(status_states.standby)
-        elif not self.threaded_leds[status_states.grip_saved][1]: #Only start a new thread if it's not already running
+        elif not self.threaded_leds[thread_key][1]: #Only start a new thread if it's not already running
             #Start the pulse thread for the amber light
-            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=(status_states.grip_saved.value))
+            self.threaded_leds[thread_key][1] = True
+            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=(thread_key))
             led_pulse_thread.start()
 
         #Update the pins given the guidelines in the display state
