@@ -125,13 +125,13 @@ try:
             reported_object = hand_interface.grips.openGrip.value
             object_id = False
         
-        print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
-        print("[DEBUG - OBJID] Object Identified? " + str(object_id))
+        # print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
+        # print("[DEBUG - OBJID] Object Identified? " + str(object_id))
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
-        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
-        print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
+        # print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
+        # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
         #Check if the new state is a special one
         statuslights.set_status(object_id, user_command_detected, state_matrix[1])
