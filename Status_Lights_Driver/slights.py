@@ -110,7 +110,6 @@ class slights_interface():
         #Update the pins given the guidelines in the display state
         for status in statuses:
             stat = status.value
-            print(str(stat))
             for pin in stat:
                 GPIO.output(pin.value, stat[pin])
 
@@ -118,6 +117,7 @@ class slights_interface():
         #Get which LED we're working with from the thread key
         led = self.threaded_leds[thread_key][0]
         self.threaded_leds[thread_key][1] = True #Set the loop to run 
+        print("[DEBUG] Starting LED pulse")
         while self.threaded_leds[thread_key][1]:
             #Turn up brightness
             for dc in range(0, 101, 5):
