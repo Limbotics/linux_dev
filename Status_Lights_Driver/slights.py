@@ -71,13 +71,13 @@ class slights_interface():
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
-            True: status_states.object_detected,
-            False: status_states.no_object
+            True: status_states.object_detected.value,
+            False: status_states.no_object.value
         }
 
         self.user_status_dispatcher = {
-            True: status_states.user_active,
-            False: status_states.user_not_active
+            True: status_states.user_active.value,
+            False: status_states.user_not_active.value
         }
 
         #Run the startup sequence
