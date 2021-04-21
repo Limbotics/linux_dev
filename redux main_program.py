@@ -145,6 +145,8 @@ try:
             state_matrix = new_state
             #Mark pulse as used
             old_pulse = new_pulse
+            #Activate the camera again
+            cam.temp_pause = False
         elif(user_command_detected and (not state_matrix[1]) and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])):
             #Check if the user is commanding us into a reported object
             print("[DEBUG - STATE] Possibly entering new save state")
@@ -152,6 +154,8 @@ try:
                 print("[DEBUG - STATE] Entering new save state")
                 #Repair init new state matrix 
                 new_state[1] = True
+                #Command the camera to stop processing inputs temporarily
+                cam.temp_pause = True
                 #Confirmed user commanding into reported object
                 servs.grip_config = reported_object
 
