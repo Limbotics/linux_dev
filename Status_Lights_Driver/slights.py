@@ -102,9 +102,9 @@ class slights_interface():
             if self.threaded_leds[status_states.grip_saved][1]:
                 self.threaded_leds[status_states.grip_saved][1] = False
             statuses.append(status_states.standby)
-        else:
+        elif not self.threaded_leds[status_states.grip_saved][1]: #Only start a new thread if it's not already running
             #Start the pulse thread for the amber light
-            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=(status_states.grip_saved))
+            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=(status_states.grip_saved.value))
             led_pulse_thread.start()
 
         #Update the pins given the guidelines in the display state
