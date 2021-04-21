@@ -123,6 +123,9 @@ class camera_interface():
         self.object_spotted_T0 = 0
         self.object_not_spotted_delta_req = 5
 
+        #Initialize the paused flag to false
+        self.temp_pause = False
+
     def camera_read_threader(self):
         #Start the read cam thread
         read_cam = threading.Thread(target=self.read_cam_thread, args=())
@@ -144,7 +147,7 @@ class camera_interface():
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
             # t = time.time()
-            if(previous_index != self.cam_image_index):
+            if(previous_index != self.cam_image_index and (not self.temp_pause)):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
@@ -166,6 +169,7 @@ class camera_interface():
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
+            time.sleep(0.01)
 
     def detect_main_object(self, frame1):
         min_conf_threshold = 0.35
@@ -202,16 +206,17 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            # t = time.time()
-            #Get camera image, rescale, and store in class variable
-            frame = self.vs.read()
-            self.cam_image = imutils.resize(frame, width=400)
-            
-            #Increase index by 1
-            self.cam_image_index += 1
-            #Pause temply
-            time.sleep(0.2)
-            # print("Time to save/resize new image: " + (str(time.time() - t)))
+            if(not self.temp_pause):
+                # t = time.time()
+                #Get camera image, rescale, and store in class variable
+                frame = self.vs.read()
+                self.cam_image = imutils.resize(frame, width=400)
+                
+                #Increase index by 1
+                self.cam_image_index += 1
+                #Pause temply
+                time.sleep(0.2)
+                # print("Time to save/resize new image: " + (str(time.time() - t)))
 
     # def read_cam(self):
     #     # get the image
