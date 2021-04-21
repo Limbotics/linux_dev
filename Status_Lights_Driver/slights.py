@@ -109,8 +109,8 @@ class slights_interface():
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
-            print(str(status))
-            for pin in status:
+            stat = status.value
+            for pin in stat:
                 GPIO.output(pin.value, status[pin])
 
     def pulse_thread(self, thread_key):
