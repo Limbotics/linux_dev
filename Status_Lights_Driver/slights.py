@@ -84,11 +84,11 @@ class slights_interface():
         # self.startup_sequence()
 
         #Set initial status
-        self.set_status(False, False)
+        # self.set_status(False, False)
         self.startup_complete = False
 
         #Stored list of led objects if on a threaded pulse
-        self.threaded_leds = {status_states.grip_saved}: [GPIO.PWM(pinouts.yellow.value, 500), False]}
+        self.threaded_leds = {status_states.grip_saved: [GPIO.PWM(pinouts.yellow.value, 500), False]}
 
     def set_status(self, object_detected, is_activated, saved_state):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
