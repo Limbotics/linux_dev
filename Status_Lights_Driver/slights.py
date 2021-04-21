@@ -110,8 +110,9 @@ class slights_interface():
         #Update the pins given the guidelines in the display state
         for status in statuses:
             stat = status.value
+            print(str(stat))
             for pin in stat:
-                GPIO.output(pin.value, status[pin])
+                GPIO.output(pin.value, stat[pin])
 
     def pulse_thread(self, thread_key):
         #Get which LED we're working with from the thread key
