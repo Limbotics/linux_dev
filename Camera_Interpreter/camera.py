@@ -121,7 +121,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 2
+        self.object_not_spotted_delta_req = 5
 
     def camera_read_threader(self):
         #Start the read cam thread
@@ -149,6 +149,8 @@ class camera_interface():
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
                 # print("[INFO] Camera objects: " + data)
+                # if(data not in grips._value2member_map_):
+                #     data = grips.openGrip.value
 
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
@@ -158,7 +160,7 @@ class camera_interface():
                 #If the camera doesn't see an object, require a delay before reporting nothing
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
-                        print("[DEBUG] Delta Req passed; reporting no object now")
+                        # print("[DEBUG] Delta Req passed; reporting no object now")
                         self.cam_data = data
                         self.object_spotted = False
                 
@@ -166,7 +168,7 @@ class camera_interface():
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
 
     def detect_main_object(self, frame1):
-        min_conf_threshold = 0.5
+        min_conf_threshold = 0.35
 
         # Acquire frame and resize to expected shape [1xHxWx3]
         frame = frame1.copy()
@@ -190,9 +192,9 @@ class camera_interface():
         highest_scoring_label = ""
         highest_score = 0
         for i in range(len(scores)):
-            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score)):
+            object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
+            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score) and (object_name in grips._value2member_map_)):
                 # Draw label
-                object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
                 highest_scoring_label = object_name
                 highest_score = scores[i]
 

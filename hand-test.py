@@ -19,7 +19,6 @@ from Camera_Interpreter import camera
 from Muscle_Driver import muscle
 from Hand_Classes import hand_interface
 
-
 #Camera initialization
 cam = camera.camera_interface()
 
@@ -47,7 +46,7 @@ user_activated_grip = False
 user_activated_grip_T0 = time.time()
 loop_time_step = 0.01
 # delta_required_for_status_change = 115*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
-delta_required_for_status_change = 100 #Units of n are in milliseconds, regardless of loop time step
+delta_required_for_status_change = 0 #Units of n are in milliseconds, regardless of loop time step
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
@@ -61,31 +60,30 @@ try:
     while ((count < 10000000) and cam_thread.is_alive()):
         grip_picked = cam.cam_data
         is_object = cam.object_spotted
-        #Set grip_picked to "" if it's not in the database of known objects
-        if(grip_picked not in hand_interface.grips._value2member_map_):
-            grip_picked = ""
-            is_object = False
 
         # print("MyoSensor value: " , mi.AnalogRead())
 
         # mapAnalogtoServo()
-        if mi.triggered():
-            print("[DEBUG - USER INPUT] User input detected")
+        available = ""
+        for grip_available in hand_interface.grips:
+            available += str(grip_available.value + ", ")
+        print("Available to pick: \n")
+        print(available)
+        ans = input()
+        if ans != "":
+            # print("MyoSensor Triggered, value: " , mi.AnalogRead())
             user_gripping = True
+            grip_picked = ans
             #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
         else:
-            print("[DEBUG - USER INPUT] No user input")
+            grip_picked = ""
             user_gripping = False
 
         if(is_object and (count%10 ==0)):
-            # print("MyoSensor value: " , mi.AnalogRead())
             print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
-            # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+"). Lights: " + str(statuslights.status))
         elif(count%10==0):
-            print("MyoSensor value: " , mi.AnalogRead())
             print("[INFO] Main thread, no object.\t" + str(count))
-            # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+") Lights: " + str(statuslights.status))
-
+        
         #Only allow a state update no quicker than every delta time
         if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
             if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
@@ -102,7 +100,7 @@ try:
                 pass
             elif(user_activated_grip and user_gripping): #User gripping after activating a grip is the exit command
                 # print("Activation, gripping")
-                if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
+                if((time.time() - user_activated_grip_T0) > 0): #Remove user priority
                     user_activated_grip = False
                     if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
                         grip_picked = hand_interface.grips.openGrip.value
@@ -113,10 +111,10 @@ try:
             elif(not user_activated_grip and user_gripping):
                 # print("No Activation, gripping")
                 if(grip_picked != ""):
-                    user_activated_grip = True
+                    user_activated_grip = False
                     servs.grip_config = grip_picked
                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change(user_grip=user_activated_grip)
+                    servs.process_grip_change(user_grip=True)
                     statuslights.set_status(user_activated_grip, user_gripping)
             # print("Current grip: " + grip_picked)
 
