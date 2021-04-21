@@ -108,7 +108,7 @@ class slights_interface():
         elif not self.threaded_leds[thread_key][1]: #Only start a new thread if it's not already running
             #Start the pulse thread for the amber light
             self.threaded_leds[thread_key][1] = True
-            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=(thread_key))
+            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=())
             led_pulse_thread.start()
 
         #Update the pins given the guidelines in the display state
@@ -117,8 +117,9 @@ class slights_interface():
             for pin in stat:
                 GPIO.output(pin.value, stat[pin])
 
-    def pulse_thread(self, thread_key):
+    def pulse_thread(self):
         #Get which LED we're working with from the thread key
+        thread_key = status_states.grip_saved_id.value
         led = self.threaded_leds[thread_key][0]
         self.threaded_leds[thread_key][1] = True #Set the loop to run 
         print("[DEBUG] Starting LED pulse")
