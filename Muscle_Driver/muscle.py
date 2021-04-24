@@ -39,7 +39,7 @@ class muscle_interface():
                 #end advanced trigger
 
                 #for peakTriggered:
-                self.bufferList = [None]*100               #adjust buffer length here
+                self.bufferList = [None]*4               #adjust buffer length here
                 self.peaks
                 #end peakTriggered
 
@@ -96,7 +96,7 @@ class muscle_interface():
         #try to run this on another thread
         for i in range(len(self.bufferList)):
             self.bufferList[i] = self.AnalogRead()
-        self.peaks = find_peaks(self.bufferList, height=500, distance = 2, threshold = 500)
+        self.peaks = find_peaks(self.bufferList, height=500, threshold = 500) #distance = 2
         if self.peaks[0].any():
             return True
         else:
