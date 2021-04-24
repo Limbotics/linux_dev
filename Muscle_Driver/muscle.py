@@ -97,6 +97,7 @@ class muscle_interface():
         for i in range(len(self.bufferList)):
             self.bufferList[i] = self.AnalogRead()
         self.peaks = find_peaks(self.bufferList, threshold = 800) #distance = 2  height=500,
+        #seems like the function itself isnt behaving properly, do a test for this
         if self.peaks[0].any():
             return True
         else:
