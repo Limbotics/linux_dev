@@ -96,7 +96,7 @@ class muscle_interface():
         #try to run this on another thread
         for i in range(len(self.bufferList)):
             self.bufferList[i] = self.AnalogRead()
-        self.peaks = find_peaks(self.bufferList, height=1400, distance = 2, threshold = 800)
+        self.peaks = find_peaks(self.bufferList, height=1400, distance = 2, threshold = 600)
         if self.peaks[0].any():
             return True
         else:
