@@ -48,12 +48,12 @@ class muscle_interface():
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
-                
+
                 #for thresholdIncreaseTriggered:
                 self.currentBufferList = [None]*20               #adjust buffer length here
                 self.currentBufferListMean = 0
                 self.previousBufferListMean = 10000              #set high to not trigger initially
-                self.gtThreshold = 400                      #signal must be 400 greater than previous one
+                self.gtThreshold = 2000                      #signal must be 400 greater than previous one
                 #potentially add feature to catch the falling edge too
                 #end thresholdIncreaseTriggered
 
