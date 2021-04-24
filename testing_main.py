@@ -12,4 +12,4 @@ while True:
     else:
         print("not triggered")
     #print(mi.bufferList)
-    print(mi.peaks)
+    print(mi.peaks[0])
