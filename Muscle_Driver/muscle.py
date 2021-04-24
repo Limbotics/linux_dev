@@ -43,6 +43,14 @@ class muscle_interface():
                 self.peaks
                 #end peakTriggered
 
+                #for thresholdIncreaseTriggered:
+                self.currentBufferList = [None]*20               #adjust buffer length here
+                self.currentBufferListMean = 0
+                self.previousBufferListMean = 10000              #set high to not trigger initially
+                self.gtThreshold = 400                      #signal must be 400 greater than previous one
+                #potentially add feature to catch the falling edge too
+                #end thresholdIncreaseTriggered
+
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
@@ -88,7 +96,7 @@ class muscle_interface():
                 self.grip_T0 = time.time()
                 return False
     
-
+    
     #this function uses the scipy detect peak function to trigger the arm
     def peakTriggered(self):
         #first create a buffer to pass to the peak detect function, allow the size to be customizable
@@ -98,10 +106,25 @@ class muscle_interface():
             self.bufferList[i] = self.AnalogRead()
         self.peaks = find_peaks(self.bufferList, threshold = 800) #distance = 2  height=500,
         #seems like the function itself isnt behaving properly, do a test for this
+        #found the problem. detect peaks checks for the value around the peak which is why its not considered a peak fuck
         if self.peaks[0].any():
             return True
         else:
             return False
+
+    def thresholdIncreaseTriggered(self):
+        #create buffers, take mean, see if next buffer is greater by a certain value
+        for i in range(len(self.currentBufferList)):
+            self.currentBufferList[i] = self.AnalogRead()
+        self.currentBufferListMean = sum(self.currentBufferList)/len(self.currentBufferList)
+
+        if (self.currentBufferListMean-self.previousBufferListMean) > self.gtThreshold:
+            self.previousBufferListMean = self.currentBufferListMean
+            return True
+        else:
+            self.previousBufferListMean = self.currentBufferListMean
+            return False
+        
 
 
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
