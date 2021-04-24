@@ -11,11 +11,11 @@ mi = muscle.muscle_interface()
 servos = servo.handServoControl()
 
 while True:
-    if mi.peakTriggered():
+    if mi.thresholdIncreaseTriggered():
         print("triggered!!!!!!!!!")
-        print(mi.peaks[0])
+        # print(mi.peaks[0])
         servos.moveFinger(0, 180)
     else:
         servos.moveFinger(0, 0)
         # print("not triggered")
-    print(mi.bufferList)
+    print(mi.currentBufferList)
