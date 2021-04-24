@@ -7,7 +7,7 @@ from Hand_Classes import hand_interface
 
 from Servo_Driver import servo
 
-mi = muscle.muscle_interface()
+mi = muscle.muscle_interface(disconnect=False)
 servos = servo.handServoControl()
 
 while True:
