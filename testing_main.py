@@ -8,4 +8,6 @@ mi = muscle.muscle_interface()
 
 while True:
     if mi.peakTriggered():
-        print("triggered")
+        print("triggered!!!!!!!!!")
+    else:
+        print("not triggered")
