@@ -8,6 +8,8 @@ import time
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
+from scipy.signal import find_peaks
+
 
 #https://www.instructables.com/MuscleCom-Muscle-Controlled-Interface/
 #https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/python-circuitpython
@@ -27,12 +29,19 @@ class muscle_interface():
                 self.chan = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
                 #usage: chan.value, chan.voltage
 
+                #for advanced trigger
                 self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
                 self.fifo = queue.Queue(self.fifoLength)
 
                 self.analogThreshold = 9000 #17,000 for heath
                 self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
                 self.disconnected = False
+                #end advanced trigger
+
+                #for peakTriggered:
+                self.bufferList = [None]*100                #adjust buffer length here
+                #end peakTriggered
+
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
@@ -78,6 +87,19 @@ class muscle_interface():
                 self.grip_T0 = time.time()
                 return False
     
+
+    #this function uses the scipy detect peak function to trigger the arm
+    def peakTriggered(self):
+        #first create a buffer to pass to the peak detect function, allow the size to be customizable
+        
+        #try to run this on another thread
+        for i in range(len(self.bufferList)):
+            self.bufferList[i] = self.AnalogRead()
+        peaks = find_peaks(self.bufferList, height=1400, distance = 5)
+        if peaks:
+            return True
+        else:
+            return False
     #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
     def advancedTriggered(self):
         #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
