@@ -39,7 +39,7 @@ class muscle_interface():
                 #end advanced trigger
 
                 #for peakTriggered:
-                self.bufferList = [None]*4               #adjust buffer length here
+                self.bufferList = [None]*20               #adjust buffer length here
                 self.peaks
                 #end peakTriggered
 
