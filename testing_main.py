@@ -18,4 +18,4 @@ while True:
     else:
         servos.moveFinger(0, 0)
         # print("not triggered")
-    print(mi.currentBufferList)
+    print(mi.currentBufferListMean)
