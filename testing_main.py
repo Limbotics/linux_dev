@@ -11,3 +11,4 @@ while True:
         print("triggered!!!!!!!!!")
     else:
         print("not triggered")
+    print(mi.AnalogRead())
