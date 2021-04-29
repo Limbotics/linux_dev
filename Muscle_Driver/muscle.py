@@ -94,6 +94,10 @@ class muscle_interface():
     
 
     def bufferedTrigger(self):
+        #If we're in debug mode just pass to the other function that has the implementation
+        if(self.disconnected):
+            return self.triggered()
+
         #create buffers, take mean, see if next buffer is greater by a certain value
         for i in range(len(self.currentBufferList)):
             self.currentBufferList[i] = self.AnalogRead()
