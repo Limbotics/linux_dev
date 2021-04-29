@@ -93,7 +93,7 @@ class muscle_interface():
                 return False
     
 
-    def thresholdIncreaseTriggered(self):
+    def bufferedTrigger(self):
         #create buffers, take mean, see if next buffer is greater by a certain value
         for i in range(len(self.currentBufferList)):
             self.currentBufferList[i] = self.AnalogRead()
