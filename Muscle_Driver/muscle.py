@@ -36,13 +36,13 @@ class muscle_interface():
                 self.disconnected = False
                 #end advanced trigger
 
-                #for thresholdIncreaseTriggered:
-                self.currentBufferList = [None]*20               #adjust buffer length here
+                #for bufferedTrigger:
+                self.currentBufferList = [None]*20               #adjust buffer length here (this is how many samples it captures before comparing - think of it as a time delay)
                 self.currentBufferListMean = 0
-                self.previousBufferListMean = 10000              #set high to not trigger initially
-                self.gtThreshold = 2000                      #signal must be 400 greater than previous one
+                self.previousBufferListMean = 10000              #set high to not trigger initially (prob have to set it to 30k, did not test)
+                self.gtThreshold = 2000                          #this is the threshold that the next signal must be greater than in order to trigger the myo sensor - balance the sensitivity of the system with noise and user input strength
                 #potentially add feature to catch the falling edge too
-                #end thresholdIncreaseTriggered
+                #end bufferedTrigger
 
                 
 
