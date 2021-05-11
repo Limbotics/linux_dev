@@ -1,0 +1,11 @@
+Record=TopLevelDocument|FileName=01_COVER.SchDoc|SheetNumber=1
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=02_BLOCK_DIAGRAM.SchDoc|SheetNumber=2
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=03_USB.SchDoc|SheetNumber=3
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=04_HDMI_MIPI.SchDoc|SheetNumber=4
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=05_AUDIO.SchDoc|SheetNumber=5
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=06_GBE_SDCARD.SchDoc|SheetNumber=6
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=07_DEBUG.SchDoc|SheetNumber=7
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=08_EXP_CN.SchDoc|SheetNumber=8
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=09_EXP_CN_100PIN.SchDoc|SheetNumber=9
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=10_MISC.SchDoc|SheetNumber=10
+Record=NoMainPathDocument|SourceDocument=01_COVER.SchDoc|FileName=11_CHANGE_LOG.SchDoc|SheetNumber=11

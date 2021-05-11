@@ -111,7 +111,7 @@ try:
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        user_command_detected = mi.triggered()
+        user_command_detected = mi.bufferedTrigger()
         if(not new_pulse[0] and user_command_detected):
             new_pulse = (True, time.time())
         elif(not user_command_detected):

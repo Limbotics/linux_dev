@@ -27,15 +27,29 @@ class muscle_interface():
                 self.chan = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
                 #usage: chan.value, chan.voltage
 
+                #for advanced trigger
                 self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
                 self.fifo = queue.Queue(self.fifoLength)
 
                 self.analogThreshold = 9000 #17,000 for heath
                 self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
                 self.disconnected = False
+                #end advanced trigger
+
+                #for bufferedTrigger:
+                self.currentBufferList = [None]*20               #adjust buffer length here (this is how many samples it captures before comparing - think of it as a time delay)
+                self.currentBufferListMean = 0
+                self.previousBufferListMean = 10000              #set high to not trigger initially (prob have to set it to 30k, did not test)
+                self.gtThreshold = 2000                          #this is the threshold that the next signal must be greater than in order to trigger the myo sensor - balance the sensitivity of the system with noise and user input strength
+                #potentially add feature to catch the falling edge too
+                #end bufferedTrigger
+
+                
+
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
+
         if(disconnect):
             self.disconnected = True #Flag to not call other things
         self.off_buffer_delay = 1
@@ -78,7 +92,26 @@ class muscle_interface():
                 self.grip_T0 = time.time()
                 return False
     
-    #hey Jered, this code is meant to be run in a loop. Am I writing this correctly?
+
+    def bufferedTrigger(self):
+        #If we're in debug mode just pass to the other function that has the implementation
+        if(self.disconnected):
+            return self.triggered()
+
+        #create buffers, take mean, see if next buffer is greater by a certain value
+        for i in range(len(self.currentBufferList)):
+            self.currentBufferList[i] = self.AnalogRead()
+        self.currentBufferListMean = sum(self.currentBufferList)/len(self.currentBufferList)    #average mean
+
+        if (self.currentBufferListMean-self.previousBufferListMean) > self.gtThreshold:
+            self.previousBufferListMean = self.currentBufferListMean
+            return True
+        else:
+            self.previousBufferListMean = self.currentBufferListMean
+            return False
+        
+
+
     def advancedTriggered(self):
         #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
         #turns out theres a fifo module, refernece linked below
