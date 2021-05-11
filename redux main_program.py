@@ -94,7 +94,7 @@ try:
     input_counter = time.time()
 
     # servs.process_grip_change() #we're entering an initial grip, so no flag
-    statuslights.set_status(False, False)
+    statuslights.set_status(False, False, False)
 
     count = 0
     while (cam_thread.is_alive()):
@@ -103,7 +103,10 @@ try:
         print("\n")
 
         if(count%1==0):
-            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            try:
+                print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            except Exception as e:
+                pass
             print("[INFO - State]  " + str(state_matrix))
 
         #Create new state matrix for current moment
@@ -122,16 +125,16 @@ try:
             reported_object = hand_interface.grips.openGrip.value
             object_id = False
         
-        print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
-        print("[DEBUG - OBJID] Object Identified? " + str(object_id))
+        # print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
+        # print("[DEBUG - OBJID] Object Identified? " + str(object_id))
         
         new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
-        print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
-        print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
+        # print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
+        # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
         #Check if the new state is a special one
-        statuslights.set_status(object_id, user_command_detected)
+        statuslights.set_status(object_id, user_command_detected, state_matrix[1])
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])): #User trying to leave current state
             #Update the servo current grip set to go back to open for this object
             servs.grip_config = state_matrix[0]
@@ -181,7 +184,7 @@ try:
                 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
                 servo_thread.start()
 
-                statuslights.set_status(object_id, user_command_detected)
+                # statuslights.set_status(object_id, user_command_detected)
                 #Wait for the servos to finish their current command
                 time.sleep(servo_sleep)
                 #Update current state
@@ -196,7 +199,7 @@ try:
                 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
                 servo_thread.start()
 
-                statuslights.set_status(object_id, user_command_detected)
+                # statuslights.set_status(object_id, user_command_detected)
                 #Skip wait b/c it's just open grip
                 # time.sleep(servo_sleep)
                 #Update current state

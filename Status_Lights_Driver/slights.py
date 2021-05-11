@@ -4,6 +4,7 @@ import time
 
 import sys
 import os
+import threading
 sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to python modules path.
 
 from Hand_Classes import hand_interface
@@ -16,7 +17,6 @@ class pinouts(Enum):
     green  = 17  
     blue   = 22    
     yellow = 27  
-    
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
@@ -27,32 +27,28 @@ class status_states(Enum):
 
     object_detected = {
         pinouts.blue: GPIO.HIGH,
-        pinouts.yellow: GPIO.LOW
     }
 
     #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
     user_active = {
-        pinouts.green: GPIO.HIGH,
-        pinouts.yellow: GPIO.LOW
+        pinouts.green: GPIO.HIGH
     }
 
     user_not_active = {
         pinouts.green: GPIO.LOW
     }
 
-    #Standby state. Only occurs when there is both no object detected + no user input detected. 
+    #Standby state
     standby = {
-        pinouts.yellow: GPIO.HIGH,
-        pinouts.green: GPIO.LOW,
-        pinouts.blue: GPIO.LOW
+        pinouts.yellow: GPIO.HIGH
     }
 
-    #Object activated state. Only occurs when user input is detected AND an object is seen. 
-    fully_active = {
-        pinouts.yellow: GPIO.HIGH,
-        pinouts.green: GPIO.HIGH,
-        pinouts.blue: GPIO.HIGH
+    #Saved grip state
+    grip_saved = {
+        pinouts.yellow: GPIO.HIGH
     }
+
+    grip_saved_id = 'status_save'
 
 class slights_interface():
     """
@@ -76,29 +72,69 @@ class slights_interface():
             GPIO.setup(pinout.value,GPIO.OUT)
 
         #Define a matching set between status states and inputs to set_status
-        self.status_dispatcher = {
-            #(object_detected, user_activated): display_state
-            (False, False): status_states.standby.value,
-            (False, True): status_states.user_active.value, 
-            (True, True):  status_states.fully_active.value,
-            (True, False):  status_states.object_detected.value,
+        self.object_status_dispatcher = {
+            True: status_states.object_detected,
+            False: status_states.no_object
+        }
+
+        self.user_status_dispatcher = {
+            True: status_states.user_active,
+            False: status_states.user_not_active
         }
 
         #Run the startup sequence
         # self.startup_sequence()
 
         #Set initial status
-        self.set_status(False, False)
+        # self.set_status(False, False)
         self.startup_complete = False
 
-    def set_status(self, object_detected, is_activated):
+        #Stored list of led objects if on a threaded pulse
+        self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
+
+    def set_status(self, object_detected, is_activated, saved_state):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
-        self.status = self.status_dispatcher[(object_detected, is_activated)]
+        object_status = self.object_status_dispatcher[object_detected]
+        user_status = self.user_status_dispatcher[is_activated]
+        statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
+
+        #Lastly, do the saved state led
+        thread_key = status_states.grip_saved_id.value
+        if (not saved_state):
+            if self.threaded_leds[thread_key][1]:
+                self.threaded_leds[thread_key][1] = False
+            statuses.append(status_states.standby)
+        elif not self.threaded_leds[thread_key][1]: #Only start a new thread if it's not already running
+            #Start the pulse thread for the amber light
+            self.threaded_leds[thread_key][1] = True
+            led_pulse_thread = threading.Thread(target=self.pulse_thread, args=())
+            led_pulse_thread.start()
 
         #Update the pins given the guidelines in the display state
-        for pin in self.status:
-            GPIO.output(pin.value, self.status[pin])
+        for status in statuses:
+            stat = status.value
+            for pin in stat:
+                GPIO.output(pin.value, stat[pin])
+
+    def pulse_thread(self):
+        #Get which LED we're working with from the thread key
+        thread_key = status_states.grip_saved_id.value
+        led = self.threaded_leds[thread_key][0]
+        led.start(0)
+        self.threaded_leds[thread_key][1] = True #Set the loop to run 
+        print("[DEBUG] Starting LED pulse")
+        while self.threaded_leds[thread_key][1]:
+            #Turn up brightness
+            for dc in range(0, 50, 5):
+                led.ChangeDutyCycle(dc)
+                time.sleep(0.1)
+            #Turn down brightness
+            for dc in range(50, -1, -5):
+                led.ChangeDutyCycle(dc)
+                time.sleep(0.1)
+        #Reset the duty cycle
+        led.ChangeDutyCycle(100)
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""
@@ -121,6 +157,8 @@ class slights_interface():
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
+        #Set all pulse LEDs to end threads
+        self.threaded_leds[status_states.grip_saved_id.value][1] = False
         #Set them all to off
         for pinout in pinouts:
             GPIO.output(pinout.value,GPIO.LOW)
