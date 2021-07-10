@@ -13,10 +13,22 @@ grips = hand_interface.grips
 from enum import Enum
 
 class pinouts(Enum):
-    """The pin number for a given LED color. BCM Coordinate system"""
-    green  = 17  
-    blue   = 22    
-    yellow = 27  
+    #Use https://coral.ai/docs/dev-board-mini/gpio/#header-pinout to find path, chip, and line for each pin
+    #Note: Pins 8, 10, 29, 31, and 37 should not be used to drive resistive loads directly, due to weak drive strength.
+    """The device path, chip, and line for each pin"""
+
+    green  =  { #GPIO0, pin 16
+        "path": "/sys/class/gpio/gpio387",
+        "line": 0
+    }
+    blue   = { #GPIO1, pin 18
+        "path": "/sys/class/gpio/gpio388",
+        "line": 1
+    }   
+    yellow = { #GPIO7, pin 22
+        "path": "/sys/class/gpio/gpio394",
+        "line": 7
+    }
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
@@ -64,14 +76,14 @@ class slights_interface():
 
     def __init__(self):
         #Set the GPIO pin naming convention
-        GPIO.setmode(GPIO.BCM)
+        #GPIO.setmode(GPIO.BCM)
 
         #Disable warnings (not for development use)
         # GPIO.setwarnings(False)
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            self.lights[pinout] = GPIO("/dev/gpiochip0", pinout.value, "out")
+            self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -174,5 +186,6 @@ class slights_interface():
         #Turn them all off
         for pinout in pinouts:
             self.lights[pinout].write(False)
+            self.lights[pinout].close()
 
     
