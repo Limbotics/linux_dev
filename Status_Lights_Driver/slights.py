@@ -1,5 +1,5 @@
 """ This package provides the interface for the system to change the status lights."""
-import RPi.GPIO as GPIO
+from periphery import GPIO
 import time
 
 import sys
@@ -22,41 +22,43 @@ class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
     #Blue light = object detection indicator. Blue on means object seen. Blue off means no object seen.
     no_object = {
-        pinouts.blue: GPIO.LOW
+        pinouts.blue: False
     }
 
     object_detected = {
-        pinouts.blue: GPIO.HIGH,
+        pinouts.blue: True,
     }
 
     #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
     user_active = {
-        pinouts.green: GPIO.HIGH
+        pinouts.green: True
     }
 
     user_not_active = {
-        pinouts.green: GPIO.LOW
+        pinouts.green: False
     }
 
     #Standby state
     standby = {
-        pinouts.yellow: GPIO.HIGH
+        pinouts.yellow: True
     }
 
     #Saved grip state
     grip_saved = {
-        pinouts.yellow: GPIO.HIGH
+        pinouts.yellow: True
     }
 
     grip_saved_id = 'status_save'
 
 class slights_interface():
+    lights = {}
     """
     Status Lights interfacing for startup, shutdown, and different operational modes.
       
     Attributes:
         status_dispatcher (dict): Correlates a tuple of (object_detected, user_activated) to a state of the status lights.
         current_status (dict): The current state of all the lights, an enum in status_states. 
+        lights (dict): The dictionary of pinouts to their corresponding GPIO interface objects.
         
     """
 
@@ -69,7 +71,7 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            GPIO.setup(pinout.value,GPIO.OUT)
+            self.lights[pinout] = GPIO("/dev/gpiochip0", pinout.value, "out")
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -90,7 +92,7 @@ class slights_interface():
         self.startup_complete = False
 
         #Stored list of led objects if on a threaded pulse
-        self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
+        #self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
 
     def set_status(self, object_detected, is_activated, saved_state):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
@@ -118,58 +120,59 @@ class slights_interface():
                 GPIO.output(pin.value, stat[pin])
 
     def pulse_thread(self):
-        #Get which LED we're working with from the thread key
-        thread_key = status_states.grip_saved_id.value
-        led = self.threaded_leds[thread_key][0]
-        led.start(0)
-        self.threaded_leds[thread_key][1] = True #Set the loop to run 
-        print("[DEBUG] Starting LED pulse")
-        while self.threaded_leds[thread_key][1]:
-            #Turn up brightness
-            for dc in range(0, 50, 5):
-                led.ChangeDutyCycle(dc)
-                time.sleep(0.1)
-            #Turn down brightness
-            for dc in range(50, -1, -5):
-                led.ChangeDutyCycle(dc)
-                time.sleep(0.1)
-        #Reset the duty cycle
-        led.ChangeDutyCycle(100)
+        pass
+        # #Get which LED we're working with from the thread key
+        # thread_key = status_states.grip_saved_id.value
+        # led = self.threaded_leds[thread_key][0]
+        # led.start(0)
+        # self.threaded_leds[thread_key][1] = True #Set the loop to run 
+        # print("[DEBUG] Starting LED pulse")
+        # while self.threaded_leds[thread_key][1]:
+        #     #Turn up brightness
+        #     for dc in range(0, 50, 5):
+        #         led.ChangeDutyCycle(dc)
+        #         time.sleep(0.1)
+        #     #Turn down brightness
+        #     for dc in range(50, -1, -5):
+        #         led.ChangeDutyCycle(dc)
+        #         time.sleep(0.1)
+        # #Reset the duty cycle
+        # led.ChangeDutyCycle(100)
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""
         for pinout in pinouts:
-            GPIO.output(pinout.value,GPIO.HIGH)
+            self.lights[pinout].write(True)
             time.sleep(0.1)
         for pinout in pinouts:
-            GPIO.output(pinout.value,GPIO.LOW)
+            self.lights[pinout].write(False)
             time.sleep(0.1)
 
     def startup_wait(self):
         #run indefinitely until flag is thrown that the rest of the system is ready
         while not self.startup_complete:
             for pinout in pinouts:
-                GPIO.output(pinout.value,GPIO.HIGH)
+                self.lights[pinout].write(True)
                 time.sleep(0.2)
             for pinout in pinouts:
-                GPIO.output(pinout.value,GPIO.LOW)
+                self.lights[pinout].write(False)
                 time.sleep(0.2)
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
         #Set all pulse LEDs to end threads
-        self.threaded_leds[status_states.grip_saved_id.value][1] = False
+        #self.threaded_leds[status_states.grip_saved_id.value][1] = False
         #Set them all to off
         for pinout in pinouts:
-            GPIO.output(pinout.value,GPIO.LOW)
+            self.lights[pinout].write(False)
         #Set them all to high, sequentially
         for pinout in pinouts:
-            GPIO.output(pinout.value,GPIO.HIGH)
+            self.lights[pinout].write(True)
             time.sleep(0.1)
         #Pause for effect
         time.sleep(0.25)
         #Turn them all off
         for pinout in pinouts:
-            GPIO.output(pinout.value,GPIO.LOW)
+            self.lights[pinout].write(False)
 
     
