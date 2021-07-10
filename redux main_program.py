@@ -10,8 +10,6 @@ statuslights = slights.slights_interface()
 slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
 slights_startup_thread.start()
 
-from adafruit_servokit import ServoKit
-
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
 from Servo_Driver import servo
