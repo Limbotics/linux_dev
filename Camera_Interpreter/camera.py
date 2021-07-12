@@ -10,7 +10,6 @@ import numpy as np
 import imutils
 import time
 from picamera.array import PiRGBArray
-from picamera import PiCamera
 import cv2
 import matplotlib.pyplot as plt
 import cvlib as cv
@@ -60,7 +59,7 @@ class camera_interface():
     def __init__(self,resolution=(640,480),framerate=30):
         self.count = 0
         # self.cap = cv2.VideoCapture(0)
-        self.vs = VideoStream(resolution=(1280,720),framerate=30).start()
+        self.vs = VideoStream(resolution=(1280,720),framerate=15).start()
         # self.stream = cv2.VideoCapture(0)
         # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         # ret = self.stream.set(3,resolution[0])
