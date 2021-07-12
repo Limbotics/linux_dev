@@ -1,6 +1,7 @@
 from adafruit_servokit import ServoKit
 #https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library#controlling-servos-3013804-22
-
+#LINUX FIX:
+# #https://gitmemory.com/issue/adafruit/Adafruit_Blinka/328/672356503
 from enum import Enum
 import time
 
