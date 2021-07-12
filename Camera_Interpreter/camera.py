@@ -1,3 +1,6 @@
+#LINUX OPENCV INstall instructions:
+# https://medium.com/@balaji_85683/installing-opencv-4-0-on-google-coral-dev-board-5c3a69d7f52f
+
 # import the necessary packages
 from imutils.video import VideoStream
 from imutils.video import FPS
