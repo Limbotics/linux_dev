@@ -1,4 +1,6 @@
 #LINUX OPENCV INstall instructions:
+# Use -> sudo apt install python3-opencv  
+# First, and if that fails, then follow this tutorial
 # https://medium.com/@balaji_85683/installing-opencv-4-0-on-google-coral-dev-board-5c3a69d7f52f
 
 # import the necessary packages
