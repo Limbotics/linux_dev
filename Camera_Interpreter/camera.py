@@ -9,7 +9,6 @@ from imutils.video import FPS
 import numpy as np
 import imutils
 import time
-from picamera.array import PiRGBArray
 import cv2
 import matplotlib.pyplot as plt
 import cvlib as cv
