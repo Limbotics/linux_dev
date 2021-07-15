@@ -22,11 +22,12 @@ interpreter.allocate_tensors()
 size = common.input_size(interpreter)
 print("Image size is " + str(size))
 image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
+image.show()
 
 # Run an inference
 common.set_input(interpreter, image)
 interpreter.invoke()
-classes = classify.get_classes(interpreter, top_k=1)
+classes = classify.get_classes(interpreter, top_k=0.5)
 
 # Print the result
 labels = dataset.read_label_file(label_file)
