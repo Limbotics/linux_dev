@@ -19,7 +19,8 @@ interpreter.allocate_tensors()
 # Resize the image
 size = common.input_size(interpreter)
 print("Image size is " + str(size))
-image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
+# .resize(size, Image.ANTIALIAS)
+image = Image.open(image_file).convert('RGB')
 
 # Run an inference
 common.set_input(interpreter, image)
