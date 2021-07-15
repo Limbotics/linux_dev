@@ -7,12 +7,12 @@ from pycoral.adapters import classify
 from PIL import Image
 
 # Specify the TensorFlow model, labels, and image
-script_dir = pathlib.Path(__file__).parent.absolute()
-model_file = os.path.join(script_dir, 'Coco/detect.tflite')
+script_dir = "/home/mendel/linux_dev"
+model_file = os.path.join(script_dir, 'Camera_Interpreter/Coco/detect.tflite')
 print(str(model_file))
-label_file = os.path.join(script_dir, 'Coco/labelmap.txt')
+label_file = os.path.join(script_dir, 'Camera_Interpreter/Coco/labelmap.txt')
 print(str(label_file))
-image_file = os.path.join(script_dir, '../cell.jpg')
+image_file = os.path.join(script_dir, '/cell.jpg')
 print(str(image_file))
 
 # Initialize the TF interpreter
