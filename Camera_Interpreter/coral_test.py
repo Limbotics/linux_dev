@@ -27,7 +27,7 @@ image.show()
 # Run an inference
 common.set_input(interpreter, image)
 interpreter.invoke()
-classes = classify.get_classes(interpreter, top_k=1)
+classes = classify.get_classes(interpreter, top_k=10)
 
 # Print the result
 labels = dataset.read_label_file(label_file)
