@@ -10,7 +10,7 @@ from PIL import Image
 script_dir = pathlib.Path(__file__).parent.absolute()
 model_file = os.path.join(script_dir, 'Coco/detect.tflite')
 label_file = os.path.join(script_dir, 'Coco/labelmap.txt')
-image_file = os.path.join(script_dir, '../outputnobox.jpg')
+image_file = os.path.join(script_dir, '../cell.jpg')
 
 # Initialize the TF interpreter
 interpreter = edgetpu.make_interpreter(model_file)
