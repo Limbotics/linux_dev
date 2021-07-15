@@ -13,6 +13,7 @@ print(str(model_file))
 label_file = os.path.join(script_dir, 'Coco/labelmap.txt')
 print(str(label_file))
 image_file = os.path.join(script_dir, '../cell.jpg')
+print(str(image_file))
 
 # Initialize the TF interpreter
 interpreter = edgetpu.make_interpreter(model_file)
@@ -23,6 +24,8 @@ size = common.input_size(interpreter)
 print("Image size is " + str(size))
 image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
 image.show()
+default_image = Image.open(image_file)
+default_image.show()
 
 # Run an inference
 common.set_input(interpreter, image)
