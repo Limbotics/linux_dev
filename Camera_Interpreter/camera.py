@@ -11,20 +11,25 @@ import imutils
 import time
 import cv2
 import matplotlib.pyplot as plt
-import cvlib as cv
+#import cvlib as cv
 import threading
 from collections import Counter
 
-import importlib.util
-pkg = importlib.util.find_spec('tflite_runtime')
-if pkg:
-    from tflite_runtime.interpreter import Interpreter
-    # if use_TPU:
-    #     from tflite_runtime.interpreter import load_delegate
-else:
-    from tensorflow.lite.python.interpreter import Interpreter
-    # if use_TPU:
-    #     from tensorflow.lite.python.interpreter import load_delegate
+# import importlib.util
+# pkg = importlib.util.find_spec('tflite_runtime')
+# if pkg:
+#     from tflite_runtime.interpreter import Interpreter
+#     # if use_TPU:
+#     #     from tflite_runtime.interpreter import load_delegate
+# else:
+#     from tensorflow.lite.python.interpreter import Interpreter
+#     # if use_TPU:
+#     #     from tensorflow.lite.python.interpreter import load_delegate
+
+from pycoral.utils import edgetpu
+from pycoral.utils import dataset
+from pycoral.adapters import common
+from pycoral.adapters import classify
 
 import sys
 import os
@@ -58,7 +63,7 @@ class camera_interface():
     def __init__(self,resolution=(640,480),framerate=30):
         self.count = 0
         # self.cap = cv2.VideoCapture(0)
-        self.vs = VideoStream(resolution=(1280,720),framerate=15).start()
+        self.vs = VideoStream(resolution=(640,480),framerate=30).start()
         # self.stream = cv2.VideoCapture(0)
         # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         # ret = self.stream.set(3,resolution[0])
@@ -81,27 +86,22 @@ class camera_interface():
 
         # Path to label map file
         PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
+        self.labels = dataset.read_label_file(PATH_TO_LABELS)
 
         # Load the label map
-        with open(PATH_TO_LABELS, 'r') as f:
-            self.labels = [line.strip() for line in f.readlines()]
+        #with open(PATH_TO_LABELS, 'r') as f:
+        #    self.labels = [line.strip() for line in f.readlines()]
 
         # Have to do a weird fix for label map if using the COCO "starter model" from
         # https://www.tensorflow.org/lite/models/object_detection/overview
         # First label is '???', which has to be removed.
-        if self.labels[0] == '???':
-            del(self.labels[0])
+        #if self.labels[0] == '???':
+        #    del(self.labels[0])
 
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
-        use_TPU = False
-        if use_TPU:
-            self.interpreter = Interpreter(model_path=PATH_TO_CKPT,
-                                    experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
-            print(PATH_TO_CKPT)
-        else:
-            self.interpreter = Interpreter(model_path=PATH_TO_CKPT)
-
+        # Initialize the TF interpreter
+        self.interpreter = edgetpu.make_interpreter(model_file)
         self.interpreter.allocate_tensors()
 
         # Get model details
@@ -109,6 +109,7 @@ class camera_interface():
         self.output_details = self.interpreter.get_output_details()
         self.height = self.input_details[0]['shape'][1]
         self.width = self.input_details[0]['shape'][2]
+        self.size = common.input_size(interpreter)
 
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
@@ -188,22 +189,23 @@ class camera_interface():
             input_data = (np.float32(input_data) - self.input_mean) / self.input_std
 
         # Perform the actual detection by running the model with the image as input
-        self.interpreter.set_tensor(self.input_details[0]['index'],input_data)
+        common.set_input(self.interpreter, frame_resized)
         self.interpreter.invoke()
+        classes = classify.get_classes(self.interpreter, top_k=0.5)
 
         # Retrieve detection results
         # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
-        classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0] # Class index of detected objects
-        scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
+        #classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0] # Class index of detected objects
+        #scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
 
         highest_scoring_label = ""
         highest_score = 0
-        for i in range(len(scores)):
-            object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
-            if((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and (scores[i] > highest_score) and (object_name in grips._value2member_map_)):
+        for c in classes:
+            object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
+            if((c.score > min_conf_threshold) and (c.score <= 1.0) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
                 # Draw label
                 highest_scoring_label = object_name
-                highest_score = scores[i]
+                highest_score = c.score
 
         return (highest_scoring_label, highest_score)
 
@@ -213,7 +215,7 @@ class camera_interface():
                 # t = time.time()
                 #Get camera image, rescale, and store in class variable
                 frame = self.vs.read()
-                self.cam_image = imutils.resize(frame, width=400)
+                self.cam_image = imutils.resize(frame, width=300)
                 
                 #Increase index by 1
                 self.cam_image_index += 1
