@@ -107,6 +107,7 @@ class handLUTControl(handServoControl):
                 for finger in finger_angles:
                     self.moveFinger(finger, finger_angles[finger])  
         except Exception as e:
+            print(str(e))
             # print("[DEBUG] User command for no specific object")
             pass
 
