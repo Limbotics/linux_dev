@@ -34,8 +34,8 @@ class handServoControl:
             fingers.thumb: 0,
             fingers.index: 0,
             fingers.middle: 0,
-            fingers.ring: 0,
-            fingers.pinky: 0
+            fingers.ring: 0
+            #fingers.pinky: 0
         }
 
     def moveFinger(self, finger, angle):
