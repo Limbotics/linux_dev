@@ -192,7 +192,7 @@ class camera_interface():
         # Perform the actual detection by running the model with the image as input
         common.set_input(self.interpreter, frame1)
         self.interpreter.invoke()
-        classes = classify.get_classes(self.interpreter, top_k=0.5)
+        classes = classify.get_classes(self.interpreter, top_k=1)
 
         # Retrieve detection results
         # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
