@@ -220,6 +220,7 @@ class camera_interface():
                 # t = time.time()
                 #Get camera image, rescale, and store in class variable
                 script_dir = "/home/mendel/linux_dev"
+                size = common.input_size(self.interpreter)
                 image_file = os.path.join(script_dir, 'cell.jpg')
                 image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
                 #frame = self.vs.read() #CAMBUG
