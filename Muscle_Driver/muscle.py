@@ -20,9 +20,7 @@ class muscle_interface():
     def __init__(self, disconnect=False):
         if(not disconnect):
             try:
-                #Test some stuff
-                print("SCL: " + str(board.SCL))
-                print("SDA: " + str(board.SDA))
+                
                 self.i2c = busio.I2C(board.SCL, board.SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
                 self.ads = ADS.ADS1015(self.i2c)
                 #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
