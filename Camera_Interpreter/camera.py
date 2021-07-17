@@ -101,7 +101,7 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = edgetpu.make_interpreter(model_file)
+        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/detect.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
@@ -109,7 +109,7 @@ class camera_interface():
         self.output_details = self.interpreter.get_output_details()
         self.height = self.input_details[0]['shape'][1]
         self.width = self.input_details[0]['shape'][2]
-        self.size = common.input_size(interpreter)
+        self.size = common.input_size(self.interpreter)
 
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
