@@ -207,8 +207,9 @@ class camera_interface():
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
+        #return (highest_scoring_label, highest_score)
+        return("banana", 10)
 
-        return (highest_scoring_label, highest_score)
 
     def read_cam_thread(self):
         flag = True #CAMBUG
