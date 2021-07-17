@@ -180,17 +180,17 @@ class camera_interface():
         min_conf_threshold = 0.35
 
         # Acquire frame and resize to expected shape [1xHxWx3]
-        frame = frame1.copy()
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
-        input_data = np.expand_dims(frame_resized, axis=0)
+        #frame = frame1.copy()
+        #frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
+        #input_data = np.expand_dims(frame_resized, axis=0)
 
         # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-        if self.floating_model:
-            input_data = (np.float32(input_data) - self.input_mean) / self.input_std
+        #if self.floating_model:
+        #    input_data = (np.float32(input_data) - self.input_mean) / self.input_std
 
         # Perform the actual detection by running the model with the image as input
-        common.set_input(self.interpreter, frame_resized)
+        common.set_input(self.interpreter, frame1)
         self.interpreter.invoke()
         classes = classify.get_classes(self.interpreter, top_k=0.5)
 
