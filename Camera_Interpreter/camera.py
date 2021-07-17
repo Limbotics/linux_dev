@@ -207,6 +207,7 @@ class camera_interface():
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
+                print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
         #return (highest_scoring_label, highest_score)
         return("banana", 10)
 
