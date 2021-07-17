@@ -27,7 +27,7 @@ class handServoControl:
 
         #this class is the lookup table servo control because the functions kind of do everything already 
         #16 channel piHat
-        self.kit = ServoKit(channels=16, address=0x48, frequency=50)
+        self.kit = ServoKit(channels=16, address=0x48)
 
         #Initialize stored angles
         self.angles = {
