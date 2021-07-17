@@ -130,7 +130,8 @@ class slights_interface():
         for status in statuses:
             stat = status.value
             for pin in stat:
-                GPIO.output(pin.value, stat[pin])
+                self.lights[pin].write(stat[pin])
+                #GPIO.output(pin.value, stat[pin])
 
     def pulse_thread(self):
         pass
