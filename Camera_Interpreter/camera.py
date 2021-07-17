@@ -152,7 +152,7 @@ class camera_interface():
         while not self.killed_thread:
             #Detect and decode the stored image if it's ready
             # t = time.time()
-            if(previous_index != self.cam_image_index and (not self.temp_pause)):
+            if(previous_index != self.cam_image_index and (not self.temp_pause) and (self.cam_image is not None)):
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
@@ -214,7 +214,7 @@ class camera_interface():
         flag = True #CAMBUG
         while not self.killed_thread:
             #All Cambug
-            self.cam_image_index += 1
+            
             time.sleep(0.2)
             if(not self.temp_pause and flag): #CAMBUG remove False
                 # t = time.time()
@@ -233,6 +233,7 @@ class camera_interface():
                 #Pause temply
                 time.sleep(0.2)
                 # print("Time to save/resize new image: " + (str(time.time() - t)))
+            self.cam_image_index += 1
 
     # def read_cam(self):
     #     # get the image
