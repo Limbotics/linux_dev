@@ -222,6 +222,7 @@ class camera_interface():
                 script_dir = "/home/mendel/linux_dev"
                 size = common.input_size(self.interpreter)
                 image_file = os.path.join(script_dir, 'cell.jpg')
+                print(str(image_file))
                 image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
                 #frame = self.vs.read() #CAMBUG
                 self.cam_image = imutils.resize(image, width=300)
