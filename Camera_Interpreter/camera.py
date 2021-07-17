@@ -63,7 +63,7 @@ class camera_interface():
     def __init__(self,resolution=(640,480),framerate=30):
         self.count = 0
         # self.cap = cv2.VideoCapture(0)
-        self.vs = VideoStream(resolution=(640,480),framerate=30).start()
+        #self.vs = VideoStream(resolution=(640,480),framerate=30).start() #CAMBUG
         # self.stream = cv2.VideoCapture(0)
         # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         # ret = self.stream.set(3,resolution[0])
@@ -210,12 +210,20 @@ class camera_interface():
         return (highest_scoring_label, highest_score)
 
     def read_cam_thread(self):
+        flag = True #CAMBUG
         while not self.killed_thread:
-            if(not self.temp_pause):
+            #All Cambug
+            self.cam_image_index += 1
+            time.sleep(0.2)
+            if(not self.temp_pause and flag): #CAMBUG remove False
                 # t = time.time()
                 #Get camera image, rescale, and store in class variable
-                frame = self.vs.read()
-                self.cam_image = imutils.resize(frame, width=300)
+                script_dir = "/home/mendel/linux_dev"
+                image_file = os.path.join(script_dir, 'cell.jpg')
+                image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
+                #frame = self.vs.read() #CAMBUG
+                self.cam_image = imutils.resize(image, width=300)
+                flag = False
                 
                 #Increase index by 1
                 self.cam_image_index += 1
@@ -262,6 +270,6 @@ class camera_interface():
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
-        self.vs.stop()
+        #self.vs.stop() #CAMBUG
         #Destroy all displayed windows
         # cv2.destroyAllWindows()
