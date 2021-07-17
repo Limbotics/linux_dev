@@ -18,16 +18,16 @@ class pinouts(Enum):
     """The device path, chip, and line for each pin"""
 
     green  =  { #GPIO0, pin 16
-        "path": "/dev/gpiochip0",
-        "line": 0
+        "path": "/dev/gpiochip2",
+        "line": 9
     }
     blue   = { #GPIO1, pin 18
-        "path": "/dev/gpiochip0",
-        "line": 1
+        "path": "/dev/gpiochip4",
+        "line": 10
     }   
     yellow = { #GPIO7, pin 22
-        "path": "/dev/gpiochip0",
-        "line": 7
+        "path": "/dev/gpiochip4",
+        "line": 12
     }
 
 class status_states(Enum):
