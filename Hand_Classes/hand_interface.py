@@ -6,7 +6,7 @@ class fingers(Enum):
     index = 0
     middle = 3
     ring = 2
-    #pinky = 4
+    pinky = 4
 
 class grips(Enum):
     """ Defines the different grips available."""
