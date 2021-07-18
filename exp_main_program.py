@@ -53,7 +53,7 @@ new_pulse = (False, time.time())
 old_pulse = new_pulse
 servo_sleep = 0.05
 program_T0 = time.time()
-SM = state_manager.State_Manager()
+SM = state_manager.Mode_Manager()
 #state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
 #Quit the status lights loading period
