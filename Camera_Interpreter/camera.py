@@ -190,9 +190,11 @@ class camera_interface():
         #    input_data = (np.float32(input_data) - self.input_mean) / self.input_std
 
         # Perform the actual detection by running the model with the image as input
+        t = time.time()
         common.set_input(self.interpreter, frame1)
         self.interpreter.invoke()
         classes = classify.get_classes(self.interpreter, top_k=1)
+
 
         # Retrieve detection results
         # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
@@ -209,6 +211,8 @@ class camera_interface():
                 highest_score = c.score
                 print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
         #return (highest_scoring_label, highest_score)
+        print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
+        print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
         return("banana", 10)
 
 
