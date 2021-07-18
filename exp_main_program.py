@@ -16,7 +16,7 @@ from Servo_Driver import servo
 from Camera_Interpreter import camera
 from Muscle_Driver import muscle
 from Hand_Classes import hand_interface
-
+from State_Manager import state_manager
 
 #Camera initialization
 cam = camera.camera_interface()
@@ -52,6 +52,7 @@ new_pulse = (False, time.time())
 old_pulse = new_pulse
 servo_sleep = 0.05
 program_T0 = time.time()
+SM = state_manager.State_Manager()
 state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
 #Quit the status lights loading period
@@ -133,6 +134,7 @@ try:
 
         #Check if the new state is a special one
         statuslights.set_status(object_id, user_command_detected, state_matrix[1])
+
         if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])): #User trying to leave current state
             #Update the servo current grip set to go back to open for this object
             servs.grip_config = state_matrix[0]

@@ -1,4 +1,15 @@
-from enum import Enum 
+from enum import Enum, auto 
+
+class input_types(Enum):
+    down_pulse: auto
+    down_hold: auto
+    up_input: auto
+    no_input: auto
+
+class input_constants(Enum):
+    pulse_low: 0.25 #The minimum time for user input to be considered a pulse
+    pulse_high: 0.5 #The maximum time for user input to be considered a pulse
+    no_input_return_time: 2 #The time for the system to go back to top modes when in lower modes after no input
 
 class fingers(Enum):
     """ Defines which servo corresponds to which finger. """

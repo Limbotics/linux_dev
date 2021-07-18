@@ -10,6 +10,8 @@ sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to p
 
 from Hand_Classes import hand_interface
 grips = hand_interface.grips
+input_types = hand_interface.input_types
+timers = hand_interface.input_constants
 
 from enum import Enum
 
@@ -18,14 +20,14 @@ class modes(Enum):
     AGS = 2      #Automated Grip Selection         (Top mode)
     GCM = 3      #Grip Control Mode        
     Trainer = 4  #Training mode for user customizations
+    Cycle_Grip = 5 
 
 #These are triggering events that may or may not cause a change in mode, or lead to another event
 class events(Enum):
-    invalid = 0
-    hold_squeeze_down = 1
-    pulse_squeeze_down = 2
-    squeeze_up = 3
-    top_mode_change = 4   
+    activate_ags = 1
+    switch_grips = 2
+    switch_modes = 3
+    switch_top_mode = 4   
 
 class Mode_Manager():
     _program_T0 = time.time()
@@ -55,17 +57,23 @@ class Mode_Manager():
 
         #Maps how events link to modes and other events
         self.event_mapping = {
-            events.invalid: events.invalid,
-            events.hold_squeeze_down: modes.GCM,
-            events.pulse_squeeze_down: events.pulse_squeeze_down,
-            events.squeeze_up: events.top_mode_change
+            events.activate_ags: modes.AGS,
+            events.switch_grips: events.switch_grips,
+            events.switch_modes: events.switch_modes
         }
 
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
-            (): True,
-            [1]: False
+            input_types.up_input: self.switch_modes, #Up inputs switch the mode, always
+            input_types.down_pulse: self.switch_grips, #Down pulses cycle grip selection in neutral mode
+            input_types.down_hold: self.activate_gcm,  #Down holding always activates GCM
+            input_types.no_input: self.no_input_manager #No input causes events after timers
         }
+        pass
+
+    @property
+    def info(self):
+        # Build a human-readable format of the current system state
         pass
     
     ######### Mode management
@@ -79,11 +87,14 @@ class Mode_Manager():
 
     @current_mode.setter
     def current_mode(self, new_mode):
+        print("[MODE CHANGE] The mode is changing to ", str(new_mode), " from ", self._current_mode)
+        self.set_mode_time()
         self._current_mode = new_mode
 
-    #Simply toggles what the current top mode is
-    def toggle_stop_mode(self):
+    #Toggles the top mode, additionally, the top mode MUSt change with the current mode.
+    def toggle_top_mode(self):
         self._top_mode = self.top_modes[self._top_mode]
+        self.current_mode = self._top_mode
 
     ######### Param management
     @property
@@ -100,19 +111,66 @@ class Mode_Manager():
 
     @user_command_detected.setter
     def user_command_detected(self, new_command):
-        return self._user_command_detected
+        self._user_command_detected = new_command
 
-    def master_state_tracker(self, down_input, up_input):
+    @property
+    def run_time(self):
+        self._run_time = time.time() - self._program_T0
+        return self._run_time
+
+    @property 
+    def mode_time(self):
+        return self._mode_time
+
+    def set_mode_time(self):
+        self._mode_time = time.time() - self._mode_time
+
+    ########## Active Management
+
+    def activate_gcm(self):
+        #If checks are passed, enter into grip control mode to signal the system it needs to be processing
+        #   user input into continuous servo commands
+
+        #Set the current mode to GCM
+        pass
+
+    def grip_switch_completed(self):
+        #Public function used for the system to signal to the state manager that the grip cycle was completed
+        
+        #Set the current mode to top mode
+        pass
+
+    def switch_grips(self):
+        #If checks are passed, enter into cycle grip mode to signal the system it needs to change grips
+
+        #If in neutral mode, enter cycle grip mode
+        pass
+
+    def switch_modes(self):
+        #If checks are passed, enter either into GCM, AGS, or Neutral
+
+        #if in AGS or Neutral, toggle top mode
+
+        #Else if in GCM, return to top mode
+        pass
+
+    def no_input_manager(self):
+        #If checks are passed, make the current mode the top mode
+
+        #If currently in GCM and timer has passed
+        if self.current_mode == modes.GCM and self.mode_time >= timers.no_input_return_time.value:
+            
+        pass
+
+    def master_state_tracker(self, user_input):
         """
         Used for the main control algorithm in the program.
 
         Inputs:
-            reported_object: Whether or not the system has an object being reported. 
-            down_input:      Whether or not a user command has been detected on the down channel.
-            up_input:        Whether or not a user command has been detected on the up channel.
+            The current type of user input, from the hand_classes constants
         """
-        #Generate the master input mapper, which is a list 
-        Input_Mapper = [
-            
-        ]
-    
+        if user_input is not input_types.no_input:
+            self.user_command_detected = True
+        else:
+            self.user_command_detected = False
+        self.inputs_to_events_mapping[user_input]
