@@ -12,27 +12,17 @@ from Hand_Classes import hand_interface
 grips = hand_interface.grips
 input_types = hand_interface.input_types
 timers = hand_interface.input_constants
+modes = hand_interface.modes
 
 from enum import Enum
-
-class modes(Enum):
-    Neutral = 1  #Default grip selection, AGS off  (Top mode)
-    AGS = 2      #Automated Grip Selection         (Top mode)
-    GCM = 3      #Grip Control Mode        
-    Trainer = 4  #Training mode for user customizations
-    Cycle_Grip = 5 
-
-#These are triggering events that may or may not cause a change in mode, or lead to another event
-class events(Enum):
-    activate_ags = 1
-    switch_grips = 2
-    switch_modes = 3
-    switch_top_mode = 4   
 
 class Mode_Manager():
     _program_T0 = time.time()
     _reported_object = ""
     _user_command_detected = False
+    #These work together in conjunction to track unique user inputs
+    _user_input_time = 0
+    _previous_user_input_time = 0
     _mode_time = time.time() - _program_T0
     _run_time = time.time() - _program_T0
     """
@@ -55,13 +45,6 @@ class Mode_Manager():
         #Initialize the top mode as Neutral
         self._top_mode = modes.Neutral
 
-        #Maps how events link to modes and other events
-        self.event_mapping = {
-            events.activate_ags: modes.AGS,
-            events.switch_grips: events.switch_grips,
-            events.switch_modes: events.switch_modes
-        }
-
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
             input_types.up_input: self.switch_modes, #Up inputs switch the mode, always
@@ -69,7 +52,6 @@ class Mode_Manager():
             input_types.down_hold: self.activate_gcm,  #Down holding always activates GCM
             input_types.no_input: self.no_input_manager #No input causes events after timers
         }
-        pass
 
     @property
     def info(self):
@@ -108,12 +90,40 @@ class Mode_Manager():
         self._reported_object = new_object
 
     @property
+    def default_grip(self):
+        return self._default_grip
+
+    @default_grip.setter
+    def default_grip(self, new_default):
+        #Set the current mode to top mode
+        if self.current_mode == modes.Cycle_Grip and self.is_unique_input:
+            #This is only triggered if Cycle Mode was activated, so return to Neutral
+            self._default_grip = new_default
+            self.top_mode = modes.Neutral
+
+    @property
     def user_command_detected(self):
         return self._user_command_detected
 
     @user_command_detected.setter
     def user_command_detected(self, new_command):
+        if new_command:
+            self._user_input_time = time.time() - self._program_T0
+        else:
+            self._previous_user_input_time = self._user_input_time
         self._user_command_detected = new_command
+
+    @property 
+    def is_unique_input(self):
+        return self._user_input_time != self._previous_user_input_time
+
+    #Use this to mark a user input as processed
+    def input_processed_successfully(self):
+        self._previous_user_input_time = self._user_input_time
+
+    @property
+    def user_input_time(self):
+        return self._user_input_time
 
     @property
     def run_time(self):
@@ -134,33 +144,33 @@ class Mode_Manager():
         #   user input into continuous servo commands
 
         #Set the current mode to GCM
-        if self.mode_time >= timers.time_required_for_user_command.value:
+        if self.mode_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.GCM
-
-    def grip_switch_completed(self):
-        #Public function used for the system to signal to the state manager that the grip cycle was completed
-        
-        #Set the current mode to top mode
-        if self.current_mode == modes.Cycle_Grip:
-            self.top_mode = modes.Neutral
+            return True
+        return False
 
     def switch_grips(self):
         #If checks are passed, enter into cycle grip mode to signal the system it needs to change grips
 
         #If in neutral mode, enter cycle grip mode
-        if self.current_mode == modes.Neutral and self.mode_time >= timers.time_required_for_user_command.value:
+        if self.current_mode == modes.Neutral and self.mode_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.Cycle_Grip
+            return True
+        return False
 
     def switch_modes(self):
         #If checks are passed, enter either into GCM, AGS, or Neutral
 
         #if in AGS or Neutral, toggle top mode
-        if self.mode_time >= timers.time_required_for_any_state:
+        if self.mode_time >= timers.time_required_for_any_state and self.is_unique_input:
             if self.current_mode == modes.Neutral or self.current_mode == modes.AGS:
                 self.toggle_top_mode()
+                return True
             elif (self.current_mode == modes.GCM):
                 #Else if in GCM, return to top mode
                 self.current_mode = self.top_mode
+                return True
+        return False
 
     def no_input_manager(self):
         #If checks are passed, make the current mode the top mode
@@ -168,7 +178,8 @@ class Mode_Manager():
         #If currently in GCM and timer has passed
         if self.current_mode == modes.GCM and self.mode_time >= timers.no_input_return_time.value:
             self.current_mode = self.top_mode
-        pass
+            return True
+        return False
 
     def master_state_tracker(self, user_input):
         """
@@ -181,4 +192,6 @@ class Mode_Manager():
             self.user_command_detected = True
         else:
             self.user_command_detected = False
-        self.inputs_to_events_mapping[user_input]
+        input_processed = self.inputs_to_events_mapping[user_input]
+        if input_processed:
+            self.input_processed_successfully()
