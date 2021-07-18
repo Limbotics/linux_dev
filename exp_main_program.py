@@ -94,7 +94,7 @@ try:
     input_counter = time.time()
 
     # servs.process_grip_change() #we're entering an initial grip, so no flag
-    statuslights.set_status(False, False, False)
+    statuslights.set_status(False, False)
 
     count = 0
     while (cam_thread.is_alive()):

@@ -239,7 +239,7 @@ class camera_interface():
                 #Pause temply
                 time.sleep(0.2)
                 # print("Time to save/resize new image: " + (str(time.time() - t)))
-            self.cam_image_index += 1
+                self.cam_image_index += 1
 
     # def read_cam(self):
     #     # get the image
