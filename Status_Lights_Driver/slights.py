@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath('../Hand_Classes')) # Adds higher directory to p
 
 from Hand_Classes import hand_interface
 grips = hand_interface.grips
+input_types = hand_interface.input_types
 
 from enum import Enum
 
@@ -93,8 +94,10 @@ class slights_interface():
         }
 
         self.user_status_dispatcher = {
-            True: status_states.user_active,
-            False: status_states.user_not_active
+            input_types.up_input: status_states.user_active,
+            input_types.down_pulse: status_states.user_active,
+            input_types.down_hold: status_states.user_active,
+            input_types.no_input: status_states.user_not_active
         }
 
         #Run the startup sequence
