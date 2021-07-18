@@ -106,7 +106,6 @@ try:
                 print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             except Exception as e:
                 pass
-            print("[INFO - State]  " + str(state_matrix))
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
