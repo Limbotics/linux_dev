@@ -115,6 +115,9 @@ class handLUTControl(handServoControl):
         """Convert myoelectric input into servo actuation for the current grip."""
         pass
 
+    def _user_input_thread(self):
+        pass
+
     def __list_diff(self, li1, li2):
         """Math helper function for authorized_to_change_grips"""
         return (list(list(set(li1)-set(li2)) + list(set(li2)-set(li1))))
