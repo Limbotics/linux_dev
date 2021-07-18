@@ -46,6 +46,9 @@ class Mode_Manager():
         self._top_mode = modes.AGS
         self._current_mode = modes.Neutral
 
+        #Define the default grip 
+        self._default_grip = grips.openGrip
+
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
             input_types.up_input: self.switch_modes, #Up inputs switch the mode, always
