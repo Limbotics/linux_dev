@@ -5,6 +5,9 @@ import busio
 import queue
 import time
 
+from Hand_Classes import hand_interface
+input_types = hand_interface.input_types
+
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
@@ -80,14 +83,14 @@ class muscle_interface():
             end_loop = 6 #seconds
             if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
                 print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
-                return True
+                return input_types.down_hold
             elif((time.time() - self.grip_T0) <= start_loop):
                 # print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))
-                return False
+                return input_types.no_input
             else:
                 # print("[DEBUG - MS] Resetting user input sequence")
                 self.grip_T0 = time.time()
-                return False
+                return input_types.down_hold
     
 
     def bufferedTrigger(self):
@@ -107,8 +110,6 @@ class muscle_interface():
             self.previousBufferListMean = self.currentBufferListMean
             return False
         
-
-
     def advancedTriggered(self):
         #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
         #turns out theres a fifo module, refernece linked below
