@@ -43,7 +43,8 @@ class Mode_Manager():
         }
 
         #Initialize the top mode as Neutral
-        self._top_mode = modes.Neutral
+        self._top_mode = modes.AGS
+        self.toggle_top_mode()
 
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
