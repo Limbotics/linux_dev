@@ -100,7 +100,7 @@ try:
         time.sleep(0.01)
         print("\n")
 
-        if(count%1==0):
+        if(count%2==0): #Can modify the output rate of the state
             try:
                 print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
             except Exception as e:

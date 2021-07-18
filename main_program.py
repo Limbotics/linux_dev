@@ -3,14 +3,12 @@ import os
 import threading
 
 from Status_Lights_Driver import slights
-
+#testing new mendel workflow
 #Status Lights initialization
 statuslights = slights.slights_interface()
 #Tell the user that we're in the startup sequence
 slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
 slights_startup_thread.start()
-
-from adafruit_servokit import ServoKit
 
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
@@ -24,125 +22,196 @@ from Hand_Classes import hand_interface
 cam = camera.camera_interface()
 
 #Muscle sensor initialization
-mi = muscle.muscle_interface()
+print("Debug muscle sensor? Y/N")
+ans = input()
+if(ans == "Y"):
+    mi = muscle.muscle_interface(disconnect=True)
+else:
+    mi = muscle.muscle_interface()
 
 #Servo control initialization
 servs = servo.handLUTControl()
 
 outValue = 0
-def mapAnalogtoServo():
-     #servs is object function to move is servs.moveFinger(self, finger, angle)
-     #8000 in to 13000
-     outValue = (mi.AnalogRead()-8000)*180/5000
-     servs.moveFinger(0, int(outValue))
-     servs.moveFinger(1, int(outValue))
-     servs.moveFinger(2, int(outValue))
-
-
-count = 0
-status_T0 = 0
-previous_grip = ""
-grip_picked = ""   #
-user_activated_grip = False
-user_activated_grip_T0 = time.time()
-loop_time_step = 0.01
-# delta_required_for_status_change = 115*(loop_time_step/0.001) #Units of n are in milliseconds, regardless of loop time step
-delta_required_for_status_change = 100 #Units of n are in milliseconds, regardless of loop time step
+# def mapAnalogtoServo():
+#      #servs is object function to move is servs.moveFinger(self, finger, angle)
+#      #8000 in to 13000
+#      outValue = (mi.AnalogRead()-8000)*180/5000
+#      servs.moveFinger(0, int(outValue))
+#      servs.moveFinger(1, int(outValue))
+#      servs.moveFinger(2, int(outValue))
+    
+#Save the state of the arm
+reported_object = ""
+saved_state = False
+user_command_detected = False
+time_required_for_open_state = 5
+time_required_for_any_state = 0.25
+time_required_for_user_command = 0.1
+new_pulse = (False, time.time())
+old_pulse = new_pulse
+servo_sleep = 0.05
+program_T0 = time.time()
+state_matrix = [reported_object, saved_state, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
 slights_startup_thread.join()
 
-print("Main Program Start.")
+#while true
+    #Create a new state matrix for the current moment
+        #Camera read in
+        #user command read in
+        #save to new state matrix
+
+    #Check if we're in a special state that overrides the time required to change states
+    #User input with saved state? Remove saved state, command servos to open position
+    #User input with no saved state? 
+        #Reported object? Set saved state, command servos to fully closed position
+        #No reported object? Flash the lights to let user know we don't see anything
+
+    #Time passed to permit generic state change?
+        #reported object? 
+            #Saved state? Do nothing
+            #No saved state? Initialize grip for this object
+        #No user input, no reported object?
+            #Set servos to open position 
+#Initialize hand positon/state lights
+servs.grip_config = hand_interface.grips.openGrip.value
+servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+servo_thread.start()
+servo_thread.join()
 try:
     #Initialize camera thread
     cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
     cam_thread.start()
-    while ((count < 10000000) and cam_thread.is_alive()):
-        grip_picked = cam.cam_data
-        is_object = cam.object_spotted
-        #Set grip_picked to "" if it's not in the database of known objects
-        if(grip_picked not in hand_interface.grips._value2member_map_):
-            grip_picked = ""
-            is_object = False
+    print("Main Program Start.")
+    
 
-        # print("MyoSensor value: " , mi.AnalogRead())
+    #Debug user input variable
+    input_counter = time.time()
 
-        # mapAnalogtoServo()
-        if mi.triggered():
-            print("[DEBUG - USER INPUT] User input detected")
-            user_gripping = True
-            #insert code to grip (for now lets overide object detection, but later just if obj detect and mi.triggered() then grip)
-        else:
-            print("[DEBUG - USER INPUT] No user input")
-            user_gripping = False
+    # servs.process_grip_change() #we're entering an initial grip, so no flag
+    statuslights.set_status(False, False, False)
 
-        if(is_object and (count%10 ==0)):
-            # print("MyoSensor value: " , mi.AnalogRead())
-            print("[INFO] Main thread spots an object: " + str(grip_picked) + " .\t" + str(count))
-            # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+"). Lights: " + str(statuslights.status))
-        elif(count%10==0):
-            print("MyoSensor value: " , mi.AnalogRead())
-            print("[INFO] Main thread, no object.\t" + str(count))
-            # print("[INFO] State: (grip_picked: "+ grip_picked+", user_gripping: "+ str(user_gripping)+") Lights: " + str(statuslights.status))
-
-        #Only allow a state update no quicker than every delta time
-        if((abs(count - status_T0) > delta_required_for_status_change)): # and servs.authorized_to_change_grips()
-            if (not user_activated_grip and not user_gripping): #If the user hasn't picked anything, computer has priority
-                # print("No activation, no gripping")
-                if (grip_picked is not previous_grip):
-                    if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
-                        grip_picked = hand_interface.grips.openGrip.value
-                    servs.grip_config = grip_picked
-                     # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change()
-                    statuslights.set_status(user_activated_grip, user_gripping)
-            elif(user_activated_grip and not user_gripping): #User previously activated this grip, so stay here
-                # print("Activation, no gripping")
-                pass
-            elif(user_activated_grip and user_gripping): #User gripping after activating a grip is the exit command
-                # print("Activation, gripping")
-                if((time.time() - user_activated_grip_T0) > 1): #Remove user priority
-                    user_activated_grip = False
-                    if (grip_picked == ""):                     #If no object, set it to the open grip value. Otherwise, just keep it
-                        grip_picked = hand_interface.grips.openGrip.value
-                    servs.grip_config = grip_picked
-                    # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
-                    statuslights.set_status(user_activated_grip, user_gripping)
-            elif(not user_activated_grip and user_gripping):
-                # print("No Activation, gripping")
-                if(grip_picked != ""):
-                    user_activated_grip = True
-                    servs.grip_config = grip_picked
-                    # servo_command = threading.Thread(target = servs.process_grip_change, args=())
-                    servs.process_grip_change(user_grip=user_activated_grip)
-                    statuslights.set_status(user_activated_grip, user_gripping)
-            # print("Current grip: " + grip_picked)
-
-            #Update status lights
-            # 
-            status_T0 = count
-
-            #Save grip pick
-            previous_grip = grip_picked
-
-        statuslights.set_status(is_object, user_gripping)
-        time.sleep(loop_time_step)
+    count = 0
+    while (cam_thread.is_alive()):
         count += 1
+        time.sleep(0.01)
+        print("\n")
+
+        if(count%2==0): #Can modify the output rate of the state
+            try:
+                print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            except Exception as e:
+                pass
+            print("[INFO - State]  " + str(state_matrix))
+
+        #Create new state matrix for current moment
+        reported_object = cam.cam_data
+        user_command_detected = mi.bufferedTrigger()
+        if(not new_pulse[0] and user_command_detected):
+            new_pulse = (True, time.time())
+        elif(not user_command_detected):
+            old_pulse = new_pulse
+            new_pulse = (False, time.time())
+        # user_command_detected = False #Just for testing purposes
+
+        #Set grip_picked to "" if it's not in the database of known objects
+        object_id = True
+        if(reported_object not in hand_interface.grips._value2member_map_ or (reported_object == hand_interface.grips.openGrip.value)):
+            reported_object = hand_interface.grips.openGrip.value
+            object_id = False
+        
+        # print("[DEBUG - GRIP] reported object open grip? " + str((reported_object == hand_interface.grips.openGrip.value)))
+        # print("[DEBUG - OBJID] Object Identified? " + str(object_id))
+        
+        new_state = [reported_object, False, user_command_detected, (time.time()-program_T0), (time.time()-program_T0)]
+
+        # print("[DEBUG - USER GRIP] TIME DIFFERENCE: " + str((new_state[3] - state_matrix[3])))
+        # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
+
+        #Check if the new state is a special one
+        statuslights.set_status(object_id, user_command_detected, state_matrix[1])
+        if (user_command_detected and state_matrix[1] and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])): #User trying to leave current state
+            #Update the servo current grip set to go back to open for this object
+            servs.grip_config = state_matrix[0]
+            servo_thread.join()
+            servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+            servo_thread.start()
+            # servs.process_grip_change() #we're leaving a grip in this state, so don't pass user grip flag
+            #Wait for the servos to finish their current command
+            time.sleep(servo_sleep)
+            #Update current state
+            state_matrix = new_state
+            #Mark pulse as used
+            old_pulse = new_pulse
+            #Activate the camera again
+            cam.temp_pause = False
+        elif(user_command_detected and (not state_matrix[1]) and ((new_state[3] - state_matrix[3]) >= time_required_for_user_command) and (new_pulse[1] != old_pulse[1])):
+            #Check if the user is commanding us into a reported object
+            print("[DEBUG - STATE] Possibly entering new save state")
+            if(object_id):
+                print("[DEBUG - STATE] Entering new save state")
+                #Repair init new state matrix 
+                new_state[1] = True
+                #Command the camera to stop processing inputs temporarily
+                cam.temp_pause = True
+                #Confirmed user commanding into reported object
+                servs.grip_config = reported_object
+
+                servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,))
+                servo_thread.start()
+                # servs.process_grip_change(user_grip=True) #we're entering a grip, so pass flag
+                # statuslights.set_status(object_id, user_command_detected)
+                #Wait for the servos to finish their current command
+                time.sleep(servo_sleep)
+                #Update current state
+                state_matrix = new_state
+                #Mark pulse as used
+                old_pulse = new_pulse
+        elif(not state_matrix[1] and not user_command_detected): #No user command processed, so proceed to other checks if we're not in a saved state
+            #Time check passed, so maybe allow new camera command
+            if((object_id) and ((new_state[3] - state_matrix[3]) > time_required_for_any_state)): #If we spot an object and we're not gripped currently
+                #Confirmed user commanding into reported object
+                servs.grip_config = reported_object
+
+                # servs.process_grip_change() #we're entering an initial grip, so no flag
+                # servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+                servo_thread.start()
+
+                # statuslights.set_status(object_id, user_command_detected)
+                #Wait for the servos to finish their current command
+                time.sleep(servo_sleep)
+                #Update current state
+                state_matrix = new_state
+            elif((not object_id) and ((new_state[3] - state_matrix[3]) > time_required_for_open_state)):
+                #We see nothing and delta time has passed, so ensure we're in the open position
+                #Confirmed user commanding into reported object
+                servs.grip_config = reported_object
+
+                # servs.process_grip_change() #we're entering an initial grip, so no flag
+                # servo_thread.join()
+                servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+                servo_thread.start()
+
+                # statuslights.set_status(object_id, user_command_detected)
+                #Skip wait b/c it's just open grip
+                # time.sleep(servo_sleep)
+                #Update current state
+                state_matrix = new_state
+
+        state_matrix[4] = (time.time()-program_T0)
+        state_matrix[2] = user_command_detected
+
 except KeyboardInterrupt:
     print("\nScript quit command detected - closing IO objects.")
     statuslights.startup_complete = False
     slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
     slights_startup_thread.start()
 
-    #print(count)
-#Determine the current state we're in 
-    #No input from user, unfrozen state -> Permission to identify objects, change grip configuration after deltaT of object in view
-    #No object detected & not currently in grasp mode -> Continue looking for object
-    #No object detected & currently in grasp mode     -> User is actuating current grasp, do not change current grip
-    #Object detected & not currently in grasp mode    -> Select grip from database, command servos to new grip
-    #Object detected & currently in grasp mode        -> User is actuating current grasp, do not change current grip
 
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
