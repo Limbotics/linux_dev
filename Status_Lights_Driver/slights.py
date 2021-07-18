@@ -107,7 +107,7 @@ class slights_interface():
         #Stored list of led objects if on a threaded pulse
         # self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
 
-    def set_status(self, object_detected, is_activated, saved_state):
+    def set_status(self, object_detected, is_activated):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
         object_status = self.object_status_dispatcher[object_detected]
