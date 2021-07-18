@@ -6,6 +6,13 @@ class input_types(Enum):
     up_input: auto
     no_input: auto
 
+class modes(Enum):
+    Neutral = 1  #Default grip selection, AGS off  (Top mode)
+    AGS = 2      #Automated Grip Selection         (Top mode)
+    GCM = 3      #Grip Control Mode        
+    Trainer = 4  #Training mode for user customizations
+    Cycle_Grip = 5 
+
 class input_constants(Enum):
     pulse_low: 0.25 #The minimum time for user input to be considered a pulse
     pulse_high: 0.5 #The maximum time for user input to be considered a pulse
