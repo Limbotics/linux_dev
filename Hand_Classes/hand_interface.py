@@ -1,10 +1,10 @@
 from enum import Enum, auto 
 
 class input_types(Enum):
-    down_pulse: auto
-    down_hold: auto
-    up_input: auto
-    no_input: auto
+    down_pulse: 1
+    down_hold: 2
+    up_input: 3
+    no_input: 4
 
 class modes(Enum):
     Neutral = 1  #Default grip selection, AGS off  (Top mode)
