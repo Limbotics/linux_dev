@@ -90,7 +90,7 @@ class muscle_interface():
             else:
                 # print("[DEBUG - MS] Resetting user input sequence")
                 self.grip_T0 = time.time()
-                return input_types.down_hold
+                return input_types.no_input
     
 
     def bufferedTrigger(self):
