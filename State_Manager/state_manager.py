@@ -1,5 +1,5 @@
 """ This package provides the interface for the system to change the status lights."""
-from typing import Sequence
+from typing import NoReturn, Sequence
 from periphery import GPIO
 from periphery import PWM
 import time
@@ -74,7 +74,7 @@ class Mode_Manager():
     @property
     def info(self):
         # Build a human-readable format of the current system state
-        pass
+        return "Current mode: ", self.current_mode, " Top mode: ", self.top_mode, " User input: ", self.user_command_detected
     
     ######### Mode management
     @property
@@ -91,8 +91,10 @@ class Mode_Manager():
         self.set_mode_time()
         self._current_mode = new_mode
 
-    #Toggles the top mode, additionally, the top mode MUSt change with the current mode.
+    #Toggles the top mode, additionally, the top mode MUST change with the current mode.
     def toggle_top_mode(self):
+        if self.current_mode != modes.Neutral or self.current_mode != modes.AGS:
+            return
         self._top_mode = self.top_modes[self._top_mode]
         self.current_mode = self._top_mode
 
@@ -132,34 +134,40 @@ class Mode_Manager():
         #   user input into continuous servo commands
 
         #Set the current mode to GCM
-        pass
+        if self.mode_time >= timers.time_required_for_user_command.value:
+            self.current_mode = modes.GCM
 
     def grip_switch_completed(self):
         #Public function used for the system to signal to the state manager that the grip cycle was completed
         
         #Set the current mode to top mode
-        pass
+        if self.current_mode == modes.Cycle_Grip:
+            self.top_mode = modes.Neutral
 
     def switch_grips(self):
         #If checks are passed, enter into cycle grip mode to signal the system it needs to change grips
 
         #If in neutral mode, enter cycle grip mode
-        pass
+        if self.current_mode == modes.Neutral and self.mode_time >= timers.time_required_for_user_command.value:
+            self.current_mode = modes.Cycle_Grip
 
     def switch_modes(self):
         #If checks are passed, enter either into GCM, AGS, or Neutral
 
         #if in AGS or Neutral, toggle top mode
-
-        #Else if in GCM, return to top mode
-        pass
+        if self.mode_time >= timers.time_required_for_any_state:
+            if self.current_mode == modes.Neutral or self.current_mode == modes.AGS:
+                self.toggle_top_mode()
+            elif (self.current_mode == modes.GCM):
+                #Else if in GCM, return to top mode
+                self.current_mode = self.top_mode
 
     def no_input_manager(self):
         #If checks are passed, make the current mode the top mode
 
         #If currently in GCM and timer has passed
         if self.current_mode == modes.GCM and self.mode_time >= timers.no_input_return_time.value:
-            
+            self.current_mode = self.top_mode
         pass
 
     def master_state_tracker(self, user_input):
