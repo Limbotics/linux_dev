@@ -60,11 +60,7 @@ class muscle_interface():
         return self.chan.value
 
     def triggered(self):
-        # if self.chan.value > self.analogThreshold:
-        #     self.grip_T0 = time.time()
-        #     return True
-        # elif (time.time() - self.grip_T0 > self.off_buffer_delay):
-        #     return False
+        # TODO: This needs to be converted into pulses of either short (pulse) or long (hold) according to the timer constants
         try:
             if(not self.disconnected):
                 if self.chan.value > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
