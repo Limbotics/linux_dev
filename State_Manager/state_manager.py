@@ -143,6 +143,7 @@ class Mode_Manager():
 
     def set_mode_time(self):
         self._mode_time = time.time() - self._mode_time - self._program_T0
+        print("[SM-MODE TIMER] Updating mode time to ", str(self._mode_time))
 
     ########## Active Management
 
