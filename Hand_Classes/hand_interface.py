@@ -56,6 +56,14 @@ class grip_finger_angles(Enum):
         # fingers.pinky.value:   0
     }
 
+    open_closed = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   0
+    }
+
     bowl = {
         # fingers.thumb.value:   45,
         # fingers.index.value:   180,
