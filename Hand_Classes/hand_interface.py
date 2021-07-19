@@ -49,10 +49,10 @@ class grips(Enum):
 class grip_finger_angles(Enum):
     """Stores the angle each finger goes to initially for a given grip."""
     openGrip = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   45,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
+        fingers.thumb.value:   0,
+        fingers.index.value:   0,
+        fingers.middle.value:  15,
+        fingers.ring.value:    15,
         # fingers.pinky.value:   0
     }
 
