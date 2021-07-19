@@ -21,10 +21,10 @@ class Mode_Manager():
     _reported_object = ""
     _user_command_detected = False
     #These work together in conjunction to track unique user inputs
-    _user_input_time = 0
-    _previous_user_input_time = 0
-    _mode_time = time.time() - _program_T0
-    _run_time = time.time() - _program_T0
+    _user_input_time = 0 #The timestamp for when the user started this input
+    _previous_user_input_time = 0 #The timestamp for when the user started previous input
+    _mode_time = time.time() - _program_T0 #The time spent in the current mode
+    _run_time = time.time() - _program_T0  #The total program runtime
     """
     Manages and tracks the current mode of the system. Methods provide checking for if a mode change is valid given certain parameters. 
 
@@ -60,7 +60,7 @@ class Mode_Manager():
     @property
     def info(self):
         # Build a human-readable format of the current system state
-        return "Current mode: ", self.current_mode, " Top mode: ", self.top_mode, " User input: ", self.user_command_detected
+        return "Current mode: ", self.current_mode, " Top mode: ", self.top_mode, " User input: ", self.user_command_detected, "\t Mode time: ", str(self.mode_time)
     
     ######### Mode management
     @property
@@ -139,7 +139,7 @@ class Mode_Manager():
         return self._mode_time
 
     def set_mode_time(self):
-        self._mode_time = time.time() - self._mode_time
+        self._mode_time = time.time() - self._mode_time - self._program_T0
 
     ########## Active Management
 
