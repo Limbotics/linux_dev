@@ -43,7 +43,7 @@ class Mode_Manager():
         }
 
         #Initialize the top mode as Neutral
-        self._top_mode = modes.AGS
+        self._top_mode = modes.Neutral
         self._current_mode = modes.Neutral
 
         #Define the default grip 

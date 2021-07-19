@@ -91,6 +91,7 @@ class handLUTControl(handServoControl):
 
     def process_grip_change(self, user_grip=False):
         """Process the current grip config set in the class object."""
+        print("[SERVO] Processing grip change to ", str(self.grip_config))
         #try:
         if(not user_grip):
             #Use the dispatcher to correlate the current grip to the angles for that grip
