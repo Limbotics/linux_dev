@@ -171,7 +171,7 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
         servs.grip_config = reported_object
 
         #TODO: Change this to an ongoing servo thread that gets passed new % values
-        servo_thread.join()
+        #servo_thread.join()
         servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,))
         servo_thread.start()
 
