@@ -194,10 +194,11 @@ class Mode_Manager():
         Inputs:
             The current type of user input, from the hand_classes constants
         """
+        # print("[SM-DEBUG] Received state of ", str(user_input))
         if user_input is not input_types.no_input:
             self.user_command_detected = True
         else:
             self.user_command_detected = False
-        input_processed = self.inputs_to_events_mapping[user_input]
+        input_processed = self.inputs_to_events_mapping[user_input]()
         if input_processed:
             self.input_processed_successfully()
