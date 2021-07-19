@@ -148,8 +148,10 @@ class Mode_Manager():
         #   user input into continuous servo commands
 
         #Set the current mode to GCM
-        if self.mode_time >= timers.time_required_for_user_command.value and self.is_unique_input:
+        print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
+        if self.user_input_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.GCM
+            print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
             return True
         return False
 
