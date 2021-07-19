@@ -222,7 +222,7 @@ class camera_interface():
             #All Cambug
             
             time.sleep(0.2)
-            if(not self.temp_pause and flag): #CAMBUG remove False
+            if(not self.temp_pause): #CAMBUG remove False
                 # t = time.time()
                 #Get camera image, rescale, and store in class variable
                 script_dir = "/home/mendel/linux_dev"
