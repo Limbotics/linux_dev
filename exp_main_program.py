@@ -259,6 +259,8 @@ except KeyboardInterrupt:
     statuslights.startup_complete = False
     slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
     slights_startup_thread.start()
+except Exception as e:
+    print(str(e))
 
 
 #handLUTInst.loopHandLUTControl()
