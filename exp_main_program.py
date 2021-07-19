@@ -132,6 +132,7 @@ try:
         #Pass the current system status to the state manager
         SM.master_state_tracker(user_command_detected)
         if (SM.current_mode == modes.Neutral):
+            print("[MT] In Neutral Mode Processing")
             #Ensure the camera is paused
             if not cam.temp_pause:
                 cam.temp_pause = True
@@ -147,6 +148,7 @@ try:
             #Wait for the servos to finish their current command
             time.sleep(servo_sleep)
         elif (SM.current_mode == modes.AGS):
+            print("[MT] In AGS Mode Processing")
             #Ensure the camera isn't paused
             if cam.temp_pause:
                 cam.temp_pause = False
@@ -162,6 +164,7 @@ try:
             #Wait for the servos to finish their current command
             time.sleep(servo_sleep)
         elif (SM.current_mode == modes.GCM):
+            print("[MT] In GCM Mode Processing")
             #Command the camera to stop processing inputs temporarily
             cam.temp_pause = True
             #Confirmed user commanding into reported object
@@ -175,6 +178,7 @@ try:
             #Give servos some time to actuate
             time.sleep(servo_sleep)
         elif (SM.current_mode == modes.Cycle_Grip):
+            print("[MT] In Cycle Grip Mode Processing")
             #Change the SM default grip to something different
             SM.default_grip = hand_interface.grips.next()
         else:

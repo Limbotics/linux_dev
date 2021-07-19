@@ -98,6 +98,7 @@ class handLUTControl(handServoControl):
             finger_angles = self.dispatch[self.grip_config]
 
             #Iterate through the fingers and set them to their respective angle
+            print("[SERVO] Setting finger angles")
             for finger in finger_angles:
                 self.moveFinger(finger, finger_angles[finger])  
         else:
