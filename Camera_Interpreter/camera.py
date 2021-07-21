@@ -288,7 +288,7 @@ class camera_interface():
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
-        self.cap.stop() #CAMBUG
+        self.cap.release() #CAMBUG
         #Destroy all displayed windows
         # cv2.destroyAllWindows()
 
@@ -298,7 +298,7 @@ class camera_interface():
             lines = (p.match(line).groups() for line in f.readlines())
             return {int(num): text.strip() for num, text in lines}
 
-    def detectCoralDevBoard():
+    def detectCoralDevBoard(self):
         try:
             if 'MX8MQ' in open('/sys/firmware/devicetree/base/model').read():
                 print('Detected Edge TPU dev board.')
