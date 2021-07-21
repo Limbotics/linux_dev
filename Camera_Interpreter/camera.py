@@ -193,7 +193,7 @@ class camera_interface():
 
         # Perform the actual detection by running the model with the image as input
         t = time.time()
-        common.set_input(self.interpreter, frame1)
+        common.set_input(self.interpreter, input_data)
         self.interpreter.invoke()
         classes = classify.get_classes(self.interpreter, top_k=1)
 
