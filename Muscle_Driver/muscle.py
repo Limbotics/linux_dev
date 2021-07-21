@@ -107,6 +107,9 @@ class muscle_interface():
                     return input_types.down_pulse
                 else:
                     return input_types.no_input
+            else:
+                self.debug_input_T0 = 0
+                return input_types.no_input
 
     def get(self):
         inkey = _Getch()
@@ -160,11 +163,11 @@ class muscle_interface():
 
 class _Getch:
     def __call__(self):
-            fd = sys.stdin.fileno()
-            old_settings = termios.tcgetattr(fd)
-            try:
-                tty.setraw(sys.stdin.fileno())
-                ch = sys.stdin.read(3)
-            finally:
-                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-            return ch
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(3)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
