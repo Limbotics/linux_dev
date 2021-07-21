@@ -206,7 +206,7 @@ class camera_interface():
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
         # common.set_input(self.interpreter, input_data)
         # self.interpreter.invoke()
-        objs = detect.get_objects(self.interpreter, min_conf_threshold, 1.0)
+        objs = detect.get_objects(self.interpreter, min_conf_threshold)
         #classes = classify.get_classes(self.interpreter, top_k=1)
 
         # Retrieve detection results
