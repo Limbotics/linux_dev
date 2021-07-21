@@ -57,7 +57,6 @@ class muscle_interface():
             self.disconnected = True #Flag to not call other things
         self.off_buffer_delay = 1
         self.grip_T0 = time.time()    
-        self.debug_input_T0 = 0
 
     def AnalogRead(self):
         return self.chan.value
@@ -79,48 +78,18 @@ class muscle_interface():
         
         #Periodic user input sequence
         if(self.disconnected):
-            # start_loop = 5 #seconds
-            # end_loop = 6 #seconds
-            # if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
-            #     print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
-            #     return input_types.down_hold
-            # elif((time.time() - self.grip_T0) <= start_loop):
-            #     # print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))
-            #     return input_types.no_input
-            # else:
-            #     # print("[DEBUG - MS] Resetting user input sequence")
-            #     self.grip_T0 = time.time()
-            #     return input_types.no_input
-
-            # Run the user input debugging sequence
-            if self.get() == "up":
-                #Return an up_input type
-                return input_types.up_input
-            elif self.get() == "down":
-                #Set the gripT0 to a time if it's not already set
-                if self.debug_input_T0 == 0:
-                    self.debug_input_T0 = time.time()
-                if (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_high.value:
-                    return input_types.down_hold
-                elif (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_low.value:
-                    return input_types.down_pulse
-                else:
-                    return input_types.no_input
-            else:
-                self.debug_input_T0 = 0
+            start_loop = 5 #seconds
+            end_loop = 6 #seconds
+            if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
+                print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
+                return input_types.down_hold
+            elif((time.time() - self.grip_T0) <= start_loop):
+                # print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))
                 return input_types.no_input
-
-    def get(self):
-        inkey = _Getch()
-        # while(1):
-        k=inkey()
-            # if k!='':break
-        if k=='\x1b[A':
-            return "up"
-        elif k=='\x1b[B':
-            return "down"
-        else:
-            return "none"
+            else:
+                # print("[DEBUG - MS] Resetting user input sequence")
+                self.grip_T0 = time.time()
+                return input_types.no_input
 
     def bufferedTrigger(self):
         #If we're in debug mode just pass to the other function that has the implementation
@@ -161,14 +130,3 @@ class muscle_interface():
         self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
         
         return False
-
-class _Getch:
-    def __call__(self):
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(3)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
