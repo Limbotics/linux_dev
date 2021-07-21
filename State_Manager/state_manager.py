@@ -113,9 +113,6 @@ class Mode_Manager():
     def user_command_detected(self, new_command):
         #If this user input (either True for some input, or False if no input) is different from the last frame
         if new_command != self.user_command_detected:
-            #then save the last frame's pulse as the previous input
-            self._previous_user_input_time = self._user_input_time
-
             #Save this new pulse as the current user input
             self._user_input_time = time.time() - self._program_T0
         self._user_command_detected = new_command
@@ -176,7 +173,7 @@ class Mode_Manager():
         #If checks are passed, enter either into GCM, AGS, or Neutral
 
         #if in AGS or Neutral, toggle top mode
-        print("[SWITCH MODES] mode time passed? ", str(self.mode_time_passed))
+        print("[SWITCH MODES] mode time passed? ", str(self.mode_time_passed(timers.time_required_for_any_state.value)))
         print("[SWITCH MODES] Unique input? ", str(self.is_unique_input))
         if self.mode_time_passed(timers.time_required_for_any_state.value) and self.is_unique_input:
             if self.current_mode == modes.Neutral or self.current_mode == modes.AGS:
