@@ -194,7 +194,7 @@ except Exception as e:
 
 #handLUTInst.loopHandLUTControl()
 cam.end_camera_session()
-cam_thread.join() #Don't continue until the thread is closed 
+# cam_thread.join() #Don't continue until the thread is closed 
 servs.safe_shutdown()
 time.sleep(0.5)
 
