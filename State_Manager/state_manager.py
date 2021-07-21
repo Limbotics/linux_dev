@@ -79,8 +79,6 @@ class Mode_Manager():
 
     #Toggles the top mode, additionally, the top mode MUST change with the current mode.
     def toggle_top_mode(self):
-        if self.current_mode != modes.Neutral or self.current_mode != modes.AGS:
-            return
         self._top_mode = self.top_modes[self._top_mode]
         self.current_mode = self._top_mode
         print("[TOP MODE TOGGLE] Successfully changed top/current mode to ", str(self.current_mode))
