@@ -83,6 +83,7 @@ class Mode_Manager():
             return
         self._top_mode = self.top_modes[self._top_mode]
         self.current_mode = self._top_mode
+        print("[TOP MODE TOGGLE] Successfully changed top/current mode to ", str(self.current_mode))
 
     ######### Param management
     @property
