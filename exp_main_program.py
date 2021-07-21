@@ -98,6 +98,7 @@ statuslights.set_status(False, hand_interface.input_types.no_input)
 
 count = 0
 while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
+    os.system('clear')
     count += 1
     time.sleep(0.01)
     print("\n")
