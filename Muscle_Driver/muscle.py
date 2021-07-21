@@ -49,8 +49,6 @@ class muscle_interface():
                 #potentially add feature to catch the falling edge too
                 #end bufferedTrigger
 
-                
-
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
@@ -59,6 +57,7 @@ class muscle_interface():
             self.disconnected = True #Flag to not call other things
         self.off_buffer_delay = 1
         self.grip_T0 = time.time()    
+        self.debug_input_T0 = 0
 
     def AnalogRead(self):
         return self.chan.value
