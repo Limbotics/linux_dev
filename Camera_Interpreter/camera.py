@@ -72,11 +72,6 @@ class camera_interface():
             raise Exception("Dev board not detected.")
         self.count = 0
         self.cap = cv2.VideoCapture(1)
-        #self.vs = VideoStream(resolution=(640,480),framerate=30).start() #CAMBUG
-        # self.stream = cv2.VideoCapture(0)
-        # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-        # ret = self.stream.set(3,resolution[0])
-        # ret = self.stream.set(4,resolution[1])
 
         #Wait for the camera to startup for one seconds
         time.sleep(1)
@@ -98,16 +93,6 @@ class camera_interface():
         #self.labels = dataset.read_label_file(PATH_TO_LABELS)
         self.labels = read_label_file(PATH_TO_LABELS)
 
-        # Load the label map
-        #with open(PATH_TO_LABELS, 'r') as f:
-        #    self.labels = [line.strip() for line in f.readlines()]
-
-        # Have to do a weird fix for label map if using the COCO "starter model" from
-        # https://www.tensorflow.org/lite/models/object_detection/overview
-        # First label is '???', which has to be removed.
-        #if self.labels[0] == '???':
-        #    del(self.labels[0])
-
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
@@ -127,7 +112,6 @@ class camera_interface():
         self.input_std = 127.5
         
         # QR code detection object
-        # self.detector = cv2.QRCodeDetector()
         self.cam_data = ""
         self.object_spotted = False
         self.test_count = 0
@@ -149,12 +133,10 @@ class camera_interface():
         #Start the image decode thread
         decoder = threading.Thread(target=self.decode_image_thread, args=())
         decoder.start()
-        while not self.killed_thread and read_cam.is_alive() and decoder.is_alive():
+        while (not self.killed_thread) and read_cam.is_alive() and decoder.is_alive():
             time.sleep(0.25)
         #Flag is thrown or error, so ensure flag is thrown and wait for threads to join
         self.killed_thread = True
-        read_cam.join()
-        decoder.join()
 
     def decode_image_thread(self):
         previous_index = None
@@ -165,9 +147,6 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-                # print("[INFO] Camera objects: " + data)
-                # if(data not in grips._value2member_map_):
-                #     data = grips.openGrip.value
 
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
@@ -188,31 +167,12 @@ class camera_interface():
     def detect_main_object(self, frame1):
         min_conf_threshold = 0.4
 
-        # Acquire frame and resize to expected shape [1xHxWx3]
-        # frame = frame1.copy()
-        # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # frame_resized = cv2.resize(frame_rgb, (self.width, self.height), interpolation = cv2.INTER_AREA)
-
-        # input_data = np.expand_dims(frame_resized, axis=0)
-
-        # # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-        # if self.floating_model:
-        #     input_data = (np.float32(input_data) - self.input_mean) / self.input_std
-
         # Perform the actual detection by running the model with the image as input
         t = time.time()
-        cv2_im_rgb = cv2.cvtColor(self.cam_image, cv2.COLOR_BGR2RGB)
+        cv2_im_rgb = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
         cv2_im_rgb = cv2.resize(cv2_im_rgb, (self.width, self.height))
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
-        # common.set_input(self.interpreter, input_data)
-        # self.interpreter.invoke()
         objs = detect.get_objects(self.interpreter, min_conf_threshold)
-        #classes = classify.get_classes(self.interpreter, top_k=1)
-
-        # Retrieve detection results
-        # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
-        #classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0] # Class index of detected objects
-        #scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
 
         highest_scoring_label = ""
         highest_score = 0
@@ -231,40 +191,12 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            #All Cambug
-            
             time.sleep(0.2)
             if(not self.temp_pause): #CAMBUG remove False
-                # t = time.time()
-                #Get camera image, rescale, and store in class variable
-                # script_dir = "/home/mendel/linux_dev"
-                # size = common.input_size(self.interpreter)
-                # image_file = os.path.join(script_dir, 'cell.jpg')
-                # print(str(image_file))
-                # self.cam_image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
-                #frame = self.vs.read() #CAMBUG
                 _, self.cam_image = self.cap.read()
-                # cv2.imwrite("frame1.jpg", img)
-                # self.cam_image = imutils.resize(img, width=300)
-                
+
                 #Increase index by 1
                 self.cam_image_index += 1
-                #Pause temply
-
-    # def read_cam(self):
-    #     # get the image
-    #     _, img = self.cap.read() #TODO: #14 Downscale the resolution for faster processing
-    #     # get bounding box coords and data
-    #     data, bbox, _ = self.detector.detectAndDecode(img)
-    #     #Define a parameter we can easily read later if anything is detected
-    #     is_object = False
-    #     #Update parameter/output the data we found, if any
-    #     if data:
-    #         #print("data found: ", data)
-    #         is_object = True
-    #     #return the information we got from the camera
-        # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
-    #     return data, bbox, img, is_object
 
     # def read_cam_display_out(self):
     #     #Call the standard method to get the qr data / bounding box
