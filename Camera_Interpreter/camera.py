@@ -223,6 +223,7 @@ class camera_interface():
         time.sleep(0.1)
         #Release the camera object
         self.cap.release() #CAMBUG
+        cv2.destroyAllWindows()
 
     def load_labels(self, path):
         p = re.compile(r'\s*(\d+)(.+)')
