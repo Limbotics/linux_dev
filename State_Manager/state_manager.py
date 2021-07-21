@@ -177,12 +177,14 @@ class Mode_Manager():
         print("[SWITCH MODES] mode time passed? ", str(self.mode_time_passed(timers.time_required_for_any_state.value)))
         print("[SWITCH MODES] Unique input? ", str(self.is_unique_input))
         if self.mode_time_passed(timers.time_required_for_any_state.value) and self.is_unique_input:
-            if self.current_mode == modes.Neutral or self.current_mode == modes.AGS:
+            if (self.current_mode == modes.Neutral) or (self.current_mode == modes.AGS):
                 self.toggle_top_mode()
+                print("[SWITCH MODES] Called toggle top mode ")
                 return True
             elif (self.current_mode == modes.GCM):
                 #Else if in GCM, return to top mode
                 self.current_mode = self.top_mode
+                print("[SWITCH MODES] Left GCM")
                 return True
         return False
 
