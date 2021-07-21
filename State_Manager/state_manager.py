@@ -176,6 +176,8 @@ class Mode_Manager():
         #If checks are passed, enter either into GCM, AGS, or Neutral
 
         #if in AGS or Neutral, toggle top mode
+        print("[SWITCH MODES] mode time passed? ", str(self.mode_time_passed))
+        print("[SWITCH MODES] Unique input? ", str(self.is_unique_input))
         if self.mode_time_passed(timers.time_required_for_any_state.value) and self.is_unique_input:
             if self.current_mode == modes.Neutral or self.current_mode == modes.AGS:
                 self.toggle_top_mode()
