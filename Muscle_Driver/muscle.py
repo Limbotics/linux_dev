@@ -100,9 +100,9 @@ class muscle_interface():
                 #Set the gripT0 to a time if it's not already set
                 if self.debug_input_T0 == 0:
                     self.debug_input_T0 = time.time()
-                if (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_high:
+                if (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_high.value:
                     return input_types.down_hold
-                elif (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_low:
+                elif (self.debug_input_T0 - time.time()) > hand_interface.input_constants.pulse_low.value:
                     return input_types.down_pulse
                 else:
                     return input_types.no_input
