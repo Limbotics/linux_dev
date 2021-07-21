@@ -232,6 +232,7 @@ class camera_interface():
                 # self.cam_image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
                 #frame = self.vs.read() #CAMBUG
                 _, img = self.cap.read()
+                cv2.imwrite("frame1.jpg", img)
                 self.cam_image = imutils.resize(img, width=300)
                 flag = False
                 
@@ -252,7 +253,7 @@ class camera_interface():
     #         #print("data found: ", data)
     #         is_object = True
     #     #return the information we got from the camera
-    #     # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
+        # cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
     #     return data, bbox, img, is_object
 
     # def read_cam_display_out(self):
