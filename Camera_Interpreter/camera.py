@@ -182,7 +182,9 @@ class camera_interface():
         # Acquire frame and resize to expected shape [1xHxWx3]
         frame = frame1.copy()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
+        frame_resized = cv2.resize(frame_rgb, (self.width, self.height), interpolation = cv2.INTER_AREA)
+
+        print("[RESIZE-DEBUG] New image dimensions: ", str(frame_resized.shape))
         input_data = np.expand_dims(frame_resized, axis=0)
 
         # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
