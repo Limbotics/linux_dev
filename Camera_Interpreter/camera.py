@@ -33,6 +33,8 @@ from pycoral.adapters import detect
 from pycoral.adapters import common
 from pycoral.adapters import classify
 from pycoral.utils.dataset import read_label_file
+from pycoral.utils.edgetpu import run_inference
+
 import re
 
 import sys
@@ -187,20 +189,23 @@ class camera_interface():
         min_conf_threshold = 0.4
 
         # Acquire frame and resize to expected shape [1xHxWx3]
-        frame = frame1.copy()
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_resized = cv2.resize(frame_rgb, (self.width, self.height), interpolation = cv2.INTER_AREA)
+        # frame = frame1.copy()
+        # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # frame_resized = cv2.resize(frame_rgb, (self.width, self.height), interpolation = cv2.INTER_AREA)
 
-        input_data = np.expand_dims(frame_resized, axis=0)
+        # input_data = np.expand_dims(frame_resized, axis=0)
 
-        # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-        if self.floating_model:
-            input_data = (np.float32(input_data) - self.input_mean) / self.input_std
+        # # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
+        # if self.floating_model:
+        #     input_data = (np.float32(input_data) - self.input_mean) / self.input_std
 
         # Perform the actual detection by running the model with the image as input
         t = time.time()
-        common.set_input(self.interpreter, input_data)
-        self.interpreter.invoke()
+        cv2_im_rgb = cv2.cvtColor(self.cam_image, cv2.COLOR_BGR2RGB)
+        cv2_im_rgb = cv2.resize(cv2_im_rgb, (self.width, self.height))
+        run_inference(self.interpreter, cv2_im_rgb.tobytes())
+        # common.set_input(self.interpreter, input_data)
+        # self.interpreter.invoke()
         objs = detect.get_objects(self.interpreter, min_conf_threshold, 1.0)
         #classes = classify.get_classes(self.interpreter, top_k=1)
 
@@ -225,7 +230,6 @@ class camera_interface():
 
 
     def read_cam_thread(self):
-        flag = True #CAMBUG
         while not self.killed_thread:
             #All Cambug
             
@@ -239,15 +243,13 @@ class camera_interface():
                 # print(str(image_file))
                 # self.cam_image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
                 #frame = self.vs.read() #CAMBUG
-                _, img = self.cap.read()
-                cv2.imwrite("frame1.jpg", img)
-                self.cam_image = imutils.resize(img, width=300)
-                flag = False
+                _, self.cam_image = self.cap.read()
+                # cv2.imwrite("frame1.jpg", img)
+                # self.cam_image = imutils.resize(img, width=300)
                 
                 #Increase index by 1
                 self.cam_image_index += 1
                 #Pause temply
-                time.sleep(0.2)
 
     # def read_cam(self):
     #     # get the image
