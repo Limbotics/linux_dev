@@ -63,7 +63,7 @@ class camera_interface():
 
     def __init__(self,resolution=(640,480),framerate=30):
         self.count = 0
-        # self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         #self.vs = VideoStream(resolution=(640,480),framerate=30).start() #CAMBUG
         # self.stream = cv2.VideoCapture(0)
         # ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
@@ -180,14 +180,14 @@ class camera_interface():
         min_conf_threshold = 0.35
 
         # Acquire frame and resize to expected shape [1xHxWx3]
-        #frame = frame1.copy()
-        #frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
-        #input_data = np.expand_dims(frame_resized, axis=0)
+        frame = frame1.copy()
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_resized = cv2.resize(frame_rgb, (self.width, self.height))
+        input_data = np.expand_dims(frame_resized, axis=0)
 
         # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-        #if self.floating_model:
-        #    input_data = (np.float32(input_data) - self.input_mean) / self.input_std
+        if self.floating_model:
+            input_data = (np.float32(input_data) - self.input_mean) / self.input_std
 
         # Perform the actual detection by running the model with the image as input
         t = time.time()
@@ -225,21 +225,20 @@ class camera_interface():
             if(not self.temp_pause): #CAMBUG remove False
                 # t = time.time()
                 #Get camera image, rescale, and store in class variable
-                script_dir = "/home/mendel/linux_dev"
-                size = common.input_size(self.interpreter)
-                image_file = os.path.join(script_dir, 'cell.jpg')
-                print(str(image_file))
-                self.cam_image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
+                # script_dir = "/home/mendel/linux_dev"
+                # size = common.input_size(self.interpreter)
+                # image_file = os.path.join(script_dir, 'cell.jpg')
+                # print(str(image_file))
+                # self.cam_image = Image.open(image_file).convert('RGB').resize(size, Image.ANTIALIAS)
                 #frame = self.vs.read() #CAMBUG
-                #self.cam_image = imutils.resize(image, width=300)
+                _, img = self.cap.read()
+                self.cam_image = imutils.resize(img, width=300)
                 flag = False
                 
                 #Increase index by 1
                 self.cam_image_index += 1
                 #Pause temply
                 time.sleep(0.2)
-                # print("Time to save/resize new image: " + (str(time.time() - t)))
-                self.cam_image_index += 1
 
     # def read_cam(self):
     #     # get the image
