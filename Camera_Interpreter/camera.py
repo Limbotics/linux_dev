@@ -77,9 +77,9 @@ class camera_interface():
 
         #Load the tflite model and labelmap
         # Get path to current working directory
-        GRAPH_NAME = "detect.tflite"
-        MODEL_NAME = "Camera_Interpreter/Coco"
-        LABELMAP_NAME = "labelmap.txt"
+        GRAPH_NAME = "ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite"
+        MODEL_NAME = "Camera_Interpreter/Edge_TPU_Model"
+        LABELMAP_NAME = "coco_labels.txt"
         CWD_PATH = os.getcwd()
 
         # Path to .tflite file, which contains the model that is used for object detection
@@ -184,7 +184,6 @@ class camera_interface():
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame_resized = cv2.resize(frame_rgb, (self.width, self.height), interpolation = cv2.INTER_AREA)
 
-        print("[RESIZE-DEBUG] New image dimensions: ", str(frame_resized.shape))
         input_data = np.expand_dims(frame_resized, axis=0)
 
         # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
