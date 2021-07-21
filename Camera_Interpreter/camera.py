@@ -29,8 +29,11 @@ from collections import Counter
 
 from pycoral.utils import edgetpu
 from pycoral.utils import dataset
+from pycoral.adapters import detect
 from pycoral.adapters import common
 from pycoral.adapters import classify
+from pycoral.utils.dataset import read_label_file
+import re
 
 import sys
 import os
@@ -62,6 +65,9 @@ class camera_interface():
     """
 
     def __init__(self,resolution=(640,480),framerate=30):
+        #Try to detect the coral dev board
+        if not self.detectCoralDevBoard():
+            raise Exception("Dev board not detected.")
         self.count = 0
         self.cap = cv2.VideoCapture(1)
         #self.vs = VideoStream(resolution=(640,480),framerate=30).start() #CAMBUG
@@ -87,7 +93,8 @@ class camera_interface():
 
         # Path to label map file
         PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
-        self.labels = dataset.read_label_file(PATH_TO_LABELS)
+        #self.labels = dataset.read_label_file(PATH_TO_LABELS)
+        self.labels = read_label_file(PATH_TO_LABELS)
 
         # Load the label map
         #with open(PATH_TO_LABELS, 'r') as f:
@@ -102,7 +109,7 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/detect.tflite'))
+        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
@@ -177,7 +184,7 @@ class camera_interface():
             time.sleep(0.01)
 
     def detect_main_object(self, frame1):
-        min_conf_threshold = 0.35
+        min_conf_threshold = 0.4
 
         # Acquire frame and resize to expected shape [1xHxWx3]
         frame = frame1.copy()
@@ -194,8 +201,8 @@ class camera_interface():
         t = time.time()
         common.set_input(self.interpreter, input_data)
         self.interpreter.invoke()
-        classes = classify.get_classes(self.interpreter, top_k=1)
-
+        objs = detect.get_objects(self.interpreter, min_conf_threshold, 1.0)
+        #classes = classify.get_classes(self.interpreter, top_k=1)
 
         # Retrieve detection results
         # boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
@@ -204,7 +211,7 @@ class camera_interface():
 
         highest_scoring_label = ""
         highest_score = 0
-        for c in classes:
+        for c in objs:
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
             if((c.score > min_conf_threshold) and (c.score <= 1.0) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
                 # Draw label
@@ -281,6 +288,20 @@ class camera_interface():
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
-        #self.vs.stop() #CAMBUG
+        self.cap.stop() #CAMBUG
         #Destroy all displayed windows
         # cv2.destroyAllWindows()
+
+    def load_labels(self, path):
+        p = re.compile(r'\s*(\d+)(.+)')
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = (p.match(line).groups() for line in f.readlines())
+            return {int(num): text.strip() for num, text in lines}
+
+    def detectCoralDevBoard():
+        try:
+            if 'MX8MQ' in open('/sys/firmware/devicetree/base/model').read():
+                print('Detected Edge TPU dev board.')
+            return True
+        except: pass
+        return False
