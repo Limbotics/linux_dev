@@ -114,9 +114,9 @@ class muscle_interface():
             k=inkey()
             if k!='':break
         if k=='\x1b[A':
-            print "up"
+            return "up"
         elif k=='\x1b[B':
-            print "down"
+            return "down"
 
     def bufferedTrigger(self):
         #If we're in debug mode just pass to the other function that has the implementation
