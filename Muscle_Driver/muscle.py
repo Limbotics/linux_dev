@@ -108,7 +108,7 @@ class muscle_interface():
                 else:
                     return input_types.no_input
 
-    def get():
+    def get(self):
         inkey = _Getch()
         while(1):
             k=inkey()
