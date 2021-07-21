@@ -112,13 +112,15 @@ class muscle_interface():
 
     def get(self):
         inkey = _Getch()
-        while(1):
-            k=inkey()
-            if k!='':break
+        # while(1):
+        k=inkey()
+            # if k!='':break
         if k=='\x1b[A':
             return "up"
         elif k=='\x1b[B':
             return "down"
+        else:
+            return "none"
 
     def bufferedTrigger(self):
         #If we're in debug mode just pass to the other function that has the implementation
