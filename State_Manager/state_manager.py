@@ -113,7 +113,7 @@ class Mode_Manager():
         #If this user input (either True for some input, or False if no input) is different from the last frame
         if new_command != self.user_command_detected:
             #Save this new pulse as the current user input
-            self._user_input_time = time.time() - self._program_T0
+            self._user_input_time = time.time()
         self._user_command_detected = new_command
 
     @property 
@@ -143,7 +143,7 @@ class Mode_Manager():
         print("[SM-MODE TIMER] Updating mode time to ", str(self._mode_time))
 
     def mode_time_passed(self, delta_req):
-        return (time.time() - self.mode_time) > delta_req
+        return (time.time() - self.user_input_time) > delta_req
 
     ########## Active Management
 
