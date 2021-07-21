@@ -215,7 +215,7 @@ class camera_interface():
         #return (highest_scoring_label, highest_score)
         print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
-        return("banana", 10)
+        return(highest_scoring_label, highest_score)
 
 
     def read_cam_thread(self):
