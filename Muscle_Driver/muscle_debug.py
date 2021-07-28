@@ -5,12 +5,6 @@ import time
 
 class MyService(rpyc.Service):
 
-    def __init__(self):
-        self.channel_0 = 0
-        self.channel_1 = 0
-
-        print("init completed")
-
     # My service
     def exposed_echo(self, text):
         print(text)
@@ -20,6 +14,22 @@ class MyService(rpyc.Service):
 
     def exposed_channel_1_value(self):
         return self.channel_1       
+
+    def on_connect(self, conn):
+        # code that runs when a connection is created
+        # (to init the service, if needed)
+        self.channel_0 = 5
+        self.channel_1 = 13
+
+        print("init completed")
+
+    def on_disconnect(self, conn):
+        # code that runs after the connection has already closed
+        # (to finalize the service, if needed)
+        pass
+
+    def get_question(self):  # while this method is not exposed
+        return "what is the airspeed velocity of an unladen swallow?"
 
 # def main_thread():
 #     while(True):
