@@ -23,6 +23,9 @@ class MyService(rpyc.Service):
 
         print("init completed")
 
+        UI_thread = threading.Thread(self.main_thread, args=())
+        UI_thread.start()
+
     def on_disconnect(self, conn):
         # code that runs after the connection has already closed
         # (to finalize the service, if needed)
@@ -31,19 +34,16 @@ class MyService(rpyc.Service):
     def get_question(self):  # while this method is not exposed
         return "what is the airspeed velocity of an unladen swallow?"
 
-# def main_thread():
-#     while(True):
-#         print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
-#         ans = input()
-#         if ans == 1:
-#             channel_0 = 10000
-#             time.sleep(0.3)
-#             channel_0 = 0
+    def main_thread():
+        while(True):
+            print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
+            ans = input()
+            if ans == 1:
+                channel_0 = 10000
+                time.sleep(10)
+                channel_0 = 0
 
 if __name__ == "__main__":
-
-    # UI_thread = threading.Thread(main_thread, args=())
-    # UI_thread.start()
 
     server = ThreadedServer(MyService, port = 18812)
     server.start()
