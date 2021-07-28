@@ -109,7 +109,7 @@ class handLUTControl(handServoControl):
             #Iterate through the fingers and set them to their respective angle
             print("[SERVO] Setting user commanded fingers to ", str(100*percent), "%")
             for finger in finger_angles:
-                self.moveFinger(finger, (percent/100)*finger_angles[finger])  
+                self.moveFinger(finger, (percent)*finger_angles[finger])  
         #except Exception as e:
         #    print(str(e))
             # print("[DEBUG] User command for no specific object")
