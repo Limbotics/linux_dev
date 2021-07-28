@@ -38,8 +38,10 @@ class MyService(rpyc.Service):
         while(True):
             print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
             ans = input()
-            self.channel_0 = 10000
-            time.sleep(10)
+            c = time.time()
+            while (time.time() - c) < 10:
+                self.channel_0 = self.channel_0 + 1
+                time.sleep(0.01)
             self.channel_0 = 0
 
 if __name__ == "__main__":
