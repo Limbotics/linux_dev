@@ -23,10 +23,10 @@ class input_constants(Enum):
 class fingers(Enum):
     """ Defines which servo corresponds to which finger. """
     thumb = 1
-    index = 4 #0
+    index = 0 #0
     middle = 3
     ring = 2
-    pinky = 3 #4
+    pinky = 4 #4
 
 class grips(Enum):
     """ Defines the different grips available."""
