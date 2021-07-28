@@ -34,7 +34,7 @@ class MyService(rpyc.Service):
     def get_question(self):  # while this method is not exposed
         return "what is the airspeed velocity of an unladen swallow?"
 
-    def main_thread():
+    def main_thread(self):
         while(True):
             print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
             ans = input()
