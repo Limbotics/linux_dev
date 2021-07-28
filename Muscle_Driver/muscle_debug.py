@@ -10,7 +10,8 @@ class MyService(rpyc.Service):
         self.channel_1 = 0
 
         #Start the user interface thread
-        self.main_thread()
+        user_interface_thread = threading.Thread(target=self.main_thread, args=())
+        user_interface_thread.start()
         
     # My service
     def exposed_echo(self, text):
