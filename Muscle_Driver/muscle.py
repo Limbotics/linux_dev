@@ -22,9 +22,9 @@ from adafruit_ads1x15.analog_in import AnalogIn
 
 #Simple types to pass to change numbers from scalars to of units down or up
 class IT(Enum):
-    down = auto
-    up = auto
-    none = auto
+    down = 0
+    up = 1
+    none = 2
 
 #Replacement AnalogIn class if we're in debug mode
 class Analog_Debug():
