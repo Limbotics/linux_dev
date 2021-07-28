@@ -23,7 +23,7 @@ class MyService(rpyc.Service):
 
         print("init completed")
 
-        UI_thread = threading.Thread(self.main_thread, args=())
+        UI_thread = threading.Thread(target=self.main_thread, args=())
         UI_thread.start()
 
     def on_disconnect(self, conn):
