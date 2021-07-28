@@ -179,6 +179,7 @@ class muscle_interface():
         if in_data[0] == IT.up:
             return input_types.up_input
         elif in_data[0] == IT.none:
+            self.grip_T0 = 0
             return input_types.no_input
 
         # if self.AnalogRead() > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
