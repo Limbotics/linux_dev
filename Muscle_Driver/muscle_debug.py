@@ -53,7 +53,7 @@ class MyService(rpyc.Service):
             elif ans == 2:
                 #Write a down hold to channel 0
                 self.channel_0 = self.max_0
-                time.sleep(1)
+                time.sleep(5)
                 self.channel_0 = self.default_0
             elif ans == 3:
                 #Write an up hold to channel 1
