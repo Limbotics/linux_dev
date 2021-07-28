@@ -159,7 +159,7 @@ class muscle_interface():
         if raw_analog >= max_input:
             return 100
         elif raw_analog > no_input:
-            return raw_analog*(1/(max_input-no_input)) + (no_input/(no_input-max_input))
+            return 100*raw_analog*(1/(max_input-no_input)) + (no_input/(no_input-max_input))
         else:
             return 0
         
