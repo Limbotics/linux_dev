@@ -111,7 +111,7 @@ try:
 
         #Create new state matrix for current moment
         reported_object = cam.cam_data
-        user_command_detected = mi.bufferedTrigger()
+        user_command_detected = mi.triggered()
 
         #Set grip_picked to "" if it's not in the database of known objects
         object_id = True

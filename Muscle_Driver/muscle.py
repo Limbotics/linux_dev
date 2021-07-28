@@ -111,6 +111,9 @@ class muscle_interface():
             self.chan_0.update_value(new_down_value)
             self.chan_1.update_value(new_up_value)
 
+        print("[MDEBUG] Channel 0 input: ", str(self.chan_0.value))
+        print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
+
         if (self.chan_0.value > self.analogThreshold_0):
             self.input_T0 = time.time()
             self.last_input = (IT.down, self.chan_0.value)
@@ -162,6 +165,7 @@ class muscle_interface():
         # TODO: Convert the reported muscle intensity into percentage distances
         #If we're currently detecting input from the user
         in_data = self.AnalogRead()
+        print("[MDEBUG] In_data: ", str(in_data))
         self.pmd = self.convert_perc(in_data[1], in_data[0]) #Converts the raw analog value into percent muscle depth
         if (in_data[0] != IT.none) and self.grip_T0 == 0: #Always track down signals
             self.grip_T0 = time.time()
