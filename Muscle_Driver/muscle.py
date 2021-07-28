@@ -170,9 +170,9 @@ class muscle_interface():
         in_data = self.AnalogRead()
         print("[MDEBUG] In_data: ", str(in_data))
         if in_data[0] == IT.down:
-            self.pmd_down = self.convert_perc(in_data[1], in_data[0]) #Converts the raw analog value into percent muscle depth
+            self.pmd = self.convert_perc(in_data[1], in_data[0]) #Converts the raw analog value into percent muscle depth
         else:
-            self.pmd_down = 0
+            self.pmd = 0
         if (in_data[0] != IT.none) and self.grip_T0 == 0: #Always track down signals
             self.grip_T0 = time.time()
         elif self.grip_T0 == 0:
