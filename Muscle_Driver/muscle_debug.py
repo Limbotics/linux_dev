@@ -43,7 +43,7 @@ class MyService(rpyc.Service):
 
     def main_thread(self):
         while(True):
-            print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
+            print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second), 4 for continuous close")
             ans = int(input())
             if ans == 1:
                 #Write a down pulse to channel 0
