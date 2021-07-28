@@ -57,8 +57,7 @@ class muscle_interface():
                 self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
                 self.fifo = queue.Queue(self.fifoLength)
 
-                self.analogThreshold_0 = 9000 #17,000 for heath
-                self.analogThreshold_1 = 9000 
+                
                 self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
                 self.disconnected = False
                 #end advanced trigger
@@ -77,6 +76,7 @@ class muscle_interface():
 
                 #TODO: Initialize connection across rpyc to the input program
                 print("[LOADING] Connecting to sensor input simulator...")
+            
 
         if(disconnect):
             self.chan_0 = Analog_Debug()
@@ -91,6 +91,9 @@ class muscle_interface():
                 except Exception as e:
                     print("[M_DEBUG] Pinging server again in 3 seconds...")
                     time.sleep(3)
+
+        self.analogThreshold_0 = 9000 #17,000 for heath
+        self.analogThreshold_1 = 9000 
 
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
