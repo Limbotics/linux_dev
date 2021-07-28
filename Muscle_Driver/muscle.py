@@ -30,6 +30,7 @@ class muscle_interface():
                 #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
                 #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
                 self.chan = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
+                self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
                 #usage: chan.value, chan.voltage
 
                 #for advanced trigger
@@ -53,25 +54,36 @@ class muscle_interface():
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
 
+                #TODO: Initialize connection across rpyc to the input program
+                print("[LOADING] Connecting to sensor input simulator...")
+
         if(disconnect):
             self.disconnected = True #Flag to not call other things
-        self.off_buffer_delay = 1
         self.grip_T0 = time.time()    
 
     def AnalogRead(self):
-        return self.chan.value
-
+        try: 
+            if self.disconnected:
+                #TODO: Load in the data value across rpyc
+                pass
+            elif self.chan.value is not None:
+                return self.chan.value
+        except Exception as e:
+            raise Exception(str(e))
+        
     def triggered(self):
         # TODO: This needs to be converted into pulses of either short (pulse) or long (hold) according to the timer constants
         try:
-            if(not self.disconnected):
-                if self.chan.value > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
-                    self.grip_T0 = time.time()
-                    return True
-                elif (time.time() - self.grip_T0 >= self.off_buffer_delay):
-                    return False
-                if(time.time() - self.grip_T0 < self.off_buffer_delay):
-                    return True
+            #If we're currently detecting input from the user
+            if self.AnalogRead() > self.analogThreshold:
+
+            if self.AnalogRead() > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
+                self.grip_T0 = time.time()
+                return True
+            elif (time.time() - self.grip_T0 >= self.off_buffer_delay):
+                return False
+            if(time.time() - self.grip_T0 < self.off_buffer_delay):
+                return True
         except:
             print("[DEBUG] Muscle sensor reading error - switching to debug mode")
             self.disconnected = True
@@ -114,8 +126,8 @@ class muscle_interface():
         #https://www.guru99.com/python-queue-example.html
         if self.fifo.full():
             previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
-            currentAnalog = self.chan.value
-            self.fifo.put(self.chan.value)              #adds the value from the ADC to the rear of the FIFO buffer
+            currentAnalog = self.AnalogRead()
+            self.fifo.put(self.AnalogRead())              #adds the value from the ADC to the rear of the FIFO buffer
 
             #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
             if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
@@ -127,6 +139,6 @@ class muscle_interface():
                 else:
                     return True
         
-        self.fifo.put(self.chan.value)                  #adds the value from the ADC to the rear of the FIFO buffer
+        self.fifo.put(self.AnalogRead())                  #adds the value from the ADC to the rear of the FIFO buffer
         
         return False
