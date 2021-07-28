@@ -66,7 +66,7 @@ class MyService(rpyc.Service):
                 c = time.time()
                 loop_time = 5
                 while ((time.time() - c) < loop_time):
-                    self.channel_0 = (((time.time() - c)/10) - self.default_0/(self.default_0-self.max_0) ) * (self.max_0 - self.default_0)
+                    self.channel_0 = (((time.time() - c)/loop_time) - self.default_0/(self.default_0-self.max_0) ) * (self.max_0 - self.default_0)
                     print(str(self.channel_0))
                 self.channel_0 = self.default_0
 
