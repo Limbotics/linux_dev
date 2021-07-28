@@ -14,9 +14,9 @@ class modes(Enum):
     Cycle_Grip = 5 
 
 class input_constants(Enum):
-    pulse_low = 0.25 #The minimum time for user input to be considered a pulse
+    pulse_low = 0.1 #The minimum time for user input to be considered a pulse
     pulse_high = 0.5 #The maximum time for user input to be considered a pulse before it becomes a hold
-    no_input_return_time = 3 #The time for the system to go back to top modes when in lower modes after no input
+    no_input_return_time = 10 #The time for the system to go back to top modes when in lower modes after no input
     time_required_for_any_state = 0.25
     time_required_for_user_command = 0.1
 
