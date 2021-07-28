@@ -171,7 +171,7 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
 
         #TODO: Change this to creating a new servo thread that gets passed new % values
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,))
+        servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,mi.pmd))
         servo_thread.start()
 
         #Give servos some time to actuate
@@ -179,7 +179,7 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
     elif (SM.current_mode == modes.Cycle_Grip):
         print("[MT] In Cycle Grip Mode Processing")
         #Change the SM default grip to something different
-        SM.default_grip = hand_interface.grips.openGrip.next()
+        SM.default_grip = SM.default_grip.next()
     else:
         raise AttributeError("State Manager has no current mode defined.")
 

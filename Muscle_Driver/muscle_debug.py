@@ -60,8 +60,15 @@ class MyService(rpyc.Service):
                 self.channel_1 = self.max_1
                 time.sleep(1)
                 self.channel_1 = self.default_1
-
-            
+            elif ans == 4:
+                #Write a continuous pulse from min to max over 10 seconds
+                self.channel_0 = self.default_0
+                c = time.time()
+                loop_time = 10
+                while ((time.time() - c) < loop_time):
+                    self.channel_0 = (((time.time() - c)/10) - self.default_0/(self.default_0-self.max_0) ) * (self.max_0 - self.default_0)
+                    print(str(self.channel_0))
+                self.channel_0 = self.default_0
 
 if __name__ == "__main__":
 

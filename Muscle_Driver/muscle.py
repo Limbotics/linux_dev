@@ -92,7 +92,7 @@ class muscle_interface():
                     print("[M_DEBUG] Pinging server again in 3 seconds...")
                     time.sleep(3)
 
-        self.analogThreshold_0 = 9000 #17,000 for heath
+        self.analogThreshold_0 = 2000 #17,000 for heath
         self.analogThreshold_1 = 9000 
 
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
