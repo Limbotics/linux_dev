@@ -104,7 +104,7 @@ try:
 
         if(count%2==0): #Can modify the output rate of the state
             try:
-                print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+                print("[DEBUG - MS] MyoSensor value: " , mi.bufferedTrigger())
             except Exception as e:
                 print(SM.info)
                 pass

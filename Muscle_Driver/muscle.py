@@ -181,6 +181,7 @@ class muscle_interface():
         elif in_data[0] == IT.none:
             self.grip_T0 = 0
             return input_types.no_input
+        return input_types.no_input #Edge case where down_hold is under pulse low value
 
         # if self.AnalogRead() > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
         #     self.grip_T0 = time.time()
