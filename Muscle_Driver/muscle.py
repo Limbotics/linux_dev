@@ -115,16 +115,19 @@ class muscle_interface():
         print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
         if (self.chan_0.value > self.analogThreshold_0):
+            print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.down, self.chan_0.value)
             return self.last_input
 
         if self.chan_1.value > self.analogThreshold_1:
+            print("[MDEBUG] Detecting input on channel 1 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.up, self.chan_1.value)
             return self.last_input
 
         if (time.time() - self.input_T0) > input_persistency:
+            print("[MDEBUG] No input is above either analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.none, 0)
             return self.last_input
