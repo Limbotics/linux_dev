@@ -18,8 +18,15 @@ class MyService(rpyc.Service):
     def on_connect(self, conn):
         # code that runs when a connection is created
         # (to init the service, if needed)
-        self.channel_0 = 5
-        self.channel_1 = 13
+
+        self.default_0 = 2000
+        self.max_0 = 15000
+
+        self.default_1 = 1000
+        self.max_1 = 13000
+
+        self.channel_0 = self.default_0
+        self.channel_1 = self.default_1
 
         print("init completed")
 
@@ -37,12 +44,24 @@ class MyService(rpyc.Service):
     def main_thread(self):
         while(True):
             print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second)")
-            ans = input()
-            c = time.time()
-            while (time.time() - c) < 10:
-                self.channel_0 = self.channel_0 + 1
-                time.sleep(0.01)
-            self.channel_0 = 0
+            ans = int(input())
+            if ans == 1:
+                #Write a down pulse to channel 0
+                self.channel_0 = self.max_0
+                time.sleep(0.3)
+                self.channel_0 = self.default_0
+            elif ans == 2:
+                #Write a down hold to channel 0
+                self.channel_0 = self.max_0
+                time.sleep(1)
+                self.channel_0 = self.default_0
+            elif ans == 3:
+                #Write an up hold to channel 1
+                self.channel_1 = self.max_1
+                time.sleep(1)
+                self.channel_1 = self.default_1
+
+            
 
 if __name__ == "__main__":
 

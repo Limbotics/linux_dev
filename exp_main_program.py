@@ -169,7 +169,7 @@ try:
             #Confirmed user commanding into reported object
             servs.grip_config = reported_object
 
-            #TODO: Change this to an ongoing servo thread that gets passed new % values
+            #TODO: Change this to creating a new servo thread that gets passed new % values
             #servo_thread.join()
             servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,))
             servo_thread.start()
