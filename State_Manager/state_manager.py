@@ -101,8 +101,9 @@ class Mode_Manager():
         #Set the current mode to top mode
         if self.current_mode == modes.Cycle_Grip and self.is_unique_input:
             #This is only triggered if Cycle Mode was activated, so return to Neutral
+            print("[SM] Cycled a grip! Now entering neutral with new default grip of ", str(new_default))
+            self.current_mode = modes.Neutral
             self._default_grip = new_default
-            self.top_mode = modes.Neutral
 
     @property
     def user_command_detected(self):
