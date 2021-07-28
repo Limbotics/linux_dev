@@ -179,7 +179,7 @@ try:
         elif (SM.current_mode == modes.Cycle_Grip):
             print("[MT] In Cycle Grip Mode Processing")
             #Change the SM default grip to something different
-            SM.default_grip = hand_interface.grips.next()
+            SM.default_grip = hand_interface.grips.openGrip.next()
         else:
             raise AttributeError("State Manager has no current mode defined.")
 
