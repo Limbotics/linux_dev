@@ -30,6 +30,50 @@ if(ans == "Y"):
 else:
     mi = muscle.muscle_interface()
 
+    #Run through the muscle calibration sequence if necessary
+    if not mi.disconnected:
+        print("[CALIBRATION] Logging current channel 0 input as input threshold in 3...")
+        time.sleep(1)
+        print("2...")
+        time.sleep(1)
+        print("1...")
+        time.sleep(1)
+        print("[CALIBRATION-CH0] Setting input threshold as ", str(mi.chan_0.value))
+        mi.update_0_threshold(mi.chan_0.value)
+        print("[CALIBRATION-CH0] Please perform a down squeeze, starting on 2, until 0.")
+        print("[CALIBRATION-CH0] Ready?")
+        time.sleep(2)
+        print("3...")
+        time.sleep(1)
+        print("Squeeze now, and hold! 2...")
+        time.sleep(1)
+        print("1...")
+        mi.update_0_max()
+        # time.sleep(1) Not needed due to the integral/interval method in above function
+        print("[CALIBRATION-CH0] Great! Thank you.")
+        print("[CALIBRATION-CH1] Logging current channel 1 input as input threshold in 3...")
+        time.sleep(1)
+        print("2...")
+        time.sleep(1)
+        print("1...")
+        time.sleep(1)
+        print("[CALIBRATION-CH1] Setting input threshold as ", str(mi.chan_1.value))
+        mi.update_1_threshold(mi.chan_1.value)
+        print("[CALIBRATION-CH1] Please perform an up squeeze, starting on 2, until 0.")
+        print("[CALIBRATION-CH1] Ready?")
+        time.sleep(2)
+        print("3...")
+        time.sleep(1)
+        print("Squeeze now, and hold! 2...")
+        time.sleep(1)
+        print("1...")
+        mi.update_1_max()
+        # time.sleep(1) Not needed due to the integral/interval method in above function
+        print("[CALIBRATION-CH1] Great! Thank you.")
+        print("[CALIBRATION] Calibration sequence summary:")
+        print("[CAL-CH0] CH0 input threshold: ", str(mi.analogThreshold_0), "CH0 max: ", str(mi.max_input_0))
+        print("[CAL-CH1] CH1 input threshold: ", str(mi.analogThreshold_1), "CH1 max: ", str(mi.max_input_1))
+
 #Servo control initialization
 servs = servo.handLUTControl()
 
