@@ -137,7 +137,7 @@ class muscle_interface():
         #     raise Exception(str(e))
 
     def convert_perc(self, raw_analog, type):
-        # TODO: Write calibration sequence for the range definitions
+        # TODO: #7 Write calibration sequence for the range definitions
         no_input_down = 2000
         max_input_down = 15000
 
