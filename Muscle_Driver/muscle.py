@@ -164,8 +164,6 @@ class muscle_interface():
             return 0
         
     def triggered(self):
-        # TODO: This needs to be converted into pulses of either short (pulse) or long (hold) according to the timer constants
-        # TODO: Convert the reported muscle intensity into percentage distances
         #If we're currently detecting input from the user
         in_data = self.AnalogRead()
         print("[MDEBUG] In_data: ", str(in_data))
