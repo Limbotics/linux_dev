@@ -108,7 +108,7 @@ class muscle_interface():
     def update_0_threshold(self, new_threshold):
         self.analogThreshold_0 = new_threshold
 
-    def update_0_max(self, new_max):
+    def update_0_max(self):
         #Put the input for this channel into an array across 1 second, then take the average
         start = time.time()
         input_array = []
@@ -121,7 +121,7 @@ class muscle_interface():
     def update_1_threshold(self, new_threshold):
         self.analogThreshold_1 = new_threshold
 
-    def update_1_max(self, new_max):
+    def update_1_max(self):
         #Put the input for this channel into an array across 1 second, then take the average
         start = time.time()
         input_array = []
