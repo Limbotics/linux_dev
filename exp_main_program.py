@@ -32,6 +32,8 @@ else:
 
     #Run through the muscle calibration sequence if necessary
     if not mi.disconnected:
+        input_margin = 0.2 #%/100 margin for input val
+
         print("[CALIBRATION] Logging current channel 0 input as input threshold in 3...")
         time.sleep(1)
         print("2...")
@@ -39,7 +41,7 @@ else:
         print("1...")
         time.sleep(1)
         print("[CALIBRATION-CH0] Setting input threshold as ", str(mi.chan_0.value))
-        mi.update_0_threshold(1.02*mi.chan_0.value)
+        mi.update_0_threshold((1+input_margin)*mi.chan_0.value)
         print("[CALIBRATION-CH0] Please perform a down squeeze, starting on 2, until 0.")
         print("[CALIBRATION-CH0] Ready?")
         time.sleep(2)
@@ -58,7 +60,7 @@ else:
         print("1...")
         time.sleep(1)
         print("[CALIBRATION-CH1] Setting input threshold as ", str(mi.chan_1.value))
-        mi.update_1_threshold(1.02*mi.chan_1.value)
+        mi.update_1_threshold((1+input_margin)*mi.chan_1.value)
         print("[CALIBRATION-CH1] Please perform an up squeeze, starting on 2, until 0.")
         print("[CALIBRATION-CH1] Ready?")
         time.sleep(2)
