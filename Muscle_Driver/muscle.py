@@ -146,11 +146,17 @@ class muscle_interface():
         print("[MDEBUG] Channel 0 input: ", str(self.chan_0.value))
         print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
-        if (self.chan_0.value > self.analogThreshold_0):
+        #compare percentages along their tracks to try to guess which input is the real one from the user
+        chan_0_perc = self.convert_perc(self.chan_0.value, IT.down)
+        chan_1_perc = self.convert_perc(self.chan_1.value, IT.up)
+
+        if (self.chan_0.value > self.analogThreshold_0 and (chan_0_perc >= chan_1_perc)):
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.down, self.chan_0.value)
             return self.last_input
+        elif self.chan_0.value > self.analogThreshold_0:
+            print("[MDEBUG] Detecting input on channel 0 above analog threshold, but channel 1 is proportionally higher!")
 
         if self.chan_1.value > self.analogThreshold_1:
             print("[MDEBUG] Detecting input on channel 1 above analog threshold")
