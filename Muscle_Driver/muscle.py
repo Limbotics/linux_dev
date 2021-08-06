@@ -129,7 +129,7 @@ class muscle_interface():
             input_array.append(self.chan_1.value)
 
         #Set val to be average of past second
-        self.max_input_0 = sum(input_array)/len(input_array)
+        self.max_input_1 = sum(input_array)/len(input_array)
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
