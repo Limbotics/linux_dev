@@ -7,14 +7,8 @@ import time
 
 import sys
 import os
-sys.path.append(os.path.abspath('../Hand_Classes'))
 
 #Import interface enums from hand_interface
-from Hand_Classes import hand_interface
-fingers = hand_interface.fingers
-grips = hand_interface.grips
-grip_finger_angles = hand_interface.grip_finger_angles
-
 class handServoControl:
     """
     Low-level servo control in terms of specific servo channels and angle commands.
@@ -29,15 +23,6 @@ class handServoControl:
         #16 channel piHat
         self.kit = ServoKit(channels=16)
 
-        #Initialize stored angles
-        self.angles = {
-            fingers.thumb: 0,
-            fingers.index: 0,
-            fingers.middle: 0,
-            fingers.ring: 0
-            #fingers.pinky: 0
-        }
-
     def moveFinger(self, finger, angle):
         """Command a given finger to a certain angle.
         
@@ -48,7 +33,6 @@ class handServoControl:
 
         """
         self.kit.servo[finger].angle = angle
-        self.angles[finger] = angle
         time.sleep(0.1)
 
 try:
