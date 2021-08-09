@@ -1,4 +1,3 @@
-from Servo_Driver.servo import handLUTControl
 from adafruit_servokit import ServoKit
 #https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library#controlling-servos-3013804-22
 #LINUX FIX:
