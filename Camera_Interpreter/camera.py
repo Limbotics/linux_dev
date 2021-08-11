@@ -34,6 +34,7 @@ from pycoral.adapters import common
 from pycoral.adapters import classify
 from pycoral.utils.dataset import read_label_file
 from pycoral.utils.edgetpu import run_inference
+import tflite_runtime.interpreter as tflite
 
 import re
 
@@ -96,7 +97,8 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
+        #self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
+        self.interpreter = tflite.Interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'), experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
         self.interpreter.allocate_tensors()
 
         # Get model details
