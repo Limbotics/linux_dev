@@ -23,7 +23,6 @@ from adafruit_ads1x15.analog_in import AnalogIn
 #Simple types to pass to change numbers from scalars to of units down or up
 class IT(Enum):
     down = 0
-    up = 1
     none = 2
 
 #Replacement AnalogIn class if we're in debug mode
@@ -48,7 +47,7 @@ class muscle_interface():
                 #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
                 #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
                 self.chan_0 = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
-                self.chan_1 = AnalogIn(self.ads, ADS.P1)
+                # self.chan_1 = AnalogIn(self.ads, ADS.P1)
 
                 self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
                 #usage: chan.value, chan.voltage
@@ -71,8 +70,8 @@ class muscle_interface():
                 #Initialize the threshold vals, let the calibration sequence handle it later
                 self.analogThreshold_0 = 0
                 self.max_input_0 = 0
-                self.analogThreshold_1 = 0 
-                self.max_input_1 = 0
+                # self.analogThreshold_1 = 0 
+                # self.max_input_1 = 0
 
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
@@ -83,7 +82,7 @@ class muscle_interface():
             
         if(disconnect):
             self.chan_0 = Analog_Debug()
-            self.chan_1 = Analog_Debug()
+            # self.chan_1 = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
             #Initialize the muscle sensor server
@@ -98,8 +97,8 @@ class muscle_interface():
             #Define debug-compatible threshold values
             self.analogThreshold_0 = 2000 #17,000 for heath
             self.max_input_0 = 15000
-            self.analogThreshold_1 = 9000 
-            self.max_input_1 = 13000
+            # self.analogThreshold_1 = 9000 
+            # self.max_input_1 = 13000
             
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
@@ -118,18 +117,18 @@ class muscle_interface():
         #Set val to be average of past second
         self.max_input_0 = sum(input_array)/len(input_array)
 
-    def update_1_threshold(self, new_threshold):
-        self.analogThreshold_1 = new_threshold
+    # def update_1_threshold(self, new_threshold):
+    #     self.analogThreshold_1 = new_threshold
 
-    def update_1_max(self):
-        #Put the input for this channel into an array across 1 second, then take the average
-        start = time.time()
-        input_array = []
-        while (time.time() - start) < 1:
-            input_array.append(self.chan_1.value)
+    # def update_1_max(self):
+    #     #Put the input for this channel into an array across 1 second, then take the average
+    #     start = time.time()
+    #     input_array = []
+    #     while (time.time() - start) < 1:
+    #         input_array.append(self.chan_1.value)
 
-        #Set val to be average of past second
-        self.max_input_1 = sum(input_array)/len(input_array)
+    #     #Set val to be average of past second
+    #     self.max_input_1 = sum(input_array)/len(input_array)
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
@@ -138,30 +137,21 @@ class muscle_interface():
         input_persistency = 0.05
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
-            new_up_value = self.c.root.channel_1_value()   ####
+            # new_up_value = self.c.root.channel_1_value()   ####
 
             self.chan_0.update_value(new_down_value)
-            self.chan_1.update_value(new_up_value)
+            # self.chan_1.update_value(new_up_value)
 
         print("[MDEBUG] Channel 0 input: ", str(self.chan_0.value))
-        print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
+        # print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
         #compare percentages along their tracks to try to guess which input is the real one from the user
         chan_0_perc = self.convert_perc(self.chan_0.value, IT.down)
-        chan_1_perc = self.convert_perc(self.chan_1.value, IT.up)
 
-        if (self.chan_0.value > self.analogThreshold_0 and (chan_0_perc >= chan_1_perc)):
+        if (self.chan_0.value > self.analogThreshold_0):
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.down, self.chan_0.value)
-            return self.last_input
-        elif self.chan_0.value > self.analogThreshold_0:
-            print("[MDEBUG] Detecting input on channel 0 above analog threshold, but channel 1 is proportionally higher!")
-
-        if self.chan_1.value > self.analogThreshold_1:
-            print("[MDEBUG] Detecting input on channel 1 above analog threshold")
-            self.input_T0 = time.time()
-            self.last_input = (IT.up, self.chan_1.value)
             return self.last_input
 
         if (time.time() - self.input_T0) > input_persistency:
@@ -175,29 +165,14 @@ class muscle_interface():
         #     raise Exception(str(e))
 
     def convert_perc(self, raw_analog, type):
-        # TODO: #7 Write calibration sequence for the range definitions
-        # no_input_down = 2000
-        # max_input_down = 15000
-
-        # no_input_up = 1000
-        # max_input_up = 13000
-
-        # no_input = 0
-        # max_input = 0
 
         if type == IT.down:
-            max_input = self.max_input_0
-            no_input = self.analogThreshold_0
-        elif type == IT.up:
-            max_input = self.max_input_1
-            no_input = self.analogThreshold_1
-        else:
-            return 0
-
-        if raw_analog >= max_input:
-            return 1
-        elif raw_analog > no_input:
-            return raw_analog*(1/(max_input-no_input)) + (no_input/(no_input-max_input))
+            if raw_analog >= self.max_input_0:
+                return 1
+            elif raw_analog > self.analogThreshold_0:
+                return raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+            else:
+                return 0
         else:
             return 0
         
