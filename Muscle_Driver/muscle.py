@@ -57,7 +57,6 @@ class muscle_interface():
                 self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
                 self.fifo = queue.Queue(self.fifoLength)
 
-                
                 self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
                 self.disconnected = False
                 #end advanced trigger
@@ -68,7 +67,12 @@ class muscle_interface():
                 self.previousBufferListMean = 10000              #set high to not trigger initially (prob have to set it to 30k, did not test)
                 self.gtThreshold = 2000                          #this is the threshold that the next signal must be greater than in order to trigger the myo sensor - balance the sensitivity of the system with noise and user input strength
                 #potentially add feature to catch the falling edge too
-                #end bufferedTrigger
+                
+                #Initialize the threshold vals, let the calibration sequence handle it later
+                self.analogThreshold_0 = 0
+                self.max_input_0 = 0
+                self.analogThreshold_1 = 0 
+                self.max_input_1 = 0
 
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
@@ -77,7 +81,6 @@ class muscle_interface():
                 #TODO: Initialize connection across rpyc to the input program
                 print("[LOADING] Connecting to sensor input simulator...")
             
-
         if(disconnect):
             self.chan_0 = Analog_Debug()
             self.chan_1 = Analog_Debug()
@@ -92,12 +95,41 @@ class muscle_interface():
                     print("[M_DEBUG] Pinging server again in 3 seconds...")
                     time.sleep(3)
 
-        self.analogThreshold_0 = 2000 #17,000 for heath
-        self.analogThreshold_1 = 9000 
-
+            #Define debug-compatible threshold values
+            self.analogThreshold_0 = 2000 #17,000 for heath
+            self.max_input_0 = 15000
+            self.analogThreshold_1 = 9000 
+            self.max_input_1 = 13000
+            
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (IT.none, 0) #The last input pair reported by AnalogRead
+
+    def update_0_threshold(self, new_threshold):
+        self.analogThreshold_0 = new_threshold
+
+    def update_0_max(self):
+        #Put the input for this channel into an array across 1 second, then take the average
+        start = time.time()
+        input_array = []
+        while (time.time() - start) < 1:
+            input_array.append(self.chan_0.value)
+
+        #Set val to be average of past second
+        self.max_input_0 = sum(input_array)/len(input_array)
+
+    def update_1_threshold(self, new_threshold):
+        self.analogThreshold_1 = new_threshold
+
+    def update_1_max(self):
+        #Put the input for this channel into an array across 1 second, then take the average
+        start = time.time()
+        input_array = []
+        while (time.time() - start) < 1:
+            input_array.append(self.chan_1.value)
+
+        #Set val to be average of past second
+        self.max_input_1 = sum(input_array)/len(input_array)
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
@@ -114,11 +146,17 @@ class muscle_interface():
         print("[MDEBUG] Channel 0 input: ", str(self.chan_0.value))
         print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
-        if (self.chan_0.value > self.analogThreshold_0):
+        #compare percentages along their tracks to try to guess which input is the real one from the user
+        chan_0_perc = self.convert_perc(self.chan_0.value, IT.down)
+        chan_1_perc = self.convert_perc(self.chan_1.value, IT.up)
+
+        if (self.chan_0.value > self.analogThreshold_0 and (chan_0_perc >= chan_1_perc)):
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (IT.down, self.chan_0.value)
             return self.last_input
+        elif self.chan_0.value > self.analogThreshold_0:
+            print("[MDEBUG] Detecting input on channel 0 above analog threshold, but channel 1 is proportionally higher!")
 
         if self.chan_1.value > self.analogThreshold_1:
             print("[MDEBUG] Detecting input on channel 1 above analog threshold")
@@ -138,21 +176,21 @@ class muscle_interface():
 
     def convert_perc(self, raw_analog, type):
         # TODO: #7 Write calibration sequence for the range definitions
-        no_input_down = 2000
-        max_input_down = 15000
+        # no_input_down = 2000
+        # max_input_down = 15000
 
-        no_input_up = 1000
-        max_input_up = 13000
+        # no_input_up = 1000
+        # max_input_up = 13000
 
-        no_input = 0
-        max_input = 0
+        # no_input = 0
+        # max_input = 0
 
         if type == IT.down:
-            max_input = max_input_down
-            no_input = no_input_down
+            max_input = self.max_input_0
+            no_input = self.analogThreshold_0
         elif type == IT.up:
-            max_input = max_input_up
-            no_input = no_input_up
+            max_input = self.max_input_1
+            no_input = self.analogThreshold_1
         else:
             return 0
 
@@ -191,33 +229,13 @@ class muscle_interface():
             return input_types.no_input
         return input_types.no_input #Edge case where down_hold is under pulse low value
 
-        # if self.AnalogRead() > self.analogThreshold: # or (time.time() - self.grip_T0 < self.off_buffer_delay)
-        #     self.grip_T0 = time.time()
-        #     return True
-        # elif (time.time() - self.grip_T0 >= self.off_buffer_delay):
-        #     return False
-        # if(time.time() - self.grip_T0 < self.off_buffer_delay):
-        #     return True
-        
-        #Periodic user input sequence
-        # if(self.disconnected):
-        #     start_loop = 5 #seconds
-        #     end_loop = 6 #seconds
-        #     if(((time.time() - self.grip_T0) >= start_loop) and (time.time() - self.grip_T0 <= end_loop)):
-        #         print("[DEBUG - MS] Sending user input... cutting in T-" + str(end_loop-time.time()+self.grip_T0))
-        #         return input_types.down_hold
-        #     elif((time.time() - self.grip_T0) <= start_loop):
-        #         # print("[DEBUG - MS] No user input - T-" + str(start_loop-time.time()+self.grip_T0))
-        #         return input_types.no_input
-        #     else:
-        #         # print("[DEBUG - MS] Resetting user input sequence")
-        #         self.grip_T0 = time.time()
-        #         return input_types.no_input
 
     def bufferedTrigger(self):
         #If we're in debug mode just pass to the other function that has the implementation
-        if(self.disconnected):
-            return self.triggered()
+        # if(self.disconnected):
+        #     return self.triggered()
+
+        return self.triggered()
 
         #create buffers, take mean, see if next buffer is greater by a certain value
         for i in range(len(self.currentBufferList)):
