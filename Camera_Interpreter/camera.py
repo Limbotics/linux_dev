@@ -63,7 +63,6 @@ class camera_interface():
     Attributes:
         count (int): Count of saved screenshots. File titles are frame'count'.jpg.
         cap (cv2 VideoCapture): The VideoCapture object.
-        detector (QRCodeDetector): The QR Code detecting object.
     """
 
     def __init__(self,resolution=(640,480),framerate=30):

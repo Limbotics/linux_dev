@@ -20,10 +20,10 @@ from adafruit_ads1x15.analog_in import AnalogIn
 #for blinka requirement:
 #https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-
 
-#Simple types to pass to change numbers from scalars to of units down or up
-class IT(Enum):
-    down = 0
-    none = 2
+# #Simple types to pass to change numbers from scalars to of units down or up
+# class IT(Enum):
+#     down = 0
+#     none = 2
 
 #Replacement AnalogIn class if we're in debug mode
 class Analog_Debug():
@@ -76,8 +76,6 @@ class muscle_interface():
             except Exception as e:
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
-
-                #TODO: Initialize connection across rpyc to the input program
                 print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
@@ -102,7 +100,9 @@ class muscle_interface():
             
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
-        self.last_input = (IT.none, 0) #The last input pair reported by AnalogRead
+        self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
+
+        #Create the percentage buckets
 
     def update_0_threshold(self, new_threshold):
         self.analogThreshold_0 = new_threshold
@@ -133,7 +133,7 @@ class muscle_interface():
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
-        # try: 
+        # The fastest rate at which input states can change
         input_persistency = 0.05
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
@@ -145,19 +145,18 @@ class muscle_interface():
         print("[MDEBUG] Channel 0 input: ", str(self.chan_0.value))
         # print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
-        #compare percentages along their tracks to try to guess which input is the real one from the user
-        chan_0_perc = self.convert_perc(self.chan_0.value, IT.down)
+        #Convert raw analog into percentage range 
+        self.pmd = self.convert_perc(self.chan_0.value, input_types.down)
 
-        if (self.chan_0.value > self.analogThreshold_0):
+        if ((self.chan_0.value > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
-            self.last_input = (IT.down, self.chan_0.value)
-            return self.last_input
+            self.last_input = (input_types.down, self.chan_0.value)
+            return self.last_input[1]
 
         if (time.time() - self.input_T0) > input_persistency:
-            print("[MDEBUG] No input is above either analog threshold")
             self.input_T0 = time.time()
-            self.last_input = (IT.none, 0)
+            self.last_input = (input_types.none, 0)
             return self.last_input
         return self.last_input
 
@@ -165,84 +164,95 @@ class muscle_interface():
         #     raise Exception(str(e))
 
     def convert_perc(self, raw_analog, type):
+        #Converts the raw analog value into a predefined percentage from the list below
 
-        if type == IT.down:
+        #Generate predefined % positions along the grip
+        perc_buckets = []
+        counter = 0
+        spacing = 5 #Always a factor of 100
+        while counter <= 100:
+            perc_buckets.append(counter)
+            counter += spacing
+
+        if type == input_types.down:
+            #If higher than the max input from the calibration, then return 100%
             if raw_analog >= self.max_input_0:
                 return 1
+            #If in above the analog threshold, then convert to the percentage range
             elif raw_analog > self.analogThreshold_0:
-                return raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+                perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+                #Convert the raw percentage to a filtered percentage
+                return min(perc_buckets, key=lambda x:abs(perc-perc_buckets))
             else:
                 return 0
         else:
             return 0
         
-    def triggered(self):
+    # def triggered(self):
         #If we're currently detecting input from the user
-        in_data = self.AnalogRead()
-        print("[MDEBUG] In_data: ", str(in_data))
-        if in_data[0] == IT.down:
-            self.pmd = self.convert_perc(in_data[1], in_data[0]) #Converts the raw analog value into percent muscle depth
-        else:
-            self.pmd = 0
-        if (in_data[0] != IT.none) and self.grip_T0 == 0: #Always track down signals
-            self.grip_T0 = time.time()
-        elif self.grip_T0 == 0:
-            return input_types.no_input
+        # return self.AnalogRead()
+        # print("[MDEBUG] In_data: ", str(in_data))
+        # if in_data[0] == IT.down:
+        #     self.pmd = self.convert_perc(in_data[1], in_data[0]) #Converts the raw analog value into percent muscle depth
+        # else:
+        #     self.pmd = 0
+        # if (in_data[0] != IT.none) and self.grip_T0 == 0: #Always track down signals
+        #     self.grip_T0 = time.time()
+        # elif self.grip_T0 == 0:
+        #     return input_types.no_input
 
-        #If over minimum persistency and under the max, with no input, then we know the user supplied a pulse
-        if (time.time() - self.grip_T0) < hand_interface.input_constants.pulse_high.value and (time.time() - self.grip_T0) > hand_interface.input_constants.pulse_low.value and in_data[0] == IT.none:
-            #We caught a short pulse, return that for the remaining time of this timeslot
-            return input_types.down_pulse
-        #If over the hold persistency, then return down hold
-        elif (time.time() - self.grip_T0) > hand_interface.input_constants.pulse_high.value and in_data[0] == IT.down:
-            return input_types.down_hold
+        # #If over minimum persistency and under the max, with no input, then we know the user supplied a pulse
+        # if (time.time() - self.grip_T0) < hand_interface.input_constants.pulse_high.value and (time.time() - self.grip_T0) > hand_interface.input_constants.pulse_low.value and in_data[0] == IT.none:
+        #     #We caught a short pulse, return that for the remaining time of this timeslot
+        #     return input_types.down_pulse
+        # #If over the hold persistency, then return down hold
+        # elif (time.time() - self.grip_T0) > hand_interface.input_constants.pulse_high.value and in_data[0] == IT.down:
+        #     return input_types.down_hold
 
-        if in_data[0] == IT.up:
-            return input_types.up_input
-        elif in_data[0] == IT.none:
-            self.grip_T0 = 0
-            return input_types.no_input
-        return input_types.no_input #Edge case where down_hold is under pulse low value
+        # if in_data[0] == IT.none:
+        #     self.grip_T0 = 0
+        #     return input_types.no_input
+        # return input_types.no_input #Edge case where down_hold is under pulse low value
 
 
-    def bufferedTrigger(self):
+    # def bufferedTrigger(self):
         #If we're in debug mode just pass to the other function that has the implementation
         # if(self.disconnected):
         #     return self.triggered()
 
-        return self.triggered()
+        # return self.triggered()
 
         #create buffers, take mean, see if next buffer is greater by a certain value
-        for i in range(len(self.currentBufferList)):
-            self.currentBufferList[i] = self.AnalogRead()
-        self.currentBufferListMean = sum(self.currentBufferList)/len(self.currentBufferList)    #average mean
+        # for i in range(len(self.currentBufferList)):
+        #     self.currentBufferList[i] = self.AnalogRead()
+        # self.currentBufferListMean = sum(self.currentBufferList)/len(self.currentBufferList)    #average mean
 
-        if (self.currentBufferListMean-self.previousBufferListMean) > self.gtThreshold:
-            self.previousBufferListMean = self.currentBufferListMean
-            return True
-        else:
-            self.previousBufferListMean = self.currentBufferListMean
-            return False
+        # if (self.currentBufferListMean-self.previousBufferListMean) > self.gtThreshold:
+        #     self.previousBufferListMean = self.currentBufferListMean
+        #     return True
+        # else:
+        #     self.previousBufferListMean = self.currentBufferListMean
+        #     return False
         
-    def advancedTriggered(self):
-        #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
-        #turns out theres a fifo module, refernece linked below
-        #https://www.guru99.com/python-queue-example.html
-        if self.fifo.full():
-            previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
-            currentAnalog = self.AnalogRead()
-            self.fifo.put(self.AnalogRead())              #adds the value from the ADC to the rear of the FIFO buffer
+    # def advancedTriggered(self):
+    #     #create a ghetto fifo buffer and then compare the first and last values. tune the sensitivity by adjusting buffer length
+    #     #turns out theres a fifo module, refernece linked below
+    #     #https://www.guru99.com/python-queue-example.html
+    #     if self.fifo.full():
+    #         previousAnalog = self.fifo.get()            #removes the first value from the FIFO buffer
+    #         currentAnalog = self.AnalogRead()
+    #         self.fifo.put(self.AnalogRead())              #adds the value from the ADC to the rear of the FIFO buffer
 
-            #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
-            if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
-                self.grip_T0 = time.time()
-                return True
-            else:
-                if((time.time() - self.grip_T0) > self.off_buffer_delay):
-                    return False
-                else:
-                    return True
+    #         #it would be cool if we could do a differentiation. (This kind of is because deltaT is unknown)
+    #         if (currentAnalog/previousAnalog) > self.analogRatioThreshold:
+    #             self.grip_T0 = time.time()
+    #             return True
+    #         else:
+    #             if((time.time() - self.grip_T0) > self.off_buffer_delay):
+    #                 return False
+    #             else:
+    #                 return True
         
-        self.fifo.put(self.AnalogRead())                  #adds the value from the ADC to the rear of the FIFO buffer
+    #     self.fifo.put(self.AnalogRead())                  #adds the value from the ADC to the rear of the FIFO buffer
         
-        return False
+    #     return False

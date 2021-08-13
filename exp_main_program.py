@@ -150,14 +150,14 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
 
     if(count%2==0): #Can modify the output rate of the state
         try:
-            print("[DEBUG - MS] MyoSensor value: " , mi.bufferedTrigger())
+            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
         except Exception as e:
             print(SM.info)
             pass
 
     #Create new state matrix for current moment
     reported_object = cam.cam_data
-    user_command_detected = mi.triggered()
+    user_command_detected = mi.AnalogRead()
 
     #Set grip_picked to "" if it's not in the database of known objects
     object_id = True
@@ -176,23 +176,23 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
 
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
-    if (SM.current_mode == modes.Neutral):
-        print("[MT] In Neutral Mode Processing")
-        #Ensure the camera is paused
-        if not cam.temp_pause:
-            cam.temp_pause = True
+    # if (SM.current_mode == modes.Neutral):
+    #     print("[MT] In Neutral Mode Processing")
+    #     #Ensure the camera is paused
+    #     if not cam.temp_pause:
+    #         cam.temp_pause = True
 
-        #Set to default position
-        servs.grip_config = SM.default_grip.value
+    #     #Set to default position
+    #     servs.grip_config = SM.default_grip.value
 
-        # servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=())
-        servo_thread.start()
+    #     # servo_thread.join()
+    #     servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+    #     servo_thread.start()
 
-        # statuslights.set_status(object_id, user_command_detected)
-        #Wait for the servos to finish their current command
-        time.sleep(servo_sleep)
-    elif (SM.current_mode == modes.AGS):
+    #     # statuslights.set_status(object_id, user_command_detected)
+    #     #Wait for the servos to finish their current command
+    #     time.sleep(servo_sleep)
+    if (SM.current_mode == modes.AGS):
         print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
         if cam.temp_pause:
@@ -202,12 +202,12 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
         servs.grip_config = reported_object
 
         # servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=())
-        servo_thread.start()
+        # servo_thread = threading.Thread(target=servs.process_grip_change, args=())
+        # servo_thread.start()
 
         # statuslights.set_status(object_id, user_command_detected)
         #Wait for the servos to finish their current command
-        time.sleep(servo_sleep)
+        # time.sleep(servo_sleep)
     elif (SM.current_mode == modes.GCM):
         print("[MT] In GCM Mode Processing")
         #Command the camera to stop processing inputs temporarily
@@ -215,17 +215,16 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
         #Confirmed user commanding into reported object
         servs.grip_config = reported_object
 
-        #TODO: Change this to creating a new servo thread that gets passed new % values
         #servo_thread.join()
         servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,mi.pmd))
         servo_thread.start()
 
         #Give servos some time to actuate
         time.sleep(servo_sleep)
-    elif (SM.current_mode == modes.Cycle_Grip):
-        print("[MT] In Cycle Grip Mode Processing")
-        #Change the SM default grip to something different
-        SM.default_grip = SM.default_grip.next()
+    # elif (SM.current_mode == modes.Cycle_Grip):
+    #     print("[MT] In Cycle Grip Mode Processing")
+    #     #Change the SM default grip to something different
+    #     SM.default_grip = SM.default_grip.next()
     else:
         raise AttributeError("State Manager has no current mode defined.")
 
