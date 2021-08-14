@@ -111,6 +111,7 @@ class slights_interface():
         #Set initial status
         # self.set_status(False, False)
         self.startup_complete = False
+        self.object_pulse_T0 = 0
 
         #Stored list of led objects if on a threaded pulse
         # self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
@@ -130,11 +131,19 @@ class slights_interface():
                     self.lights[pin].write(stat[pin])
                 except Exception as e:
                     self.lights[pin].frequency = 1e3
-                    if object_detected:
-                        self.lights[pin].duty_cycle = 1
+                    if object_detected and (self.object_pulse_T0 == 0):
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
+                        pulse_thread.start()
                     else:
+                        self.object_pulse_T0 = 0
                         self.lights[pin].duty_cycle = 0
-                #GPIO.output(pin.value, stat[pin])
+                #GPIO.output(pin.value, stat[pin])4
+
+    def pulse_vibes(self):
+        self.object_pulse_T0 = time.time()
+        self.lights[pinouts.vibrate].duty_cycle = 1
+        time.sleep(0.25)
+        self.lights[pinouts.vibrate].duty_cycle = 0
 
     def pulse_thread(self):
         pass
