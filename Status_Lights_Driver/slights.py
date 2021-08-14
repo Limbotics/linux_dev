@@ -113,11 +113,12 @@ class slights_interface():
         # self.set_status(False, False)
         self.startup_complete = False
         self.object_pulse_T0 = 0
+        self.spotted_object = ""
 
         #Stored list of led objects if on a threaded pulse
         # self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
 
-    def set_status(self, object_detected, is_activated):
+    def set_status(self, object_detected, is_activated, reported_object):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
         object_status = self.object_status_dispatcher[object_detected]
@@ -131,22 +132,21 @@ class slights_interface():
                 try:
                     self.lights[pin].write(stat[pin])
                 except Exception as e:
-                    if object_detected and (self.object_pulse_T0 == 0):
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25, False))
+                    if object_detected and (reported_object != self.spotted_object):
+                        self.spotted_object = reported_object
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25))
                         pulse_thread.start()
-                    elif not object_detected and (self.object_pulse_T0 != 0):
+                    elif not object_detected and (reported_object != self.spotted_object):
                         self.object_pulse_T0 = 0
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05, True))
+                        self.spotted_object = ""
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05))
                         pulse_thread.start()
                 #GPIO.output(pin.value, stat[pin])4
 
-    def pulse_vibes(self, vibe_time, reset_end_time):
-        self.object_pulse_T0 = time.time()
+    def pulse_vibes(self, vibe_time):
         self.lights[pinouts.vibrate].duty_cycle = 1
         time.sleep(vibe_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
-        if reset_end_time:
-            self.object_pulse_T0 = 0
 
     def pulse_thread(self):
         pass

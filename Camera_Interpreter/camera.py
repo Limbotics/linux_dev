@@ -118,7 +118,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 1
+        self.object_not_spotted_delta_req = 0.5
 
         #Initialize the paused flag to false
         self.temp_pause = False

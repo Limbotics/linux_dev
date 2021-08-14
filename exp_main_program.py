@@ -172,7 +172,7 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
     # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
     #Check if the new state is a special one
-    statuslights.set_status(object_id, user_command_detected)
+    statuslights.set_status(object_id, user_command_detected, reported_object)
 
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
