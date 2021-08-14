@@ -74,6 +74,7 @@ class muscle_interface():
                 # self.max_input_1 = 0
 
             except Exception as e:
+                print("[M] Error: ", str(e))
                 print("[DEBUG] Error loading muscle input; defaulting to debug mode")
                 disconnect = True
                 print("[LOADING] Connecting to sensor input simulator...")
