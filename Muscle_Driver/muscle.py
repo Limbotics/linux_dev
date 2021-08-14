@@ -106,8 +106,8 @@ class muscle_interface():
         #Generate predefined % positions along the grip
         self.perc_buckets = []
         counter = 0
-        spacing = 5 #Always a factor of 100
-        while counter <= 100:
+        spacing = 5/100 #Always a factor of 100
+        while counter <= 1:
             self.perc_buckets.append(counter)
             counter += spacing
 
