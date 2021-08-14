@@ -172,26 +172,10 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
     # print("[DEBUG - USER GRIP] TIME BOOLEAN: " + str((new_state[3] - state_matrix[3]) >= time_required_for_user_command))
 
     #Check if the new state is a special one
-    # statuslights.set_status(object_id, user_command_detected)
+    statuslights.set_status(object_id, user_command_detected)
 
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
-    # if (SM.current_mode == modes.Neutral):
-    #     print("[MT] In Neutral Mode Processing")
-    #     #Ensure the camera is paused
-    #     if not cam.temp_pause:
-    #         cam.temp_pause = True
-
-    #     #Set to default position
-    #     servs.grip_config = SM.default_grip.value
-
-    #     # servo_thread.join()
-    #     servo_thread = threading.Thread(target=servs.process_grip_change, args=())
-    #     servo_thread.start()
-
-    #     # statuslights.set_status(object_id, user_command_detected)
-    #     #Wait for the servos to finish their current command
-    #     time.sleep(servo_sleep)
     if (SM.current_mode == modes.AGS):
         print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
@@ -221,10 +205,6 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
 
         #Give servos some time to actuate
         time.sleep(servo_sleep)
-    # elif (SM.current_mode == modes.Cycle_Grip):
-    #     print("[MT] In Cycle Grip Mode Processing")
-    #     #Change the SM default grip to something different
-    #     SM.default_grip = SM.default_grip.next()
     else:
         raise AttributeError("State Manager has no current mode defined.")
 

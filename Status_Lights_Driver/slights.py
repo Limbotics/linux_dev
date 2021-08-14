@@ -130,12 +130,10 @@ class slights_interface():
                     self.lights[pin].write(stat[pin])
                 except Exception as e:
                     self.lights[pin].frequency = 1e3
-                    # Set duty cycle to 75%
-                    self.lights[pin].duty_cycle = 1
                     if object_detected:
-                        self.lights[pin].enable()
+                        self.lights[pin].duty_cycle = 1
                     else:
-                        self.lights[pin].close()
+                        self.lights[pin].duty_cycle = 0
                 #GPIO.output(pin.value, stat[pin])
 
     def pulse_thread(self):
@@ -190,7 +188,6 @@ class slights_interface():
                 print(str(e))
             time.sleep(0.1)
         self.lights[pinouts.vibrate].duty_cycle = 0
-        self.lights[pinouts.vibrate].close()
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
