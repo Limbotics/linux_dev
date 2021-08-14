@@ -11,8 +11,11 @@ import rpyc #Muscle sensor debugging
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
 
-import adafruit_ads1x15.ads1015 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
+import tempmusclelib.ADS1x15 as ADS1x15
+import tempmusclelib.ADS1015 as ADS1015
+import Adafruit_GPIO.I2C as I2C
+#import adafruit_ads1x15.ads1015 as ADS
+#from adafruit_ads1x15.analog_in import AnalogIn
 
 
 #https://www.instructables.com/MuscleCom-Muscle-Controlled-Interface/
@@ -42,12 +45,17 @@ class muscle_interface():
         if(not disconnect):
             # try:
                 
-            self.i2c = busio.I2C(board.I2C3_SCL, board.I2C3_SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
+            #self.i2c = busio.I2C(board.I2C3_SCL, board.I2C3_SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
             # "/dev/i2c-2"
-            self.ads = ADS.ADS1015(self.i2c)
+            #self.ads = ADS.ADS1015(self.i2c)
+            self.prei2c = I2C
+            self._device = self.prei2c.get_i2c_device(0x48, busnum=2)
+            self.preads = ADS1x15(self.prei2c)
+            self.ads = ADS1015(self.preads)
             #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
             #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
-            self.chan_0 = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
+            _ = self.ads._data_rate_config(self, 128)
+            self.value = self.ads._conversion_value(self, 0, 128)
             # self.chan_1 = AnalogIn(self.ads, ADS.P1)
 
             self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
