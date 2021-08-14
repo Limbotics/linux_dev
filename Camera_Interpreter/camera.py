@@ -192,7 +192,7 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            time.sleep(0.2)
+            #time.sleep(0.2)#what is this
             if(not self.temp_pause): #CAMBUG remove False
                 _, self.cam_image = self.cap.read()
 
