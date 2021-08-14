@@ -185,11 +185,10 @@ class slights_interface():
                     delta = 0.01
                     duty = duty + delta
                 self.lights[pinouts.vibrate].duty_cycle = duty
-                self.lights[pinouts.vibrate].enable()
+                # self.lights[pinouts.vibrate].enable()
             except Exception as e:
                 print(str(e))
-                
-
+        self.lights[pinouts.vibrate].close()
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
