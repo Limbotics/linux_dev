@@ -93,6 +93,7 @@ class slights_interface():
                 self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
             except Exception as e:
                 self.lights[pinout] = PWM(pinout.value["chip"], pinout.value["line"])
+                self.lights[pinout].frequency = 1e3
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -130,21 +131,22 @@ class slights_interface():
                 try:
                     self.lights[pin].write(stat[pin])
                 except Exception as e:
-                    self.lights[pin].frequency = 1e3
                     if object_detected and (self.object_pulse_T0 == 0):
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25, False))
                         pulse_thread.start()
                     elif not object_detected and (self.object_pulse_T0 != 0):
                         self.object_pulse_T0 = 0
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05, True))
                         pulse_thread.start()
                 #GPIO.output(pin.value, stat[pin])4
 
-    def pulse_vibes(self):
+    def pulse_vibes(self, vibe_time, reset_end_time):
         self.object_pulse_T0 = time.time()
         self.lights[pinouts.vibrate].duty_cycle = 1
-        time.sleep(0.25)
+        time.sleep(vibe_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
+        if reset_end_time:
+            self.object_pulse_T0 = 0
 
     def pulse_thread(self):
         pass
