@@ -94,7 +94,8 @@ class slights_interface():
         }
 
         self.user_status_dispatcher = {
-            input_types.down: status_states.user_active
+            input_types.down: status_states.user_active,
+            input_types.none: status_states.user_not_active
         }
 
         #Run the startup sequence
