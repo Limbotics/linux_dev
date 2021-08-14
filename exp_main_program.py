@@ -21,7 +21,7 @@ from State_Manager import state_manager
 
 #Camera initialization
 cam = camera.camera_interface()
-
+# test
 #Muscle sensor initialization
 print("Debug muscle sensor? Y/N")
 ans = input()
