@@ -55,7 +55,10 @@ class muscle_interface():
             #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
             #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
             _ = self.ads._data_rate_config(self, 128)
-            self.value = self.ads._conversion_value(self, 0, 128)
+            _ = self.ads._conversion_value(self, -5000, 5000)
+
+            #line to read the value of the channel
+            self.value = self.ads.read_adc(self, 0, gain=1)
             # self.chan_1 = AnalogIn(self.ads, ADS.P1)
 
             self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
