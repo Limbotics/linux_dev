@@ -134,12 +134,12 @@ class slights_interface():
                 except Exception as e:
                     if object_detected and (reported_object != self.spotted_object):
                         self.spotted_object = reported_object
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25))
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25,))
                         pulse_thread.start()
                     elif not object_detected and (reported_object != self.spotted_object):
                         self.object_pulse_T0 = 0
                         self.spotted_object = ""
-                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05))
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05,))
                         pulse_thread.start()
                 #GPIO.output(pin.value, stat[pin])4
 
