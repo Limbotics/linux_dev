@@ -52,6 +52,7 @@ class Mode_Manager():
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
             input_types.down: self.activate_gcm,  #Down holding always activates GCM
+            input_types.none: self.no_input_manager
         }
 
     @property
