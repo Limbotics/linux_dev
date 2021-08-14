@@ -134,7 +134,7 @@ class slights_interface():
                     if object_detected and (self.object_pulse_T0 == 0):
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
                         pulse_thread.start()
-                    else:
+                    elif not object_detected:
                         self.object_pulse_T0 = 0
                         self.lights[pin].duty_cycle = 0
                 #GPIO.output(pin.value, stat[pin])4
