@@ -169,13 +169,24 @@ class slights_interface():
 
     def startup_wait(self):
         #run indefinitely until flag is thrown that the rest of the system is ready
+        self.lights[pinouts.vibrate].frequency = 1e3
+        # Set duty cycle to 75%
+        self.lights[pinouts.vibrate].duty_cycle = 0
+        self.lights[pinouts.vibrate].enable()
+        duty = 0
+        delta = 0.01
         while not self.startup_complete:
-            for pinout in pinouts:
-                self.lights[pinout].write(True)
-                time.sleep(0.2)
-            for pinout in pinouts:
-                self.lights[pinout].write(False)
-                time.sleep(0.2)
+            try:
+                duty = duty + delta
+                if duty > 1:
+                    delta = -0.01
+                    duty = duty + delta
+                elif duty < 0:
+                    delta = 0.01
+                    duty = duty + delta
+                self.lights[pinouts.vibrate].duty_cycle = duty
+                self.lights[pinouts.vibrate].enable()
+
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
