@@ -183,11 +183,11 @@ class slights_interface():
         self.lights[pinouts.vibrate].enable()
         while not self.startup_complete:
             try:
-                for dc in range(0, 1, 0.1):
-                    self.lights[pinouts.vibrate].duty_cycle = dc
+                for dc in range(0, 10, 1):
+                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
                     time.sleep(0.1)
-                for dc in range(1, 0, -0.1):
-                    self.lights[pinouts.vibrate].duty_cycle = dc
+                for dc in range(10, 0, -1):
+                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
                     time.sleep(0.1)
                 # self.lights[pinouts.vibrate].enable()
             except Exception as e:
