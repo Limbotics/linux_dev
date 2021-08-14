@@ -111,6 +111,8 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
+        print("Control buckets: ", str(self.perc_buckets))
+
     def update_0_threshold(self, new_threshold):
         self.analogThreshold_0 = new_threshold
 
@@ -180,4 +182,6 @@ class muscle_interface():
         for valor in list:
             aux.append(abs(Number-valor))
 
-        return list[aux.index(min(aux))]
+        new_val = list[aux.index(min(aux))]
+        print("Changing input from ", str(Number), " to ", str(new_val))
+        return new_val
