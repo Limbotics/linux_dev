@@ -136,7 +136,8 @@ class slights_interface():
                         pulse_thread.start()
                     elif not object_detected:
                         self.object_pulse_T0 = 0
-                        self.lights[pin].duty_cycle = 0
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
+                        pulse_thread.start()
                 #GPIO.output(pin.value, stat[pin])4
 
     def pulse_vibes(self):
@@ -195,7 +196,7 @@ class slights_interface():
                 # self.lights[pinouts.vibrate].enable()
             except Exception as e:
                 print(str(e))
-            time.sleep(0.1)
+            time.sleep(0.01)
         self.lights[pinouts.vibrate].duty_cycle = 0
 
     def safe_shutdown(self):
