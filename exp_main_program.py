@@ -140,7 +140,7 @@ print("Main Program Start.")
 input_counter = time.time()
 
 # servs.process_grip_change() #we're entering an initial grip, so no flag
-statuslights.set_status(False, hand_interface.input_types.no_input)
+statuslights.set_status(False, hand_interface.input_types.none)
 
 count = 0
 while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
