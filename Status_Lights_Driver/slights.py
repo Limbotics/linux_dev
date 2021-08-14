@@ -32,7 +32,7 @@ class pinouts(Enum):
         "line": 12
     }
     vibrate = {
-        "path": "/sys/class/pwm/pwmchip0/pwm0",
+        "chip": 0,
         "line": 0
     }
 
@@ -40,11 +40,11 @@ class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
     #Blue light = object detection indicator. Blue on means object seen. Blue off means no object seen.
     no_object = {
-        pinouts.blue: False
+        pinouts.vibrate: False
     }
 
     object_detected = {
-        pinouts.vibrate: True,
+        pinouts.vibrate: True
     }
 
     #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
@@ -89,7 +89,10 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
+            try:
+                self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
+            except Exception as e:
+                self.lights[pinout] = PWM(pinout.value["chip"], pinout.value["line"])
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -123,7 +126,16 @@ class slights_interface():
         for status in statuses:
             stat = status.value
             for pin in stat:
-                self.lights[pin].write(stat[pin])
+                try:
+                    self.lights[pin].write(stat[pin])
+                except Exception as e:
+                    self.lights[pin].frequency = 1e3
+                    # Set duty cycle to 75%
+                    self.lights[pin].duty_cycle = 1
+                    if object_detected:
+                        self.lights[pin].enable()
+                    else:
+                        self.lights[pin].close()
                 #GPIO.output(pin.value, stat[pin])
 
     def pulse_thread(self):
