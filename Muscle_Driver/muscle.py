@@ -157,8 +157,8 @@ class muscle_interface():
         if (time.time() - self.input_T0) > input_persistency:
             self.input_T0 = time.time()
             self.last_input = (input_types.none, 0)
-            return self.last_input
-        return self.last_input
+            return self.last_input[1]
+        return self.last_input[1]
 
         # except Exception as e:
         #     raise Exception(str(e))
