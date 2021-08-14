@@ -134,7 +134,7 @@ class slights_interface():
                     if object_detected and (self.object_pulse_T0 == 0):
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
                         pulse_thread.start()
-                    elif not object_detected:
+                    elif not object_detected and (self.object_pulse_T0 != 0):
                         self.object_pulse_T0 = 0
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=())
                         pulse_thread.start()
@@ -181,22 +181,17 @@ class slights_interface():
         # Set duty cycle to 75%
         self.lights[pinouts.vibrate].duty_cycle = 0
         self.lights[pinouts.vibrate].enable()
-        duty = 0
-        delta = 0.1
         while not self.startup_complete:
             try:
-                duty = duty + delta
-                if duty >= 1:
-                    delta = -0.01
-                    duty = duty + delta
-                elif duty <= 0:
-                    delta = 0.01
-                    duty = duty + delta
-                self.lights[pinouts.vibrate].duty_cycle = duty
+                for dc in range(0, 1, 0.1):
+                    self.lights[pinouts.vibrate].duty_cycle = dc
+                    time.sleep(0.1)
+                for dc in range(1, 0, -0.1):
+                    self.lights[pinouts.vibrate].duty_cycle = dc
+                    time.sleep(0.1)
                 # self.lights[pinouts.vibrate].enable()
             except Exception as e:
                 print(str(e))
-            time.sleep(0.01)
         self.lights[pinouts.vibrate].duty_cycle = 0
 
     def safe_shutdown(self):
