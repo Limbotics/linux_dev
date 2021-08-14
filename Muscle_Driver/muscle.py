@@ -189,7 +189,7 @@ class muscle_interface():
         else:
             return 0
 
-    def closest(list, Number):
+    def closest(self, list, Number):
         aux = []
         for valor in list:
             aux.append(abs(Number-valor))
