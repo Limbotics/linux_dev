@@ -11,7 +11,7 @@ import imutils
 from PIL import Image
 import time
 import cv2
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 #import cvlib as cv
 import threading
 from collections import Counter
