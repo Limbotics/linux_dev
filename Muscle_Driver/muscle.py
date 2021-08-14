@@ -152,13 +152,13 @@ class muscle_interface():
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (input_types.down, self.chan_0.value)
-            return self.last_input[1]
+            return self.last_input[0]
 
         if (time.time() - self.input_T0) > input_persistency:
             self.input_T0 = time.time()
             self.last_input = (input_types.none, 0)
-            return self.last_input[1]
-        return self.last_input[1]
+            return self.last_input[0]
+        return self.last_input[0]
 
         # except Exception as e:
         #     raise Exception(str(e))
