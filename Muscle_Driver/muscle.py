@@ -40,44 +40,44 @@ class muscle_interface():
     #self disconnected is class variable that states whether or not human input is being used
     def __init__(self, disconnect=False):
         if(not disconnect):
-            try:
+            # try:
                 
-                self.i2c = busio.I2C(board.I2C3_SDA, board.I2C3_SCL)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
-                self.ads = ADS.ADS1015(self.i2c)
-                #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
-                #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
-                self.chan_0 = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
-                # self.chan_1 = AnalogIn(self.ads, ADS.P1)
+            self.i2c = busio.I2C(board.I2C3_SDA, board.I2C3_SCL)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
+            self.ads = ADS.ADS1015(self.i2c)
+            #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
+            #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
+            self.chan_0 = AnalogIn(self.ads, ADS.P0)           #connect pin to A0
+            # self.chan_1 = AnalogIn(self.ads, ADS.P1)
 
-                self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
-                #usage: chan.value, chan.voltage
+            self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
+            #usage: chan.value, chan.voltage
 
-                #for advanced trigger
-                self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
-                self.fifo = queue.Queue(self.fifoLength)
+            #for advanced trigger
+            self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
+            self.fifo = queue.Queue(self.fifoLength)
 
-                self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
-                self.disconnected = False
-                #end advanced trigger
+            self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
+            self.disconnected = False
+            #end advanced trigger
 
-                #for bufferedTrigger:
-                self.currentBufferList = [None]*20               #adjust buffer length here (this is how many samples it captures before comparing - think of it as a time delay)
-                self.currentBufferListMean = 0
-                self.previousBufferListMean = 10000              #set high to not trigger initially (prob have to set it to 30k, did not test)
-                self.gtThreshold = 2000                          #this is the threshold that the next signal must be greater than in order to trigger the myo sensor - balance the sensitivity of the system with noise and user input strength
-                #potentially add feature to catch the falling edge too
-                
-                #Initialize the threshold vals, let the calibration sequence handle it later
-                self.analogThreshold_0 = 0
-                self.max_input_0 = 0
-                # self.analogThreshold_1 = 0 
-                # self.max_input_1 = 0
+            #for bufferedTrigger:
+            self.currentBufferList = [None]*20               #adjust buffer length here (this is how many samples it captures before comparing - think of it as a time delay)
+            self.currentBufferListMean = 0
+            self.previousBufferListMean = 10000              #set high to not trigger initially (prob have to set it to 30k, did not test)
+            self.gtThreshold = 2000                          #this is the threshold that the next signal must be greater than in order to trigger the myo sensor - balance the sensitivity of the system with noise and user input strength
+            #potentially add feature to catch the falling edge too
+            
+            #Initialize the threshold vals, let the calibration sequence handle it later
+            self.analogThreshold_0 = 0
+            self.max_input_0 = 0
+            # self.analogThreshold_1 = 0 
+            # self.max_input_1 = 0
 
-            except Exception as e:
-                print("[M] Error: ", str(e))
-                print("[DEBUG] Error loading muscle input; defaulting to debug mode")
-                disconnect = True
-                print("[LOADING] Connecting to sensor input simulator...")
+            # except Exception as e:
+            #     print("[M] Error: ", str(e))
+            #     print("[DEBUG] Error loading muscle input; defaulting to debug mode")
+            #     disconnect = True
+            #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
             self.chan_0 = Analog_Debug()
