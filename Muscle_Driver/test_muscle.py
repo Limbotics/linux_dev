@@ -385,6 +385,6 @@ _ = ads._data_rate_config( 128)
 _ = ads._conversion_value( -5000, 5000)
 
 #line to read the value of the channel
-value = ads.read_adc(0, gain=1)
+value = ads.read_adc(1, gain=1)
 
 print(value)
