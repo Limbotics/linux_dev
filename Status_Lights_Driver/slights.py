@@ -186,6 +186,9 @@ class slights_interface():
                     duty = duty + delta
                 self.lights[pinouts.vibrate].duty_cycle = duty
                 self.lights[pinouts.vibrate].enable()
+            except Exception as e:
+                print(str(e))
+                
 
 
     def safe_shutdown(self):
