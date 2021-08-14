@@ -31,6 +31,10 @@ class pinouts(Enum):
         "path": "/dev/gpiochip4",
         "line": 12
     }
+    vibrate = {
+        "path": "/sys/class/pwm/pwmchip0/pwm0",
+        "line": 0
+    }
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
@@ -40,7 +44,7 @@ class status_states(Enum):
     }
 
     object_detected = {
-        pinouts.blue: True,
+        pinouts.vibrate: True,
     }
 
     #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
@@ -114,18 +118,6 @@ class slights_interface():
         object_status = self.object_status_dispatcher[object_detected]
         user_status = self.user_status_dispatcher[is_activated]
         statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
-
-        #Lastly, do the saved state led
-        # thread_key = status_states.grip_saved_id.value
-        # if (not saved_state):
-        #     if self.threaded_leds[thread_key][1]:
-        #         self.threaded_leds[thread_key][1] = False
-        #     statuses.append(status_states.standby)
-        # elif not self.threaded_leds[thread_key][1]: #Only start a new thread if it's not already running
-        #     #Start the pulse thread for the amber light
-        #     self.threaded_leds[thread_key][1] = True
-        #     led_pulse_thread = threading.Thread(target=self.pulse_thread, args=())
-        #     led_pulse_thread.start()
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
