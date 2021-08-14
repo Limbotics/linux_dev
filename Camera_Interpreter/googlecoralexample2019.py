@@ -14,7 +14,7 @@
 
 """A demo that runs object detection on camera frames using OpenCV.
 
-TEST_DATA=../all_models
+TEST_DATA=../Edge_TPU_Model
 
 Run face detection model:
 python3 detect.py \
@@ -37,7 +37,7 @@ from pycoral.utils.edgetpu import make_interpreter
 from pycoral.utils.edgetpu import run_inference
 
 def main():
-    default_model_dir = '../all_models'
+    default_model_dir = '../Edge_TPU_Model'
     default_model = 'mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'
     default_labels = 'coco_labels.txt'
     parser = argparse.ArgumentParser()
