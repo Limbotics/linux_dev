@@ -179,8 +179,9 @@ class muscle_interface():
 
         print("Control buckets: ", str(self.perc_buckets))
 
-    def update_0_threshold(self, new_threshold):
-        self.analogThreshold_0 = new_threshold
+    def update_0_threshold(self):
+        self.analogThreshold_0 = self.ads.read_adc(0, gain=1)
+        print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
         #Put the input for this channel into an array across 1 second, then take the average
