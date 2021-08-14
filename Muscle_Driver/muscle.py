@@ -103,6 +103,13 @@ class muscle_interface():
         self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
 
         #Create the percentage buckets
+        #Generate predefined % positions along the grip
+        self.perc_buckets = []
+        counter = 0
+        spacing = 5 #Always a factor of 100
+        while counter <= 100:
+            self.perc_buckets.append(counter)
+            counter += spacing
 
     def update_0_threshold(self, new_threshold):
         self.analogThreshold_0 = new_threshold
@@ -166,13 +173,7 @@ class muscle_interface():
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
 
-        #Generate predefined % positions along the grip
-        perc_buckets = []
-        counter = 0
-        spacing = 5 #Always a factor of 100
-        while counter <= 100:
-            perc_buckets.append(counter)
-            counter += spacing
+        
 
         if type == input_types.down:
             #If higher than the max input from the calibration, then return 100%
@@ -182,11 +183,18 @@ class muscle_interface():
             elif raw_analog > self.analogThreshold_0:
                 perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
                 #Convert the raw percentage to a filtered percentage
-                return min(perc_buckets, key=lambda x:abs(perc-perc_buckets))
+                return self.closest(self.perc_buckets, perc)
             else:
                 return 0
         else:
             return 0
+
+    def closest(list, Number):
+        aux = []
+        for valor in list:
+            aux.append(abs(Number-valor))
+
+        return aux.index(min(aux))
         
     # def triggered(self):
         #If we're currently detecting input from the user
