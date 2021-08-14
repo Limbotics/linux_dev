@@ -181,7 +181,7 @@ class slights_interface():
         self.lights[pinouts.vibrate].duty_cycle = 0
         self.lights[pinouts.vibrate].enable()
         duty = 0
-        delta = 0.01
+        delta = 0.1
         while not self.startup_complete:
             try:
                 duty = duty + delta
