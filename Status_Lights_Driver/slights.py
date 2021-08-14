@@ -188,6 +188,8 @@ class slights_interface():
                 # self.lights[pinouts.vibrate].enable()
             except Exception as e:
                 print(str(e))
+            time.sleep(0.1)
+        self.lights[pinouts.vibrate].duty_cycle = 0
         self.lights[pinouts.vibrate].close()
 
     def safe_shutdown(self):
