@@ -11,8 +11,6 @@ import rpyc #Muscle sensor debugging
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
 
-import tempmusclelib.ADS1x15 as ADS1x15
-import tempmusclelib.ADS1015 as ADS1015
 import Adafruit_GPIO.I2C as I2C
 #import adafruit_ads1x15.ads1015 as ADS
 #from adafruit_ads1x15.analog_in import AnalogIn
