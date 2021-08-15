@@ -98,7 +98,7 @@ class muscle_interface():
             #self.ads = ADS.ADS1015(self.i2c)
 
             self.ads = ADS1015(busnum=2)
-            _ = self.ads._data_rate_config(490)
+            _ = self.ads._data_rate_config(128)
             _ = self.ads._conversion_value( 0, 2000)
 
             # self.prei2c = I2C
