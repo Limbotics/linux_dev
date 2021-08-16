@@ -114,7 +114,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 0.5
+        self.object_not_spotted_delta_req = 1
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -142,10 +142,11 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-                self.cam_data = data
-                self.cam_data_score = score
+                
                 #If the camera sees an object, skip the time requirement
-                if(data != ""):
+                if((data != "" and (time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req) or data == self.cam_data):
+                    self.cam_data = data
+                    self.cam_data_score = score
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
                 #If the camera doesn't see an object, require a delay before reporting nothing
@@ -153,11 +154,11 @@ class camera_interface():
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
                         # print("[DEBUG] Delta Req passed; reporting no object now")
                         self.object_spotted = False
+                        self.object_spotted_T0 = time.time()
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
-            time.sleep(0.01)
-
+            
     def detect_main_object(self, frame1):
         min_conf_threshold = 0.4
 
@@ -185,7 +186,7 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            time.sleep(0.2)
+            time.sleep(0.01)
             if(not self.temp_pause): #CAMBUG remove False
                 _, self.cam_image = self.cap.read()
 
