@@ -9,9 +9,6 @@ from Status_Lights_Driver import slights
 #testing new mendel workflow
 #Status Lights initialization
 statuslights = slights.slights_interface()
-#Tell the user that we're in the startup sequence
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
 
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
@@ -24,7 +21,10 @@ from State_Manager import state_manager
 
 #Camera initialization
 cam = camera.camera_interface()
-# test
+
+#Tell the user that we're ready for their input
+slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
+slights_startup_thread.start()
 #Muscle sensor initialization
 print("Debug muscle sensor? Y/N")
 ans = input()
@@ -164,8 +164,6 @@ while (cam_thread.is_alive() and not SM.killed):
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
 statuslights.startup_complete = False
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 
@@ -174,7 +172,6 @@ time.sleep(0.5)
 
 #Everything else is complete, so do status lights last
 statuslights.startup_complete = True
-slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 print("Program ended.")
