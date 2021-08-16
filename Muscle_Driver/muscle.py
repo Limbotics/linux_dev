@@ -192,6 +192,8 @@ class muscle_interface():
         elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
             new_perc = new_perc - max_delta
             new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        else:
+            new_val = raw_val
 
         #perform value filtering
         if len(self.averaging_array) >= array_avg_len:
