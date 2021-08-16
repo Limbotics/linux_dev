@@ -179,12 +179,16 @@ class muscle_interface():
         #Convert raw analog into percentage range 
         self.pmd = self.convert_perc(self.ads.read_adc(0, gain=1), input_types.down)
 
+        #If above the input threshold   
+        #   and enough time has passed to allow a new value to be reported,
+        #   or the last value reported was user input
         if ((self.ads.read_adc(0, gain=1) > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
             print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (input_types.down, self.ads.read_adc(0, gain=1))
             return self.last_input[0]
 
+        #If the input persistency threshold has passed, then report no user input 
         if (time.time() - self.input_T0) > input_persistency:
             self.input_T0 = time.time()
             self.last_input = (input_types.none, 0)
@@ -208,6 +212,7 @@ class muscle_interface():
         else:
             return 0
 
+    #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):
         aux = []
         for valor in list:
