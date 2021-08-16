@@ -198,12 +198,14 @@ class camera_interface():
                 self.cam_image_index += 1
 
     def end_camera_session(self):
+        print("[CAM] Attempting to end camera session...")
         #Stop the camera thread 
         self.killed_thread = True
         time.sleep(0.1)
         #Release the camera object
         self.cap.release() #CAMBUG
         cv2.destroyAllWindows()
+        print("[CAM] Successfully killed camerea session.")
 
     def load_labels(self, path):
         p = re.compile(r'\s*(\d+)(.+)')

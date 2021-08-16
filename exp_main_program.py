@@ -1,6 +1,7 @@
 import time
 import os
 import threading
+import keyboard
 
 from Status_Lights_Driver import slights
 #testing new mendel workflow
@@ -93,6 +94,10 @@ input_counter = time.time()
 count = 0
 output_delay = time.time()
 while (cam_thread.is_alive()):
+    #Check for user quit command
+    if keyboard.read_key() == "q":
+        break
+
     count += 1
 
     #Create new state matrix for current moment
@@ -170,7 +175,3 @@ slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 print("Program ended.")
-
-
-
-
