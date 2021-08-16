@@ -188,11 +188,11 @@ class slights_interface():
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
         pulse_time = 0.1
         self.pulse_vibes(pulse_time)
-        time.sleep(0.5*pulse_time)
+        time.sleep(pulse_time)
         self.pulse_vibes(pulse_time)
-        time.sleep(0.5*pulse_time)
+        time.sleep(pulse_time)
         self.pulse_vibes(pulse_time)
-        time.sleep(0.5*pulse_time)
+        time.sleep(pulse_time)
         #Pause for effect
         #Turn them all off
         for pinout in pinouts:
