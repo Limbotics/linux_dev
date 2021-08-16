@@ -3,10 +3,7 @@ import os
 import threading
 import tty
 import sys
-import termios
-orig_settings = termios.tcgetattr(sys.stdin)
-tty.setcbreak(sys.stdin)
-x = 0
+from curtsies import Input
 
 from Status_Lights_Driver import slights
 #testing new mendel workflow
@@ -100,9 +97,10 @@ count = 0
 output_delay = time.time()
 while (cam_thread.is_alive()):
     #Check for user quit command
-    x=sys.stdin.read(1)[0]
-    if x != chr(27):
-        break
+    with Input(keynames='curses') as input_generator:
+        for e in input_generator:
+            if repr(e) == 'q':
+                cam.end_camera_session()
 
     count += 1
 
@@ -166,7 +164,6 @@ while (cam_thread.is_alive()):
 
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
-termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)    
 statuslights.startup_complete = False
 slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
 slights_startup_thread.start()
