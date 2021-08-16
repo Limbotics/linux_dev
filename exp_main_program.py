@@ -92,7 +92,7 @@ print("Main Program Start.")
 input_counter = time.time()
 
 count = 0
-while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
+while (cam_thread.is_alive()):
     count += 1
     time.sleep(0.01)
     print("\n")
