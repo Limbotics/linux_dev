@@ -153,6 +153,8 @@ class camera_interface():
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
                         # print("[DEBUG] Delta Req passed; reporting no object now")
+                        self.cam_data = ""
+                        self.cam_data_score = 0
                         self.object_spotted = False
                         self.object_spotted_T0 = time.time()
                 
