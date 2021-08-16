@@ -204,41 +204,41 @@ class Mode_Manager():
         main_str = "--------------------------"
 
         #Print the current program time
-        program_time = "\n|\tT: ", data_list["program_time"]
+        program_time = "\n|\tT: " + data_list["program_time"]
         main_str += program_time
 
         # print("\n")
 
         #Print the current mode 
-        current_mode = "\n| Current State: ", data_list["state"]
+        current_mode = "\n| Current State: " + data_list["state"]
         main_str += current_mode
 
         # print("|\n")
 
         #Print the Camera data
-        object_spot = "\n| Object spotted: ", data_list["spotted_object"]
+        object_spot = "\n| Object spotted: " + data_list["spotted_object"]
         main_str += object_spot
-        conf_score = "\n| \tConfidence score: ", data_list["spotted_object_score"]
+        conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"]
         main_str += conf_score
 
         # print("|\n|")
 
         #Print sensor data
-        emg_input = "\n| EMG input: ", data_list["muscle_input"]
+        emg_input = "\n| EMG input: " + data_list["muscle_input"]
         main_str += emg_input
-        perc = "\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%"
+        perc = "\n| \tConverted percentage: " + data_list["muscle_input_percent"], "%"
         main_str += perc
-        input_type = "\n| \tInput type: ", data_list["muscle_input_type"]
+        input_type = "\n| \tInput type: " + data_list["muscle_input_type"]
         main_str += input_type
 
         #Print servo data
-        loaded = "\n| Grip loaded: ", data_list["servo_grip_loaded"]
+        loaded = "\n| Grip loaded: " + data_list["servo_grip_loaded"]
         main_str += loaded
 
         # print("|\n")
 
         #Print vibration status
-        vibe = "\n| Vibration status: ", data_list["vibes"]
+        vibe = "\n| Vibration status: " + data_list["vibes"]
         main_str += vibe
 
         print(main_str)
