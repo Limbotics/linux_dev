@@ -1,30 +1,20 @@
 from enum import Enum, auto
 from typing import ChainMap
 
-import board
-import busio
 import queue
 import time
-import sys,tty,termios
 import rpyc #Muscle sensor debugging
 
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
 
 import Adafruit_GPIO.I2C as I2C
-#import adafruit_ads1x15.ads1015 as ADS
-#from adafruit_ads1x15.analog_in import AnalogIn
-
 
 #https://www.instructables.com/MuscleCom-Muscle-Controlled-Interface/
 #https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/python-circuitpython
 #for blinka requirement:
 #https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-
 
-# #Simple types to pass to change numbers from scalars to of units down or up
-# class IT(Enum):
-#     down = 0
-#     none = 2
 
 # Register and other configuration values:
 ADS1x15_DEFAULT_ADDRESS        = 0x48
@@ -92,27 +82,13 @@ class muscle_interface():
     def __init__(self, disconnect=False):
         if(not disconnect):
             # try:
-                
-            #self.i2c = busio.I2C(board.I2C3_SCL, board.I2C3_SDA)  #might need to change to SCL1 SDA1 if i2c channel addresses mess w other channel
-            # "/dev/i2c-2"
-            #self.ads = ADS.ADS1015(self.i2c)
-
+            
             self.ads = ADS1015(busnum=2)
             _ = self.ads._data_rate_config(128)
             _ = self.ads._conversion_value( 0, 2000)
 
-            # self.prei2c = I2C
-            # self._device = self.prei2c.get_i2c_device(0x48, busnum=2)
-            # self.preads = ADS1x15(self.prei2c)
-            # self.ads = ADS1015(self.preads)
-            #ads.mode = Mode.CONTINUOUS                 #set to continous to speed up reads
-            #ads.gain = 16                              #adjust gain using this value (does not affect voltage parameter)
-            # _ = self.ads._data_rate_config(self, 128)
-            # _ = self.ads._conversion_value(self, -5000, 5000)
-
             #line to read the value of the channel
             self.value = self.ads.read_adc(0, gain=1)
-            # self.chan_1 = AnalogIn(self.ads, ADS.P1)
 
             self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
             #usage: chan.value, chan.voltage
@@ -135,8 +111,6 @@ class muscle_interface():
             #Initialize the threshold vals, let the calibration sequence handle it later
             self.analogThreshold_0 = 0
             self.max_input_0 = 0
-            # self.analogThreshold_1 = 0 
-            # self.max_input_1 = 0
 
             # except Exception as e:
             #     print("[M] Error: ", str(e))
@@ -146,7 +120,6 @@ class muscle_interface():
             
         if(disconnect):
             self.chan_0 = Analog_Debug()
-            # self.chan_1 = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
             #Initialize the muscle sensor server
@@ -159,10 +132,8 @@ class muscle_interface():
                     time.sleep(3)
 
             #Define debug-compatible threshold values
-            self.analogThreshold_0 = 2000 #17,000 for heath
+            self.analogThreshold_0 = 2000 
             self.max_input_0 = 15000
-            # self.analogThreshold_1 = 9000 
-            # self.max_input_1 = 13000
             
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
@@ -200,13 +171,10 @@ class muscle_interface():
         input_persistency = 0.05
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
-            # new_up_value = self.c.root.channel_1_value()   ####
 
             self.chan_0.update_value(new_down_value)
-            # self.chan_1.update_value(new_up_value)
 
         print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
-        # print("[MDEBUG] Channel 1 input: ", str(self.chan_1.value))
 
         #Convert raw analog into percentage range 
         self.pmd = self.convert_perc(self.ads.read_adc(0, gain=1), input_types.down)
@@ -223,13 +191,9 @@ class muscle_interface():
             return self.last_input[0]
         return self.last_input[0]
 
-        # except Exception as e:
-        #     raise Exception(str(e))
-
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
 
-    
         if type == input_types.down:
             #If higher than the max input from the calibration, then return 100%
             if raw_analog >= self.max_input_0:
