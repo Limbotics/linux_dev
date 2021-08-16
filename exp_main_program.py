@@ -68,8 +68,6 @@ user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.25
 time_required_for_user_command = 0.1
-new_pulse = (False, time.time())
-old_pulse = new_pulse
 servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
@@ -89,22 +87,13 @@ cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
 cam_thread.start()
 print("Main Program Start.")
 
-
 #Debug user input variable
 input_counter = time.time()
 
 count = 0
-while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
+output_delay = time.time()
+while (cam_thread.is_alive()):
     count += 1
-    time.sleep(0.01)
-    print("\n")
-
-    if(count%2==0): #Can modify the output rate of the state
-        try:
-            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
-        except Exception as e:
-            print(SM.info)
-            pass
 
     #Create new state matrix for current moment
     reported_object = cam.cam_data
@@ -119,10 +108,28 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
     #Check if the new state is a special one
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
+    #Generate the nice output
+    if (time.time() - output_delay) > 0.05:
+        data_list = {}
+        data_list["program_time"] = str(round((time.time() - SM._program_T0), 2))
+        data_list["state"] = str(SM.current_mode)
+        data_list["spotted_object"] = str(cam.cam_data)
+        data_list["inference_time"] = str(round((1/cam.inference_time), 1))
+        data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
+        data_list["muscle_input"] = str(int(mi.ads.read_adc(0, gain=1)))
+        data_list["muscle_input_percent"] = str(100*mi.pmd)
+        data_list["muscle_input_type"] = str(mi.last_input[0])
+        data_list["servo_grip_loaded"] = str(servs.grip_config)
+        data_list["vibes"] = str(statuslights.vibe_status)
+        SM.nice_output(data_list)
+
+        output_delay = time.time()
+    
+
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
     if (SM.current_mode == modes.AGS):
-        print("[MT] In AGS Mode Processing")
+        # print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
         if cam.temp_pause:
             cam.temp_pause = False
@@ -131,7 +138,7 @@ while (cam_thread.is_alive() or (time.time() - SM._program_T0) > 15):
         servs.grip_config = reported_object
 
     elif (SM.current_mode == modes.GCM):
-        print("[MT] In GCM Mode Processing")
+        # print("[MT] In GCM Mode Processing")
         #Command the camera to stop processing inputs temporarily
         cam.temp_pause = True
         #Confirmed user commanding into reported object
@@ -163,3 +170,7 @@ slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 print("Program ended.")
+
+
+
+

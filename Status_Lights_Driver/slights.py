@@ -141,32 +141,19 @@ class slights_interface():
                         self.spotted_object = grips.openGrip.value #the default "no object" 
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05,))
                         pulse_thread.start()
-                #GPIO.output(pin.value, stat[pin])4
 
     def pulse_vibes(self, vibe_time):
+        if vibe_time == 0.05:
+            self.vibe_status = "Short pulse"
+        elif vibe_time == 0.25:
+            self.vibe_status = "Long pulse"
         self.lights[pinouts.vibrate].duty_cycle = 1
         time.sleep(vibe_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
+        self.vibe_status = "N/A"
 
     def pulse_thread(self):
         pass
-        # #Get which LED we're working with from the thread key
-        # thread_key = status_states.grip_saved_id.value
-        # led = self.threaded_leds[thread_key][0]
-        # led.start(0)
-        # self.threaded_leds[thread_key][1] = True #Set the loop to run 
-        # print("[DEBUG] Starting LED pulse")
-        # while self.threaded_leds[thread_key][1]:
-        #     #Turn up brightness
-        #     for dc in range(0, 50, 5):
-        #         led.ChangeDutyCycle(dc)
-        #         time.sleep(0.1)
-        #     #Turn down brightness
-        #     for dc in range(50, -1, -5):
-        #         led.ChangeDutyCycle(dc)
-        #         time.sleep(0.1)
-        # #Reset the duty cycle
-        # led.ChangeDutyCycle(100)
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""
@@ -178,6 +165,7 @@ class slights_interface():
             time.sleep(0.1)
 
     def startup_wait(self):
+        return
         #run indefinitely until flag is thrown that the rest of the system is ready
         self.lights[pinouts.vibrate].frequency = 1e3
         # Set duty cycle to 75%
