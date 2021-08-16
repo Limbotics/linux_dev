@@ -75,7 +75,7 @@ servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
 #Create user input program killer watchdog
-program_killer_thread = threading.Thread(target=)
+program_killer_thread = threading.Thread(target=SM.killer_watcher, args=())
 program_killer_thread.start()
 
 #Quit the status lights loading period
