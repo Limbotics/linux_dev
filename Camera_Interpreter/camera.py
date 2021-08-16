@@ -201,9 +201,8 @@ class camera_interface():
         print("[CAM] Attempting to end camera session...")
         #Stop the camera thread 
         self.killed_thread = True
-        time.sleep(0.1)
         #Release the camera object
-        self.cap.release() #CAMBUG
+        self.cap.release()
         cv2.destroyAllWindows()
         print("[CAM] Successfully killed camerea session.")
 
