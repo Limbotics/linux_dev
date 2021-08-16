@@ -155,6 +155,7 @@ class camera_interface():
                         # print("[DEBUG] Delta Req passed; reporting no object now")
                         self.cam_data = data
                         self.object_spotted = False
+                        self.cam_data_score = score
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
