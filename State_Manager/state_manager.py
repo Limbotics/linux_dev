@@ -57,7 +57,7 @@ class Mode_Manager():
         }
 
         #Initialize the debug file manager
-        self.output_file = open("debug.txt", "w")
+        # self.output_file = open("debug.txt", "w")
 
     @property
     def info(self):
@@ -246,4 +246,4 @@ class Mode_Manager():
         main_str += vibe
 
         print(main_str)
-        self.output_file.write("\n" + main_str)
+        # self.output_file.write("\n" + main_str)
