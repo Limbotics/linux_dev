@@ -176,6 +176,10 @@ class muscle_interface():
 
         #Read the raw value
         raw_val = self.ads.read_adc(0, gain=1)
+        #Check edge case on startup
+        if len(self.averaging_array) == 0:
+            self.averaging_array.append(raw_val)
+            return raw_val
 
         #Perform filtering step #1: max delta change
         new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
