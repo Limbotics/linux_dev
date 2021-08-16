@@ -142,6 +142,7 @@ class muscle_interface():
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
         self.averaging_array = []
+        self.binary_threshold = 0.75
 
         #Create the percentage buckets
         #Generate predefined % positions along the grip
@@ -167,7 +168,7 @@ class muscle_interface():
         self.max_input_0 = sum(input_array)/len(input_array)
 
         #Set threshold to be half the range
-        self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
+        # self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
 
     def read_filtered(self):
         """
@@ -249,7 +250,11 @@ class muscle_interface():
             elif raw_analog > self.analogThreshold_0:
                 perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
                 #Convert the raw percentage to a filtered percentage
-                return self.closest(self.perc_buckets, perc)
+                new_perc = self.closest(self.perc_buckets, perc)
+                if new_perc > self.binary_threshold:
+                    return 1
+                else:
+                    return 0
             else:
                 return 0
         else:

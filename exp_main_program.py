@@ -124,7 +124,7 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["spotted_object"] = str(cam.cam_data)
         data_list["inference_time"] = str(round((1/cam.inference_time), 1))
         data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
-        data_list["muscle_input"] = str(int(mi.ads.read_adc(0, gain=1)))
+        data_list["muscle_input"] = str(int(mi.read_filtered()))
         data_list["muscle_input_percent"] = str(100*mi.pmd)
         data_list["muscle_input_type"] = str(mi.last_input[0])
         data_list["servo_grip_loaded"] = str(servs.grip_config)
