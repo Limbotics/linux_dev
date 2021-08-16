@@ -108,6 +108,19 @@ while (cam_thread.is_alive()):
     #Check if the new state is a special one
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
+    #Generate the nice output
+    data_list = {}
+    data_list["program_time"] = str(time.time() - SM._program_T0)
+    data_list["state"] = SM.current_mode
+    data_list["spotted_object"] = cam.cam_data
+    data_list["spotted_object_score"] = str(cam.cam_data_score)
+    data_list["muscle_input"] = str(mi.ads.read_adc(0, gain=1))
+    data_list["muscle_input_percent"] = str(mi.pmd)
+    data_list["muscle_input_type"] = str(mi.last_input[0])
+    data_list["servo_grip_loaded"] = str(servs.grip_config)
+    data_list["vibes"] = str(statuslights.vibe_status)
+    nice_output(data_list)
+
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
     if (SM.current_mode == modes.AGS):
@@ -152,3 +165,59 @@ slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 print("Program ended.")
+
+
+def nice_output(data_list):
+    """
+        data_list required key/value pairs:
+            "program_time":         Current time of the system
+
+            "state":                Current mode of the system
+
+            "spotted_object":       Current object being reported by the camera
+                "spotted_object_score": The confidence value the camera has for given object
+            
+            "muscle_input":         Current value from muscle sensor
+                "muscle_input_percent": The converted value from raw adc to percent bucket
+                "muscle_input_type":    The current input type being reported by the muscle sensor
+
+            "servo_grip_loaded":    The current grip loaded into the servo module
+            
+            "vibes":                The current state of the vibration motor
+    """
+    #Clear the terminal, maybe?
+    print("\n")
+    #Print the top of the text box
+    print("--------------------------")
+
+    #Print the current program time
+    print("|\t\tT: ", data_list["program_time"])
+
+    print("\n")
+
+    #Print the current mode 
+    print("| Current State: ", data_list["state"])
+
+    print("|\n")
+
+    #Print the Camera data
+    print("| Object spotted: ", data_list["spotted_object"])
+    print("| \tConfidence score: ", data_list["spotted_object_score"])
+
+    print("|\n")
+
+    #Print sensor data
+    print("| EMG input: ", data_list["muscle_input"])
+    print("| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
+    print("| \tInput type: ", data_list["muscle_input_type"])
+
+    print("|\n")
+
+    #Print servo data
+    print("| Grip loaded: ", data_list["servo_grip_loaded"])
+
+    print("|\n")
+
+    #Print vibration status
+    print("| Vibration status: ", data_list["vibes"])
+

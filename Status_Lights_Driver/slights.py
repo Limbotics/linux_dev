@@ -141,12 +141,16 @@ class slights_interface():
                         self.spotted_object = grips.openGrip.value #the default "no object" 
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05,))
                         pulse_thread.start()
-                #GPIO.output(pin.value, stat[pin])4
 
     def pulse_vibes(self, vibe_time):
+        if vibe_time == 0.05:
+            self.vibe_status = "Short pulse"
+        elif vibe_time == 0.25:
+            self.vibe_status = "Long pulse"
         self.lights[pinouts.vibrate].duty_cycle = 1
         time.sleep(vibe_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
+        self.vibe_status = "N/A"
 
     def pulse_thread(self):
         pass
