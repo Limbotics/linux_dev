@@ -253,8 +253,10 @@ class Mode_Manager():
 
     def killer_watcher(self):
         #Check for user quit command
-        with Input(keynames='curses') as input_generator:
-            for e in input_generator:
-                if repr(e) == 'q':
-                    self.killed = True
-                    break
+        # with Input(keynames='curses') as input_generator:
+        #     for e in input_generator:
+        #         if repr(e) == 'q':
+        #             self.killed = True
+        #             break
+        ans = input()
+        self.killed = True
