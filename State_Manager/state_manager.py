@@ -1,4 +1,5 @@
 """ This package provides the interface for the system to change the status lights."""
+from threading import current_thread
 from typing import NoReturn, Sequence
 from periphery import GPIO
 from periphery import PWM
@@ -203,32 +204,41 @@ class Mode_Manager():
         main_str = "--------------------------"
 
         #Print the current program time
-        main_str += str("\n|\tT: ", data_list["program_time"])
+        program_time = "\n|\tT: ", data_list["program_time"]
+        main_str += program_time
 
         # print("\n")
 
         #Print the current mode 
-        main_str += str("\n| Current State: ", data_list["state"])
+        current_mode = "\n| Current State: ", data_list["state"]
+        main_str += current_mode
 
         # print("|\n")
 
         #Print the Camera data
-        main_str += str("\n| Object spotted: ", data_list["spotted_object"])
-        main_str += str("\n| \tConfidence score: ", data_list["spotted_object_score"])
+        object_spot = "\n| Object spotted: ", data_list["spotted_object"]
+        main_str += object_spot
+        conf_score = "\n| \tConfidence score: ", data_list["spotted_object_score"]
+        main_str += conf_score
 
         # print("|\n|")
 
         #Print sensor data
-        main_str += str("\n| EMG input: ", data_list["muscle_input"])
-        main_str += str("\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
-        main_str += str("\n| \tInput type: ", data_list["muscle_input_type"])
+        emg_input = "\n| EMG input: ", data_list["muscle_input"]
+        main_str += emg_input
+        perc = "\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%"
+        main_str += perc
+        input_type = "\n| \tInput type: ", data_list["muscle_input_type"]
+        main_str += input_type
 
         #Print servo data
-        main_str += str("\n| Grip loaded: ", data_list["servo_grip_loaded"])
+        loaded = "\n| Grip loaded: ", data_list["servo_grip_loaded"]
+        main_str += loaded
 
         # print("|\n")
 
         #Print vibration status
-        main_str += str("\n| Vibration status: ", data_list["vibes"])
+        vibe = "\n| Vibration status: ", data_list["vibes"]
+        main_str += vibe
 
         print(main_str)
