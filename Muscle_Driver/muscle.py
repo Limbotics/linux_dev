@@ -138,9 +138,13 @@ class muscle_interface():
             self.analogThreshold_0 = 2000 
             self.max_input_0 = 15000
             
+        self.pmd = 0
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
-        self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
+        self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
+        self.temp_input = (input_types.none, 0, time.time()) #The temporary, nonreported input to compare to last_input
+        self.averaging_array = []
+        self.binary_threshold = 0.85
 
         #Create the percentage buckets
         #Generate predefined % positions along the grip
@@ -165,36 +169,119 @@ class muscle_interface():
         #Set val to be average of past second
         self.max_input_0 = sum(input_array)/len(input_array)
 
+        #Set threshold to be half the range
+        # self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
+
+    def read_filtered(self):
+        """
+        Read the raw ADS value and return the current filtered value.
+        """
+        #Constants
+        array_avg_len = 5 #The number of readings to average across
+        max_delta = 0.03 #Max percent change in a single step across the range
+
+        #Read the raw value
+        raw_val = self.ads.read_adc(0, gain=1)
+        #Check edge case on startup
+        if len(self.averaging_array) == 0:
+            self.averaging_array.append(raw_val)
+            return raw_val
+
+        #Perform filtering step #1: max delta change
+        new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+        old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+
+        #perform delta filtering
+        if (new_perc - old_perc) > max_delta:
+            new_perc = new_perc + max_delta
+            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
+            new_perc = new_perc - max_delta
+            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        else:
+            new_val = raw_val
+
+        #perform value filtering
+        if len(self.averaging_array) >= array_avg_len:
+            #Pop element, add new to end
+            self.averaging_array.pop(0)
+
+        self.averaging_array.append(new_val)
+
+        return sum(self.averaging_array)/len(self.averaging_array)
+
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
-        # The fastest rate at which input states can change
-        input_persistency = 0.05
+        # The fastest rate at which input states can change between down/none
+        input_persistency = 0.25
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
             self.ads.update_value(new_down_value)
 
-        # print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
+        input_value = self.read_filtered()
 
         #Convert raw analog into percentage range 
-        self.pmd = self.convert_perc(self.ads.read_adc(0, gain=1), input_types.down)
+        new_pmd = self.convert_perc(input_value, input_types.down)
 
-        #If above the input threshold   
-        #   and enough time has passed to allow a new value to be reported,
-        #   or the last value reported was user input
-        if ((self.ads.read_adc(0, gain=1) > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
-            # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
-            self.input_T0 = time.time()
-            self.last_input = (input_types.down, self.ads.read_adc(0, gain=1))
-            return self.last_input[0]
-
-        #If the input persistency threshold has passed, then report no user input 
-        if (time.time() - self.input_T0) > input_persistency:
-            self.input_T0 = time.time()
-            self.last_input = (input_types.none, 0)
-            return self.last_input[0]
+        #Check if we have a difference in what we're reporting and the current state
+        if new_pmd and self.last_input[0] == input_types.none:
+            #We are detecting input from the user, so create the new temp input object to track if not already exists
+            if self.temp_input[2] == 0:
+                #Save the new temp input object
+                self.temp_input = (input_types.down, input_value, time.time())
+            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+                #We're over threshold, so report new input type
+                self.last_input = self.temp_input
+                self.pmd = new_pmd
+                self.temp_input = (input_types.down, input_value, 0)
+        elif not new_pmd and self.last_input[0] == input_types.down:
+            #We're reporting user input but not receiving it, start timer
+            if self.temp_input[2] == 0:
+                #Save the new temp input object
+                self.temp_input = (input_types.none, input_value, time.time())
+            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+                #We're over threshold, so report new input type
+                self.last_input = self.temp_input
+                self.pmd = new_pmd
+                self.temp_input = (input_types.none, input_value, 0)
+        else:
+            #reset temp input object 
+            self.temp_input = (self.last_input[0], self.last_input[1], 0)
         return self.last_input[0]
+
+        # #Build the temp input object if it's not already in use (tracked by timer)
+        # if self.temp_input[2] == 0:
+        #     if self.temp_input[0] != self.temp_input[0]:
+        #         temp_type = input_types.none
+        #         if new_pmd:
+        #             temp_type = input_types.down
+
+                
+        # else:
+        #     #We know we're already tracking what could be a change in muscle input from user
+        #     if (self.temp_input[2] - self.last_input[2]) > input_persistency:
+        #         #It's time to change the last input object!
+        #         self.last_input = self.temp_input
+
+        # #If above the input threshold   
+        # #   and enough time has passed to allow a new value to be reported,
+        # #   or the last value reported was user input
+        # if ((new_pmd == 1 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (new_pmd == 1))):
+        #     # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
+        #     self.input_T0 = time.time()
+        #     self.last_input = (input_types.down, self.max_input_0)
+        #     self.pmd = new_pmd
+        #     return self.last_input[0]
+
+        # #If the input persistency threshold has passed, then report no user input 
+        # if (time.time() - self.input_T0) > input_persistency:
+        #     self.input_T0 = time.time()
+        #     self.last_input = (input_types.none, 0)
+        #     self.pmd = new_pmd
+        #     return self.last_input[0]
+        # return self.last_input[0]
 
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
@@ -207,7 +294,11 @@ class muscle_interface():
             elif raw_analog > self.analogThreshold_0:
                 perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
                 #Convert the raw percentage to a filtered percentage
-                return self.closest(self.perc_buckets, perc)
+                new_perc = self.closest(self.perc_buckets, perc)
+                if new_perc > self.binary_threshold:
+                    return 1
+                else:
+                    return 0
             else:
                 return 0
         else:
