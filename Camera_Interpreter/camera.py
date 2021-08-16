@@ -144,10 +144,11 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-
+                self.cam_data = data
+                self.cam_data_score = score
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
-                    self.cam_data = data
+                    
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
                 #If the camera doesn't see an object, require a delay before reporting nothing
@@ -156,7 +157,6 @@ class camera_interface():
                         # print("[DEBUG] Delta Req passed; reporting no object now")
                         self.cam_data = data
                         self.object_spotted = False
-                        self.cam_data_score = score
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
@@ -184,6 +184,7 @@ class camera_interface():
         #return (highest_scoring_label, highest_score)
         # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
+        self.inference_time = time.time() - t
         return(highest_scoring_label, highest_score)
 
     def read_cam_thread(self):

@@ -220,6 +220,7 @@ class Mode_Manager():
         main_str += object_spot
         conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"]
         main_str += conf_score
+        main_str += "\n| \tInference FPS: " + data_list["inference_time"]
 
         # print("|\n|")
 
