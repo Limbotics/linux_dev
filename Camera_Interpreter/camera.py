@@ -27,14 +27,12 @@ from collections import Counter
 #     # if use_TPU:
 #     #     from tensorflow.lite.python.interpreter import load_delegate
 
-from pycoral.utils import edgetpu
-from pycoral.utils import dataset
-from pycoral.adapters import detect
-from pycoral.adapters import common
-from pycoral.adapters import classify
-from pycoral.utils.dataset import read_label_file
-from pycoral.utils.edgetpu import run_inference
 
+from pycoral.adapters.common import input_size
+from pycoral.adapters.detect import get_objects
+from pycoral.utils.dataset import read_label_file
+from pycoral.utils.edgetpu import make_interpreter
+from pycoral.utils.edgetpu import run_inference
 import re
 
 import sys
@@ -92,15 +90,14 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
+        self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        self.height = self.input_details[0]['shape'][1]
-        self.width = self.input_details[0]['shape'][2]
-        self.size = common.input_size(self.interpreter)
+        inference_size = input_size(self.interpreter)
+        self.size = input_size(self.interpreter)
 
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
@@ -169,9 +166,9 @@ class camera_interface():
         # Perform the actual detection by running the model with the image as input
         t = time.time()
         cv2_im_rgb = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
-        cv2_im_rgb = cv2.resize(cv2_im_rgb, (self.width, self.height))
+        cv2_im_rgb = cv2.resize(cv2_im_rgb, self.size)
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
-        objs = detect.get_objects(self.interpreter, min_conf_threshold)
+        objs = get_objects(self.interpreter, min_conf_threshold)
 
         highest_scoring_label = ""
         highest_score = 0
