@@ -4,6 +4,7 @@ from typing import NoReturn, Sequence
 from periphery import GPIO
 from periphery import PWM
 import time
+from curtsies import Input
 
 import sys
 import os
@@ -58,6 +59,8 @@ class Mode_Manager():
 
         #Initialize the debug file manager
         # self.output_file = open("debug.txt", "w")
+
+        self.killed = False
 
     @property
     def info(self):
@@ -247,3 +250,11 @@ class Mode_Manager():
 
         print(main_str)
         # self.output_file.write("\n" + main_str)
+
+    def killer_watcher(self):
+        #Check for user quit command
+        with Input(keynames='curses') as input_generator:
+            for e in input_generator:
+                if repr(e) == 'q':
+                    self.killed = True
+                    break

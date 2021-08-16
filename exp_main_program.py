@@ -3,7 +3,7 @@ import os
 import threading
 import tty
 import sys
-from curtsies import Input
+
 
 from Status_Lights_Driver import slights
 #testing new mendel workflow
@@ -74,6 +74,9 @@ time_required_for_user_command = 0.1
 servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
+#Create user input program killer watchdog
+program_killer_thread = threading.Thread(target=)
+program_killer_thread.start()
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
@@ -95,12 +98,8 @@ input_counter = time.time()
 
 count = 0
 output_delay = time.time()
-while (cam_thread.is_alive()):
-    #Check for user quit command
-    with Input(keynames='curses') as input_generator:
-        for e in input_generator:
-            if repr(e) == 'q':
-                cam.end_camera_session()
+while (cam_thread.is_alive() and not SM.killed):
+    
 
     count += 1
 
