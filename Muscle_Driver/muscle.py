@@ -144,7 +144,7 @@ class muscle_interface():
         self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
         self.temp_input = (input_types.none, 0, time.time()) #The temporary, nonreported input to compare to last_input
         self.averaging_array = []
-        self.binary_threshold = 0.75
+        self.binary_threshold = 0.85
 
         #Create the percentage buckets
         #Generate predefined % positions along the grip
