@@ -91,9 +91,9 @@ print("Main Program Start.")
 input_counter = time.time()
 
 count = 0
+output_delay = time.time()
 while (cam_thread.is_alive()):
     count += 1
-    time.sleep(0.01)
 
     #Create new state matrix for current moment
     reported_object = cam.cam_data
@@ -109,17 +109,21 @@ while (cam_thread.is_alive()):
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
     #Generate the nice output
-    data_list = {}
-    data_list["program_time"] = str(time.time() - SM._program_T0)
-    data_list["state"] = SM.current_mode
-    data_list["spotted_object"] = cam.cam_data
-    data_list["spotted_object_score"] = str(cam.cam_data_score)
-    data_list["muscle_input"] = str(mi.ads.read_adc(0, gain=1))
-    data_list["muscle_input_percent"] = str(mi.pmd)
-    data_list["muscle_input_type"] = str(mi.last_input[0])
-    data_list["servo_grip_loaded"] = str(servs.grip_config)
-    data_list["vibes"] = str(statuslights.vibe_status)
-    SM.nice_output(data_list)
+    if (time.time() - output_delay) > 0.1:
+        data_list = {}
+        data_list["program_time"] = str(time.time() - SM._program_T0)
+        data_list["state"] = SM.current_mode
+        data_list["spotted_object"] = cam.cam_data
+        data_list["spotted_object_score"] = str(100*cam.cam_data_score)
+        data_list["muscle_input"] = str(mi.ads.read_adc(0, gain=1))
+        data_list["muscle_input_percent"] = str(100*mi.pmd)
+        data_list["muscle_input_type"] = str(mi.last_input[0])
+        data_list["servo_grip_loaded"] = str(servs.grip_config)
+        data_list["vibes"] = str(statuslights.vibe_status)
+        SM.nice_output(data_list)
+
+        output_delay = time.time()
+    
 
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)

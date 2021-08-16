@@ -198,37 +198,37 @@ class Mode_Manager():
                 "vibes":                The current state of the vibration motor
         """
         #Clear the terminal, maybe?
-        print("\n")
+        os.system('clear')
         #Print the top of the text box
         print("--------------------------")
 
         #Print the current program time
-        print("|\t\tT: ", data_list["program_time"])
+        print("|\tT: ", data_list["program_time"])
 
-        print("\n")
+        # print("\n")
 
         #Print the current mode 
         print("| Current State: ", data_list["state"])
 
-        print("|\n")
+        # print("|\n")
 
         #Print the Camera data
         print("| Object spotted: ", data_list["spotted_object"])
         print("| \tConfidence score: ", data_list["spotted_object_score"])
 
-        print("|\n")
+        # print("|\n|")
 
         #Print sensor data
         print("| EMG input: ", data_list["muscle_input"])
         print("| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
         print("| \tInput type: ", data_list["muscle_input_type"])
 
-        print("|\n")
+        print("|\n|")
 
         #Print servo data
         print("| Grip loaded: ", data_list["servo_grip_loaded"])
 
-        print("|\n")
+        # print("|\n")
 
         #Print vibration status
         print("| Vibration status: ", data_list["vibes"])
