@@ -95,13 +95,6 @@ while (cam_thread.is_alive()):
     count += 1
     time.sleep(0.01)
 
-    if(count%2==0): #Can modify the output rate of the state
-        try:
-            # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
-        except Exception as e:
-            print(SM.info)
-            pass
-
     #Create new state matrix for current moment
     reported_object = cam.cam_data
     user_command_detected = mi.AnalogRead()
