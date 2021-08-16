@@ -76,6 +76,9 @@ class Analog_Debug():
     def update_value(self, new_value):
         self.value = new_value
 
+    def read_adc(self, num, gain=0):
+        return self.value
+
 class muscle_interface():
     """This provides the inputs from the user muscle sensors."""
     #self disconnected is class variable that states whether or not human input is being used
@@ -119,7 +122,7 @@ class muscle_interface():
             #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
-            self.chan_0 = Analog_Debug()
+            self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
             #Initialize the muscle sensor server
@@ -148,8 +151,6 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
-        print("Control buckets: ", str(self.perc_buckets))
-
     def update_0_threshold(self):
         self.analogThreshold_0 = self.ads.read_adc(0, gain=1)
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
@@ -172,9 +173,9 @@ class muscle_interface():
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
-            self.chan_0.update_value(new_down_value)
+            self.ads.update_value(new_down_value)
 
-        print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
+        # print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
 
         #Convert raw analog into percentage range 
         self.pmd = self.convert_perc(self.ads.read_adc(0, gain=1), input_types.down)
@@ -183,7 +184,7 @@ class muscle_interface():
         #   and enough time has passed to allow a new value to be reported,
         #   or the last value reported was user input
         if ((self.ads.read_adc(0, gain=1) > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
-            print("[MDEBUG] Detecting input on channel 0 above analog threshold")
+            # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (input_types.down, self.ads.read_adc(0, gain=1))
             return self.last_input[0]
@@ -219,7 +220,7 @@ class muscle_interface():
             aux.append(abs(Number-valor))
 
         new_val = list[aux.index(min(aux))]
-        print("Changing input from ", str(Number), " to ", str(new_val))
+        # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
 class ADS1x15(object):

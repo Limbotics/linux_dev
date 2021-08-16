@@ -1,4 +1,5 @@
 """ This package provides the interface for the system to change the status lights."""
+from threading import current_thread
 from typing import NoReturn, Sequence
 from periphery import GPIO
 from periphery import PWM
@@ -55,6 +56,9 @@ class Mode_Manager():
             input_types.none: self.no_input_manager
         }
 
+        #Initialize the debug file manager
+        # self.output_file = open("debug.txt", "w")
+
     @property
     def info(self):
         # Build a human-readable format of the current system state
@@ -71,7 +75,7 @@ class Mode_Manager():
 
     @current_mode.setter
     def current_mode(self, new_mode):
-        print("[MODE CHANGE] The mode is changing to ", str(new_mode), " from ", self._current_mode)
+        # print("[MODE CHANGE] The mode is changing to ", str(new_mode), " from ", self._current_mode)
         self.set_mode_time()
         self._current_mode = new_mode
 
@@ -79,7 +83,6 @@ class Mode_Manager():
     def toggle_top_mode(self):
         self._top_mode = self.top_modes[self._top_mode]
         self.current_mode = self._top_mode
-        print("[TOP MODE TOGGLE] Successfully changed top/current mode to ", str(self.current_mode))
 
     ######### Param management
     @property
@@ -99,7 +102,6 @@ class Mode_Manager():
         #Set the current mode to top mode
         if self.current_mode == modes.Cycle_Grip and self.is_unique_input:
             #This is only triggered if Cycle Mode was activated, so return to Neutral
-            print("[SM] Cycled a grip! Now entering neutral with new default grip of ", str(new_default))
             self.current_mode = modes.Neutral
             self._default_grip = new_default
 
@@ -139,7 +141,6 @@ class Mode_Manager():
 
     def set_mode_time(self):
         self._mode_time = time.time()
-        print("[SM-MODE TIMER] Updating mode time to ", str(self._mode_time))
 
     def mode_time_passed(self, delta_req):
         return (time.time() - self.user_input_time) > delta_req
@@ -151,10 +152,10 @@ class Mode_Manager():
         #   user input into continuous servo commands
 
         #Set the current mode to GCM
-        print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
+        # print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
         if self.user_input_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.GCM
-            print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
+            # print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
             return True
         return False
 
@@ -181,3 +182,68 @@ class Mode_Manager():
         input_processed = self.inputs_to_events_mapping[user_input]()
         if input_processed:
             self.input_processed_successfully()
+
+    def nice_output(self, data_list):
+        """
+            data_list required key/value pairs:
+                "program_time":         Current time of the system
+
+                "state":                Current mode of the system
+
+                "spotted_object":       Current object being reported by the camera
+                    "spotted_object_score": The confidence value the camera has for given object
+                
+                "muscle_input":         Current value from muscle sensor
+                    "muscle_input_percent": The converted value from raw adc to percent bucket
+                    "muscle_input_type":    The current input type being reported by the muscle sensor
+
+                "servo_grip_loaded":    The current grip loaded into the servo module
+                
+                "vibes":                The current state of the vibration motor
+        """
+        #Clear the terminal, maybe?
+        os.system('clear')
+        #Print the top of the text box
+        main_str = "--------------------------"
+
+        #Print the current program time
+        program_time = "\n|\tT: " + data_list["program_time"]
+        main_str += program_time
+
+        # print("\n")
+
+        #Print the current mode 
+        current_mode = "\n| Current State: " + data_list["state"]
+        main_str += current_mode
+
+        # print("|\n")
+
+        #Print the Camera data
+        object_spot = "\n| Object spotted: " + data_list["spotted_object"]
+        main_str += object_spot
+        conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"] + "%"
+        main_str += conf_score
+        main_str += "\n| \tInference FPS: " + data_list["inference_time"]
+
+        # print("|\n|")
+
+        #Print sensor data
+        emg_input = "\n| EMG input: " + data_list["muscle_input"]
+        main_str += emg_input
+        perc = "\n| \tConverted percentage: " + data_list["muscle_input_percent"] + "%"
+        main_str += perc
+        input_type = "\n| \tInput type: " + data_list["muscle_input_type"]
+        main_str += input_type
+
+        #Print servo data
+        loaded = "\n| Grip loaded: " + data_list["servo_grip_loaded"]
+        main_str += loaded
+
+        # print("|\n")
+
+        #Print vibration status
+        vibe = "\n| Vibration status: " + data_list["vibes"]
+        main_str += vibe
+
+        print(main_str)
+        # self.output_file.write("\n" + main_str)
