@@ -213,22 +213,22 @@ class Mode_Manager():
         # print("|\n")
 
         #Print the Camera data
-        main_str += "\n| Object spotted: ", data_list["spotted_object"])
-        main_str += "\n| \tConfidence score: ", data_list["spotted_object_score"])
+        main_str += "\n| Object spotted: ", data_list["spotted_object"]
+        main_str += "\n| \tConfidence score: ", data_list["spotted_object_score"]
 
         # print("|\n|")
 
         #Print sensor data
-        main_str += "\n| EMG input: ", data_list["muscle_input"])
-        main_str += "\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
-        main_str += "\n| \tInput type: ", data_list["muscle_input_type"])
+        main_str += "\n| EMG input: ", data_list["muscle_input"]
+        main_str += "\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%"
+        main_str += "\n| \tInput type: ", data_list["muscle_input_type"]
 
         #Print servo data
-        main_str += "\n| Grip loaded: ", data_list["servo_grip_loaded"])
+        main_str += "\n| Grip loaded: ", data_list["servo_grip_loaded"]
 
         # print("|\n")
 
         #Print vibration status
-        main_str += "\n| Vibration status: ", data_list["vibes"])
+        main_str += "\n| Vibration status: ", data_list["vibes"]
 
         print(main_str)
