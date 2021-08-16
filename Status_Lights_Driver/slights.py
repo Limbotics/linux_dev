@@ -165,6 +165,7 @@ class slights_interface():
             time.sleep(0.1)
 
     def startup_wait(self):
+        return
         #run indefinitely until flag is thrown that the rest of the system is ready
         self.lights[pinouts.vibrate].frequency = 1e3
         # Set duty cycle to 75%

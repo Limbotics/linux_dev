@@ -226,7 +226,7 @@ class Mode_Manager():
         #Print sensor data
         emg_input = "\n| EMG input: " + data_list["muscle_input"]
         main_str += emg_input
-        perc = "\n| \tConverted percentage: " + data_list["muscle_input_percent"], "%"
+        perc = "\n| \tConverted percentage: " + data_list["muscle_input_percent"] + "%"
         main_str += perc
         input_type = "\n| \tInput type: " + data_list["muscle_input_type"]
         main_str += input_type
