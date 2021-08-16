@@ -200,35 +200,35 @@ class Mode_Manager():
         #Clear the terminal, maybe?
         os.system('clear')
         #Print the top of the text box
-        print("--------------------------")
+        main_str = "--------------------------"
 
         #Print the current program time
-        print("|\tT: ", data_list["program_time"])
+        main_str += "\n|\tT: ", data_list["program_time"]
 
         # print("\n")
 
         #Print the current mode 
-        print("| Current State: ", data_list["state"])
+        main_str += "\n| Current State: ", data_list["state"]
 
         # print("|\n")
 
         #Print the Camera data
-        print("| Object spotted: ", data_list["spotted_object"])
-        print("| \tConfidence score: ", data_list["spotted_object_score"])
+        main_str += "\n| Object spotted: ", data_list["spotted_object"])
+        main_str += "\n| \tConfidence score: ", data_list["spotted_object_score"])
 
         # print("|\n|")
 
         #Print sensor data
-        print("| EMG input: ", data_list["muscle_input"])
-        print("| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
-        print("| \tInput type: ", data_list["muscle_input_type"])
-
-        print("|\n|")
+        main_str += "\n| EMG input: ", data_list["muscle_input"])
+        main_str += "\n| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
+        main_str += "\n| \tInput type: ", data_list["muscle_input_type"])
 
         #Print servo data
-        print("| Grip loaded: ", data_list["servo_grip_loaded"])
+        main_str += "\n| Grip loaded: ", data_list["servo_grip_loaded"])
 
         # print("|\n")
 
         #Print vibration status
-        print("| Vibration status: ", data_list["vibes"])
+        main_str += "\n| Vibration status: ", data_list["vibes"])
+
+        print(main_str)
