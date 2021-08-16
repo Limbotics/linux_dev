@@ -204,9 +204,10 @@ class Mode_Manager():
                 "vibes":                The current state of the vibration motor
         """
         #Clear the terminal, maybe?
-        os.system('clear')
+        # os.system('clear')
+        main_str = (chr(27) + "[2J")
         #Print the top of the text box
-        main_str = "--------------------------"
+        main_str += "--------------------------"
 
         #Print the current program time
         program_time = "\n|\tT: " + data_list["program_time"]
