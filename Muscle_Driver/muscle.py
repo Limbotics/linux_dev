@@ -140,7 +140,8 @@ class muscle_interface():
             
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
-        self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
+        self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
+        self.temp_input = (input_types.none, 0, time.time()) #The temporary, nonreported input to compare to last_input
         self.averaging_array = []
         self.binary_threshold = 0.75
 
@@ -223,23 +224,63 @@ class muscle_interface():
         #Convert raw analog into percentage range 
         new_pmd = self.convert_perc(input_value, input_types.down)
 
-        #If above the input threshold   
-        #   and enough time has passed to allow a new value to be reported,
-        #   or the last value reported was user input
-        if ((new_pmd == 1 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (new_pmd == 1))):
-            # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
-            self.input_T0 = time.time()
-            self.last_input = (input_types.down, self.max_input_0)
-            self.pmd = new_pmd
-            return self.last_input[0]
-
-        #If the input persistency threshold has passed, then report no user input 
-        if (time.time() - self.input_T0) > input_persistency:
-            self.input_T0 = time.time()
-            self.last_input = (input_types.none, 0)
-            self.pmd = new_pmd
-            return self.last_input[0]
+        #Check if we have a difference in what we're reporting and the current state
+        if new_pmd and self.last_input[0] == input_types.none:
+            #We are detecting input from the user, so create the new temp input object to track if not already exists
+            if self.temp_input[2] == 0:
+                #Save the new temp input object
+                self.temp_input = (input_types.down, input_value, time.time())
+            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+                #We're over threshold, so report new input type
+                self.last_input = self.temp_input
+                self.pmd = new_pmd
+                self.temp_input = (input_types.down, input_value, 0)
+        elif not new_pmd and self.last_input[0] == input_types.down:
+            #We're reporting user input but not receiving it, start timer
+            if self.temp_input[2] == 0:
+                #Save the new temp input object
+                self.temp_input = (input_types.none, input_value, time.time())
+            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+                #We're over threshold, so report new input type
+                self.last_input = self.temp_input
+                self.pmd = new_pmd
+                self.temp_input = (input_types.none, input_value, 0)
+        else:
+            #reset temp input object 
+            self.temp_input = (self.last_input[0], self.last_input[1], 0)
         return self.last_input[0]
+
+        # #Build the temp input object if it's not already in use (tracked by timer)
+        # if self.temp_input[2] == 0:
+        #     if self.temp_input[0] != self.temp_input[0]:
+        #         temp_type = input_types.none
+        #         if new_pmd:
+        #             temp_type = input_types.down
+
+                
+        # else:
+        #     #We know we're already tracking what could be a change in muscle input from user
+        #     if (self.temp_input[2] - self.last_input[2]) > input_persistency:
+        #         #It's time to change the last input object!
+        #         self.last_input = self.temp_input
+
+        # #If above the input threshold   
+        # #   and enough time has passed to allow a new value to be reported,
+        # #   or the last value reported was user input
+        # if ((new_pmd == 1 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (new_pmd == 1))):
+        #     # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
+        #     self.input_T0 = time.time()
+        #     self.last_input = (input_types.down, self.max_input_0)
+        #     self.pmd = new_pmd
+        #     return self.last_input[0]
+
+        # #If the input persistency threshold has passed, then report no user input 
+        # if (time.time() - self.input_T0) > input_persistency:
+        #     self.input_T0 = time.time()
+        #     self.last_input = (input_types.none, 0)
+        #     self.pmd = new_pmd
+        #     return self.last_input[0]
+        # return self.last_input[0]
 
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
