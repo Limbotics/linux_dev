@@ -166,6 +166,9 @@ class muscle_interface():
         #Set val to be average of past second
         self.max_input_0 = sum(input_array)/len(input_array)
 
+        #Set threshold to be half the range
+        self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
+
     def read_filtered(self):
         """
         Read the raw ADS value and return the current filtered value.
@@ -207,8 +210,8 @@ class muscle_interface():
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
-        # The fastest rate at which input states can change
-        input_persistency = 0.05
+        # The fastest rate at which input states can change between down/none
+        input_persistency = 0.5
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
@@ -222,10 +225,10 @@ class muscle_interface():
         #If above the input threshold   
         #   and enough time has passed to allow a new value to be reported,
         #   or the last value reported was user input
-        if ((input_value > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
+        if ((input_value > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (input_value > self.analogThreshold_0))):
             # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
-            self.last_input = (input_types.down, input_value)
+            self.last_input = (input_types.down, self.max_input_0)
             return self.last_input[0]
 
         #If the input persistency threshold has passed, then report no user input 
