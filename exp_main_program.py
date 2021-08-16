@@ -109,7 +109,7 @@ while (cam_thread.is_alive()):
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
     #Generate the nice output
-    if (time.time() - output_delay) > 0.1:
+    if (time.time() - output_delay) > 0.05:
         data_list = {}
         data_list["program_time"] = str(time.time() - SM._program_T0)
         data_list["state"] = str(SM.current_mode)
