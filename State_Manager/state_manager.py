@@ -56,6 +56,9 @@ class Mode_Manager():
             input_types.none: self.no_input_manager
         }
 
+        #Initialize the debug file manager
+        self.output_file = open("debug.txt", "w")
+
     @property
     def info(self):
         # Build a human-readable format of the current system state
@@ -243,3 +246,4 @@ class Mode_Manager():
         main_str += vibe
 
         print(main_str)
+        self.output_file.write("\n" + main_str)
