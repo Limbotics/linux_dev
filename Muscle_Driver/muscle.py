@@ -141,6 +141,7 @@ class muscle_interface():
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0) #The last input pair reported by AnalogRead
+        self.averaging_array = []
 
         #Create the percentage buckets
         #Generate predefined % positions along the grip
@@ -165,6 +166,38 @@ class muscle_interface():
         #Set val to be average of past second
         self.max_input_0 = sum(input_array)/len(input_array)
 
+    def read_filtered(self):
+        """
+        Read the raw ADS value and return the current filtered value.
+        """
+        #Constants
+        array_avg_len = 5 #The number of readings to average across
+        max_delta = 0.03 #Max percent change in a single step across the range
+
+        #Read the raw value
+        raw_val = self.ads.read_adc(0, gain=1)
+
+        #Perform filtering step #1: max delta change
+        new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+        old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+
+        #perform delta filtering
+        if (new_perc - old_perc) > max_delta:
+            new_perc = new_perc + max_delta
+            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
+            new_perc = new_perc - max_delta
+            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+
+        #perform value filtering
+        if len(self.averaging_array) >= array_avg_len:
+            #Pop element, add new to end
+            self.averaging_array.pop(0)
+
+        self.averaging_array.append(new_val)
+
+        return sum(self.averaging_array)/len(self.averaging_array)
+
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
@@ -175,18 +208,18 @@ class muscle_interface():
 
             self.ads.update_value(new_down_value)
 
-        # print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
+        input_value = self.read_filtered()
 
         #Convert raw analog into percentage range 
-        self.pmd = self.convert_perc(self.ads.read_adc(0, gain=1), input_types.down)
+        self.pmd = self.convert_perc(input_value, input_types.down)
 
         #If above the input threshold   
         #   and enough time has passed to allow a new value to be reported,
         #   or the last value reported was user input
-        if ((self.ads.read_adc(0, gain=1) > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
+        if ((input_value > self.analogThreshold_0 and (time.time() - self.input_T0) > input_persistency) or (self.last_input[1] == input_types.down)):
             # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
-            self.last_input = (input_types.down, self.ads.read_adc(0, gain=1))
+            self.last_input = (input_types.down, input_value)
             return self.last_input[0]
 
         #If the input persistency threshold has passed, then report no user input 
