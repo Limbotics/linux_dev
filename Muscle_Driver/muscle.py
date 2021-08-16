@@ -138,6 +138,7 @@ class muscle_interface():
             self.analogThreshold_0 = 2000 
             self.max_input_0 = 15000
             
+        self.pmd = 0
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
