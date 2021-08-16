@@ -27,14 +27,12 @@ from collections import Counter
 #     # if use_TPU:
 #     #     from tensorflow.lite.python.interpreter import load_delegate
 
-from pycoral.utils import edgetpu
-from pycoral.utils import dataset
-from pycoral.adapters import detect
-from pycoral.adapters import common
-from pycoral.adapters import classify
-from pycoral.utils.dataset import read_label_file
-from pycoral.utils.edgetpu import run_inference
 
+from pycoral.adapters.common import input_size
+from pycoral.adapters.detect import get_objects
+from pycoral.utils.dataset import read_label_file
+from pycoral.utils.edgetpu import make_interpreter
+from pycoral.utils.edgetpu import run_inference
 import re
 
 import sys
@@ -77,7 +75,7 @@ class camera_interface():
         #Load the tflite model and labelmap
         # Get path to current working directory
         GRAPH_NAME = "ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite"
-        MODEL_NAME = "Camera_Interpreter/Edge_TPU_Model"
+        MODEL_NAME = "Camera_Interpreter/Coco"
         LABELMAP_NAME = "coco_labels.txt"
         CWD_PATH = os.getcwd()
 
@@ -92,15 +90,14 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
+        self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        self.height = self.input_details[0]['shape'][1]
-        self.width = self.input_details[0]['shape'][2]
-        self.size = common.input_size(self.interpreter)
+        inference_size = input_size(self.interpreter)
+        self.size = input_size(self.interpreter)
 
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
@@ -117,7 +114,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 0.5
+        self.object_not_spotted_delta_req = 1
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -145,39 +142,40 @@ class camera_interface():
                 previous_index = self.cam_image_index
                 # data, _, _ = self.detector.detectAndDecode(self.cam_image) Deprecated QR Code reader
                 data, score = self.detect_main_object(self.cam_image)
-                self.cam_data = data
-                self.cam_data_score = score
+                
                 #If the camera sees an object, skip the time requirement
-                if(data != ""):
-                    
+                if((data != "" and (time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req) or data == self.cam_data):
+                    self.cam_data = data
+                    self.cam_data_score = score
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
                 #If the camera doesn't see an object, require a delay before reporting nothing
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
                         # print("[DEBUG] Delta Req passed; reporting no object now")
-                        self.cam_data = data
+                        self.cam_data = ""
+                        self.cam_data_score = 0
                         self.object_spotted = False
+                        self.object_spotted_T0 = time.time()
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
-            time.sleep(0.01)
-
+            
     def detect_main_object(self, frame1):
         min_conf_threshold = 0.4
 
         # Perform the actual detection by running the model with the image as input
         t = time.time()
         cv2_im_rgb = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
-        cv2_im_rgb = cv2.resize(cv2_im_rgb, (self.width, self.height))
+        cv2_im_rgb = cv2.resize(cv2_im_rgb, self.size)
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
-        objs = detect.get_objects(self.interpreter, min_conf_threshold)
+        objs = get_objects(self.interpreter, min_conf_threshold)
 
         highest_scoring_label = ""
         highest_score = 0
         for c in objs:
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
-            if((c.score > min_conf_threshold) and (c.score <= 1.0) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
+            if((c.score > min_conf_threshold) and (c.score <= 10) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
@@ -190,7 +188,7 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            time.sleep(0.2)
+            time.sleep(0.01)
             if(not self.temp_pause): #CAMBUG remove False
                 _, self.cam_image = self.cap.read()
 
