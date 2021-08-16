@@ -11,7 +11,7 @@ import imutils
 from PIL import Image
 import time
 import cv2
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 #import cvlib as cv
 import threading
 from collections import Counter
@@ -63,7 +63,6 @@ class camera_interface():
     Attributes:
         count (int): Count of saved screenshots. File titles are frame'count'.jpg.
         cap (cv2 VideoCapture): The VideoCapture object.
-        detector (QRCodeDetector): The QR Code detecting object.
     """
 
     def __init__(self,resolution=(640,480),framerate=30):
@@ -119,7 +118,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 3
+        self.object_not_spotted_delta_req = 0.5
 
         #Initialize the paused flag to false
         self.temp_pause = False

@@ -1,10 +1,8 @@
 from enum import Enum, auto 
 
 class input_types(Enum):
-    down_pulse = 1
-    down_hold = 2
-    up_input  = 3
-    no_input  = 4
+    down = 1
+    none  = 4
 
 class modes(Enum):
     Neutral = 1  #Default grip selection, AGS off  (Top mode)
@@ -16,7 +14,7 @@ class modes(Enum):
 class input_constants(Enum):
     pulse_low = 0.1 #The minimum time for user input to be considered a pulse
     pulse_high = 0.5 #The maximum time for user input to be considered a pulse before it becomes a hold
-    no_input_return_time = 10 #The time for the system to go back to top modes when in lower modes after no input
+    no_input_return_time = 1 #The time for the system to go back to top modes when in lower modes after no input
     time_required_for_any_state = 0.25
     time_required_for_user_command = 0.1
 
