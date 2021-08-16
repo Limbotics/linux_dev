@@ -76,6 +76,9 @@ class Analog_Debug():
     def update_value(self, new_value):
         self.value = new_value
 
+    def read_adc(self, num, gain=0):
+        return self.value
+
 class muscle_interface():
     """This provides the inputs from the user muscle sensors."""
     #self disconnected is class variable that states whether or not human input is being used
@@ -119,7 +122,7 @@ class muscle_interface():
             #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
-            self.chan_0 = Analog_Debug()
+            self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
             #Initialize the muscle sensor server
@@ -170,7 +173,7 @@ class muscle_interface():
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
-            self.chan_0.update_value(new_down_value)
+            self.ads.update_value(new_down_value)
 
         # print("[MDEBUG] Channel 0 input: ", str(self.ads.read_adc(0, gain=1)))
 
