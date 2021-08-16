@@ -11,6 +11,7 @@ import imutils
 from PIL import Image
 import time
 import cv2
+# import matplotlib.pyplot as plt
 #import cvlib as cv
 import threading
 from collections import Counter
@@ -33,7 +34,6 @@ from pycoral.adapters import common
 from pycoral.adapters import classify
 from pycoral.utils.dataset import read_label_file
 from pycoral.utils.edgetpu import run_inference
-import tflite_runtime.interpreter as tflite
 
 import re
 
@@ -63,7 +63,6 @@ class camera_interface():
     Attributes:
         count (int): Count of saved screenshots. File titles are frame'count'.jpg.
         cap (cv2 VideoCapture): The VideoCapture object.
-        detector (QRCodeDetector): The QR Code detecting object.
     """
 
     def __init__(self,resolution=(640,480),framerate=30):
@@ -96,8 +95,7 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        #self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
-        self.interpreter = tflite.Interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'), experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
+        self.interpreter = edgetpu.make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
@@ -120,7 +118,7 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 3
+        self.object_not_spotted_delta_req = 0.5
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -192,7 +190,7 @@ class camera_interface():
 
     def read_cam_thread(self):
         while not self.killed_thread:
-            time.sleep(0.2)#what is this
+            time.sleep(0.2)
             if(not self.temp_pause): #CAMBUG remove False
                 _, self.cam_image = self.cap.read()
 

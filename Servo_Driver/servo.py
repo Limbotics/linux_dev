@@ -2,6 +2,7 @@ from adafruit_servokit import ServoKit
 #https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library#controlling-servos-3013804-22
 #LINUX FIX:
 # #https://gitmemory.com/issue/adafruit/Adafruit_Blinka/328/672356503
+# https://www.digi.com/support/forum/19251/linux-cme9210-pca9554-i2c Fix for I2C lockup
 from enum import Enum
 import time
 
@@ -27,7 +28,7 @@ class handServoControl:
 
         #this class is the lookup table servo control because the functions kind of do everything already 
         #16 channel piHat
-        self.kit = ServoKit(channels=16)
+        self.kit = ServoKit(channels=16, )
 
         #Initialize stored angles
         self.angles = {

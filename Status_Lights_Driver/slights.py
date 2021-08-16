@@ -31,16 +31,20 @@ class pinouts(Enum):
         "path": "/dev/gpiochip4",
         "line": 12
     }
+    vibrate = {
+        "chip": 0,
+        "line": 0
+    }
 
 class status_states(Enum):
     """Status states as defined by a title corresponding to a dictionary of pinout High/Lows for each color."""
     #Blue light = object detection indicator. Blue on means object seen. Blue off means no object seen.
     no_object = {
-        pinouts.blue: False
+        pinouts.vibrate: False
     }
 
     object_detected = {
-        pinouts.blue: True,
+        pinouts.vibrate: True
     }
 
     #Green light = user input indicator. Green on means user input detected. Green off means no user input detected. 
@@ -85,7 +89,11 @@ class slights_interface():
 
         #Set all pinouts as GPIO Output
         for pinout in pinouts:
-            self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
+            try:
+                self.lights[pinout] = GPIO(pinout.value["path"], pinout.value["line"], "out")
+            except Exception as e:
+                self.lights[pinout] = PWM(pinout.value["chip"], pinout.value["line"])
+                self.lights[pinout].frequency = 1e3
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -94,10 +102,8 @@ class slights_interface():
         }
 
         self.user_status_dispatcher = {
-            input_types.up_input: status_states.user_active,
-            input_types.down_pulse: status_states.user_active,
-            input_types.down_hold: status_states.user_active,
-            input_types.no_input: status_states.user_not_active
+            input_types.down: status_states.user_active,
+            input_types.none: status_states.user_not_active
         }
 
         #Run the startup sequence
@@ -106,35 +112,41 @@ class slights_interface():
         #Set initial status
         # self.set_status(False, False)
         self.startup_complete = False
+        self.object_pulse_T0 = 0
+        self.spotted_object = ""
 
         #Stored list of led objects if on a threaded pulse
         # self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
 
-    def set_status(self, object_detected, is_activated):
+    def set_status(self, object_detected, is_activated, reported_object):
         """Set the status of the lights given a combination of if an object is detected, and if the user has taken control."""
         #Correlate the state of the arm to a status light display state
         object_status = self.object_status_dispatcher[object_detected]
         user_status = self.user_status_dispatcher[is_activated]
         statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
 
-        #Lastly, do the saved state led
-        # thread_key = status_states.grip_saved_id.value
-        # if (not saved_state):
-        #     if self.threaded_leds[thread_key][1]:
-        #         self.threaded_leds[thread_key][1] = False
-        #     statuses.append(status_states.standby)
-        # elif not self.threaded_leds[thread_key][1]: #Only start a new thread if it's not already running
-        #     #Start the pulse thread for the amber light
-        #     self.threaded_leds[thread_key][1] = True
-        #     led_pulse_thread = threading.Thread(target=self.pulse_thread, args=())
-        #     led_pulse_thread.start()
-
         #Update the pins given the guidelines in the display state
         for status in statuses:
             stat = status.value
             for pin in stat:
-                self.lights[pin].write(stat[pin])
-                #GPIO.output(pin.value, stat[pin])
+                try:
+                    self.lights[pin].write(stat[pin])
+                except Exception as e:
+                    if object_detected and (reported_object != self.spotted_object):
+                        self.spotted_object = reported_object
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.25,))
+                        pulse_thread.start()
+                    elif not object_detected and (reported_object != self.spotted_object):
+                        self.object_pulse_T0 = 0
+                        self.spotted_object = grips.openGrip.value #the default "no object" 
+                        pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05,))
+                        pulse_thread.start()
+                #GPIO.output(pin.value, stat[pin])4
+
+    def pulse_vibes(self, vibe_time):
+        self.lights[pinouts.vibrate].duty_cycle = 1
+        time.sleep(vibe_time)
+        self.lights[pinouts.vibrate].duty_cycle = 0
 
     def pulse_thread(self):
         pass
@@ -167,13 +179,22 @@ class slights_interface():
 
     def startup_wait(self):
         #run indefinitely until flag is thrown that the rest of the system is ready
+        self.lights[pinouts.vibrate].frequency = 1e3
+        # Set duty cycle to 75%
+        self.lights[pinouts.vibrate].duty_cycle = 0
+        self.lights[pinouts.vibrate].enable()
         while not self.startup_complete:
-            for pinout in pinouts:
-                self.lights[pinout].write(True)
-                time.sleep(0.2)
-            for pinout in pinouts:
-                self.lights[pinout].write(False)
-                time.sleep(0.2)
+            try:
+                for dc in range(0, 10, 1):
+                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
+                    time.sleep(0.1)
+                for dc in range(10, 0, -1):
+                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
+                    time.sleep(0.1)
+                # self.lights[pinouts.vibrate].enable()
+            except Exception as e:
+                print(str(e))
+        self.lights[pinouts.vibrate].duty_cycle = 0
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""

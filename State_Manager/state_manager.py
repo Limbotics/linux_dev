@@ -43,18 +43,16 @@ class Mode_Manager():
         }
 
         #Initialize the top mode as Neutral
-        self._top_mode = modes.Neutral
-        self._current_mode = modes.Neutral
+        self._top_mode = modes.AGS
+        self._current_mode = modes.AGS
 
         #Define the default grip 
         self._default_grip = grips.openGrip
 
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
-            input_types.up_input: self.switch_modes, #Up inputs switch the mode, always
-            input_types.down_pulse: self.switch_grips, #Down pulses cycle grip selection in neutral mode
-            input_types.down_hold: self.activate_gcm,  #Down holding always activates GCM
-            input_types.no_input: self.no_input_manager #No input causes events after timers
+            input_types.down: self.activate_gcm,  #Down holding always activates GCM
+            input_types.none: self.no_input_manager
         }
 
     @property
@@ -154,37 +152,10 @@ class Mode_Manager():
 
         #Set the current mode to GCM
         print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
-        if self.user_input_time >= timers.time_required_for_user_command.value and self.is_unique_input and self.mode_time_passed(timers.time_required_for_any_state.value):
+        if self.user_input_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.GCM
             print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
             return True
-        return False
-
-    def switch_grips(self):
-        #If checks are passed, enter into cycle grip mode to signal the system it needs to change grips
-
-        #If in neutral mode, enter cycle grip mode
-        if self.current_mode == modes.Neutral and self.mode_time_passed(timers.time_required_for_user_command.value) and self.is_unique_input:
-            self.current_mode = modes.Cycle_Grip
-            return True
-        return False
-
-    def switch_modes(self):
-        #If checks are passed, enter either into GCM, AGS, or Neutral
-
-        #if in AGS or Neutral, toggle top mode
-        print("[SWITCH MODES] mode time passed? ", str(self.mode_time_passed(timers.time_required_for_any_state.value)))
-        print("[SWITCH MODES] Unique input? ", str(self.is_unique_input))
-        if self.mode_time_passed(timers.time_required_for_any_state.value) and self.is_unique_input:
-            if (self.current_mode == modes.Neutral) or (self.current_mode == modes.AGS):
-                self.toggle_top_mode()
-                print("[SWITCH MODES] Called toggle top mode ")
-                return True
-            elif (self.current_mode == modes.GCM):
-                #Else if in GCM, return to top mode
-                self.current_mode = self.top_mode
-                print("[SWITCH MODES] Left GCM")
-                return True
         return False
 
     def no_input_manager(self):
@@ -203,8 +174,7 @@ class Mode_Manager():
         Inputs:
             The current type of user input, from the hand_classes constants
         """
-        # print("[SM-DEBUG] Received state of ", str(user_input))
-        if user_input is not input_types.no_input:
+        if user_input is not input_types.none:
             self.user_command_detected = True
         else:
             self.user_command_detected = False
