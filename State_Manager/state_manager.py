@@ -218,7 +218,7 @@ class Mode_Manager():
         #Print the Camera data
         object_spot = "\n| Object spotted: " + data_list["spotted_object"]
         main_str += object_spot
-        conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"]
+        conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"] + "%"
         main_str += conf_score
         main_str += "\n| \tInference FPS: " + data_list["inference_time"]
 
