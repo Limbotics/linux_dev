@@ -179,7 +179,7 @@ class Mode_Manager():
         if input_processed:
             self.input_processed_successfully()
 
-    def nice_output(data_list):
+    def nice_output(self, data_list):
         """
             data_list required key/value pairs:
                 "program_time":         Current time of the system
