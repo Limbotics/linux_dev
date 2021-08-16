@@ -1,14 +1,14 @@
 import time
 import os
 import threading
+import tty
+import sys
+
 
 from Status_Lights_Driver import slights
 #testing new mendel workflow
 #Status Lights initialization
 statuslights = slights.slights_interface()
-#Tell the user that we're in the startup sequence
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
 
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
@@ -21,7 +21,10 @@ from State_Manager import state_manager
 
 #Camera initialization
 cam = camera.camera_interface()
-# test
+
+#Tell the user that we're ready for their input
+slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
+slights_startup_thread.start()
 #Muscle sensor initialization
 print("Debug muscle sensor? Y/N")
 ans = input()
@@ -71,6 +74,9 @@ time_required_for_user_command = 0.1
 servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
+#Create user input program killer watchdog
+program_killer_thread = threading.Thread(target=SM.killer_watcher, args=())
+program_killer_thread.start()
 
 #Quit the status lights loading period
 statuslights.startup_complete = True
@@ -92,7 +98,9 @@ input_counter = time.time()
 
 count = 0
 output_delay = time.time()
-while (cam_thread.is_alive()):
+while (cam_thread.is_alive() and not SM.killed):
+    
+
     count += 1
 
     #Create new state matrix for current moment
@@ -156,8 +164,6 @@ while (cam_thread.is_alive()):
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
 statuslights.startup_complete = False
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 
@@ -166,11 +172,6 @@ time.sleep(0.5)
 
 #Everything else is complete, so do status lights last
 statuslights.startup_complete = True
-slights_startup_thread.join()
 statuslights.safe_shutdown()
 
 print("Program ended.")
-
-
-
-

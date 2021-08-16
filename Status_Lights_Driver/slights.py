@@ -165,41 +165,45 @@ class slights_interface():
             time.sleep(0.1)
 
     def startup_wait(self):
-        return
         #run indefinitely until flag is thrown that the rest of the system is ready
         self.lights[pinouts.vibrate].frequency = 1e3
         # Set duty cycle to 75%
         self.lights[pinouts.vibrate].duty_cycle = 0
         self.lights[pinouts.vibrate].enable()
-        while not self.startup_complete:
-            try:
-                for dc in range(0, 10, 1):
-                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
-                    time.sleep(0.1)
-                for dc in range(10, 0, -1):
-                    self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
-                    time.sleep(0.1)
-                # self.lights[pinouts.vibrate].enable()
-            except Exception as e:
-                print(str(e))
+        # while not self.startup_complete:
+        #     try:
+        #         for dc in range(0, 10, 1):
+        #             self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
+        #             time.sleep(0.1)
+        #         for dc in range(10, 0, -1):
+        #             self.lights[pinouts.vibrate].duty_cycle = float(dc/10)
+        #             time.sleep(0.1)
+        #         # self.lights[pinouts.vibrate].enable()
+        #     except Exception as e:
+        #         print(str(e))
+        pulse_time = 0.1
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
-        #Set all pulse LEDs to end threads
-        #self.threaded_leds[status_states.grip_saved_id.value][1] = False
-        #Set them all to off
-        for pinout in pinouts:
-            self.lights[pinout].write(False)
-        #Set them all to high, sequentially
-        for pinout in pinouts:
-            self.lights[pinout].write(True)
-            time.sleep(0.1)
+        pulse_time = 0.1
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
+        self.pulse_vibes(pulse_time)
+        time.sleep(pulse_time)
         #Pause for effect
-        time.sleep(0.25)
         #Turn them all off
         for pinout in pinouts:
-            self.lights[pinout].write(False)
             self.lights[pinout].close()
+
+        print("[STATUS] Successfully killed GPIO.")
 
     

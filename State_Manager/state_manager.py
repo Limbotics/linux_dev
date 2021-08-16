@@ -59,6 +59,8 @@ class Mode_Manager():
         #Initialize the debug file manager
         # self.output_file = open("debug.txt", "w")
 
+        self.killed = False
+
     @property
     def info(self):
         # Build a human-readable format of the current system state
@@ -247,3 +249,8 @@ class Mode_Manager():
 
         print(main_str)
         # self.output_file.write("\n" + main_str)
+
+    def killer_watcher(self):
+        #Check for user quit command
+        ans = input()
+        self.killed = True

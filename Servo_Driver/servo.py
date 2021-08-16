@@ -140,3 +140,5 @@ class handLUTControl(handServoControl):
         self.grip_config = grips.openGrip.value
 
         self.process_grip_change()
+
+        print("[SERVO] Successfully killed servos.")
