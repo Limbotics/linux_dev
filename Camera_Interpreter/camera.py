@@ -146,14 +146,12 @@ class camera_interface():
                 self.cam_data_score = score
                 #If the camera sees an object, skip the time requirement
                 if(data != ""):
-                    
                     self.object_spotted_T0 = time.time()
                     self.object_spotted = True
                 #If the camera doesn't see an object, require a delay before reporting nothing
                 else:
                     if((time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req):
                         # print("[DEBUG] Delta Req passed; reporting no object now")
-                        self.cam_data = data
                         self.object_spotted = False
                 
                 #####No sleep since detecting/decoding takes significant time, just do it as fast as possible
@@ -174,7 +172,7 @@ class camera_interface():
         highest_score = 0
         for c in objs:
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
-            if((c.score > min_conf_threshold) and (c.score <= 1.0) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
+            if((c.score > min_conf_threshold) and (c.score <= 10) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
