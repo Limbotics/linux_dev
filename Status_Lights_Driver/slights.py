@@ -150,23 +150,6 @@ class slights_interface():
 
     def pulse_thread(self):
         pass
-        # #Get which LED we're working with from the thread key
-        # thread_key = status_states.grip_saved_id.value
-        # led = self.threaded_leds[thread_key][0]
-        # led.start(0)
-        # self.threaded_leds[thread_key][1] = True #Set the loop to run 
-        # print("[DEBUG] Starting LED pulse")
-        # while self.threaded_leds[thread_key][1]:
-        #     #Turn up brightness
-        #     for dc in range(0, 50, 5):
-        #         led.ChangeDutyCycle(dc)
-        #         time.sleep(0.1)
-        #     #Turn down brightness
-        #     for dc in range(50, -1, -5):
-        #         led.ChangeDutyCycle(dc)
-        #         time.sleep(0.1)
-        # #Reset the duty cycle
-        # led.ChangeDutyCycle(100)
 
     def startup_sequence(self):
         """Funky startup sequence to indicate to the user the arm is starting up."""

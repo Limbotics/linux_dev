@@ -71,12 +71,9 @@ class camera_interface():
             raise Exception("Dev board not detected.")
         self.count = 0
         self.cap = cv2.VideoCapture(1)
-
-        #Wait for the camera to startup for one seconds
-        time.sleep(1)
         print("[INFO] Created video capture object")
-        print("[INFO] loading model...")
 
+        print("[INFO] loading model...")
         #Load the tflite model and labelmap
         # Get path to current working directory
         GRAPH_NAME = "ssd_mobilenet_v1_coco_quant_postprocess_edgetpu.tflite"
@@ -181,12 +178,11 @@ class camera_interface():
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
-                print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
+                # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
         #return (highest_scoring_label, highest_score)
-        print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
-        print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
+        # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
+        # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
         return(highest_scoring_label, highest_score)
-
 
     def read_cam_thread(self):
         while not self.killed_thread:
@@ -196,25 +192,6 @@ class camera_interface():
 
                 #Increase index by 1
                 self.cam_image_index += 1
-
-    # def read_cam_display_out(self):
-    #     #Call the standard method to get the qr data / bounding box
-    #     data, bbox, img, _ = self.read_cam()
-    #     # if there is a bounding box, draw one, along with the data
-    #     if(bbox is not None):
-    #         for i in range(len(bbox)):
-    #             cv2.line(img, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255,
-    #                     0, 255), thickness=2)
-    #         cv2.putText(img, data, (int(bbox[0][0][0]), int(bbox[0][0][1]) - 10), cv2.FONT_HERSHEY_SIMPLEX,
-    #                     0.5, (0, 255, 0), 2)
-    #         #if data:
-    #             #print("data found: ", data)
-    #     # display the image preview
-    #     cv2.imshow("code detector", img)
-
-    #     # save the image
-    #     cv2.imwrite("frame1.jpg", img)     # save frame as JPEG file
-    #     #self.count += 1
 
     def end_camera_session(self):
         #Stop the camera thread 

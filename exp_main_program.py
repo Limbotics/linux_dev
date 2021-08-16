@@ -87,7 +87,6 @@ cam_thread = threading.Thread(target=cam.camera_read_threader, args=())
 cam_thread.start()
 print("Main Program Start.")
 
-
 #Debug user input variable
 input_counter = time.time()
 
@@ -95,11 +94,10 @@ count = 0
 while (cam_thread.is_alive()):
     count += 1
     time.sleep(0.01)
-    print("\n")
 
     if(count%2==0): #Can modify the output rate of the state
         try:
-            print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
+            # print("[DEBUG - MS] MyoSensor value: " , mi.AnalogRead())
         except Exception as e:
             print(SM.info)
             pass
@@ -120,7 +118,7 @@ while (cam_thread.is_alive()):
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
     if (SM.current_mode == modes.AGS):
-        print("[MT] In AGS Mode Processing")
+        # print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
         if cam.temp_pause:
             cam.temp_pause = False
@@ -129,7 +127,7 @@ while (cam_thread.is_alive()):
         servs.grip_config = reported_object
 
     elif (SM.current_mode == modes.GCM):
-        print("[MT] In GCM Mode Processing")
+        # print("[MT] In GCM Mode Processing")
         #Command the camera to stop processing inputs temporarily
         cam.temp_pause = True
         #Confirmed user commanding into reported object

@@ -71,7 +71,7 @@ class Mode_Manager():
 
     @current_mode.setter
     def current_mode(self, new_mode):
-        print("[MODE CHANGE] The mode is changing to ", str(new_mode), " from ", self._current_mode)
+        # print("[MODE CHANGE] The mode is changing to ", str(new_mode), " from ", self._current_mode)
         self.set_mode_time()
         self._current_mode = new_mode
 
@@ -79,7 +79,6 @@ class Mode_Manager():
     def toggle_top_mode(self):
         self._top_mode = self.top_modes[self._top_mode]
         self.current_mode = self._top_mode
-        print("[TOP MODE TOGGLE] Successfully changed top/current mode to ", str(self.current_mode))
 
     ######### Param management
     @property
@@ -99,7 +98,6 @@ class Mode_Manager():
         #Set the current mode to top mode
         if self.current_mode == modes.Cycle_Grip and self.is_unique_input:
             #This is only triggered if Cycle Mode was activated, so return to Neutral
-            print("[SM] Cycled a grip! Now entering neutral with new default grip of ", str(new_default))
             self.current_mode = modes.Neutral
             self._default_grip = new_default
 
@@ -139,7 +137,6 @@ class Mode_Manager():
 
     def set_mode_time(self):
         self._mode_time = time.time()
-        print("[SM-MODE TIMER] Updating mode time to ", str(self._mode_time))
 
     def mode_time_passed(self, delta_req):
         return (time.time() - self.user_input_time) > delta_req
@@ -151,10 +148,10 @@ class Mode_Manager():
         #   user input into continuous servo commands
 
         #Set the current mode to GCM
-        print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
+        # print("[GCM-DEBUG] Testing to see if GCM should be entered: ")
         if self.user_input_time >= timers.time_required_for_user_command.value and self.is_unique_input:
             self.current_mode = modes.GCM
-            print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
+            # print("\t[GCM-DEBUG] Test passed! Entering GCM mode.")
             return True
         return False
 

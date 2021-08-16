@@ -93,14 +93,14 @@ class handLUTControl(handServoControl):
 
     def process_grip_change(self, user_grip=False, percent=0):
         """Process the current grip config set in the class object."""
-        print("[SERVO] Processing grip change to ", str(self.grip_config))
+        # print("[SERVO] Processing grip change to ", str(self.grip_config))
         #try:
         if(not user_grip):
             #Use the dispatcher to correlate the current grip to the angles for that grip
             finger_angles = self.dispatch[self.grip_config]
 
             #Iterate through the fingers and set them to their respective angle
-            print("[SERVO] Setting finger angles")
+            # print("[SERVO] Setting finger angles")
             for finger in finger_angles:
                 self.moveFinger(finger, finger_angles[finger])  
         else:
@@ -108,7 +108,7 @@ class handLUTControl(handServoControl):
             finger_angles = self.user_dispatch[self.grip_config]
 
             #Iterate through the fingers and set them to their respective angle
-            print("[SERVO] Setting user commanded fingers to ", str(100*percent), "%")
+            # print("[SERVO] Setting user commanded fingers to ", str(100*percent), "%")
             for finger in finger_angles:
                 self.moveFinger(finger, (percent)*finger_angles[finger])  
         #except Exception as e:
