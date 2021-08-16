@@ -221,7 +221,7 @@ class muscle_interface():
         input_value = self.read_filtered()
 
         #Convert raw analog into percentage range 
-        self.pmd = self.convert_perc(input_value, input_types.down)
+        new_pmd = self.convert_perc(input_value, input_types.down)
 
         #If above the input threshold   
         #   and enough time has passed to allow a new value to be reported,
@@ -230,12 +230,14 @@ class muscle_interface():
             # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
             self.input_T0 = time.time()
             self.last_input = (input_types.down, self.max_input_0)
+            self.pmd = new_pmd
             return self.last_input[0]
 
         #If the input persistency threshold has passed, then report no user input 
         if (time.time() - self.input_T0) > input_persistency:
             self.input_T0 = time.time()
             self.last_input = (input_types.none, 0)
+            self.pmd = new_pmd
             return self.last_input[0]
         return self.last_input[0]
 
