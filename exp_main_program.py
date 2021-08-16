@@ -111,11 +111,11 @@ while (cam_thread.is_alive()):
     #Generate the nice output
     if (time.time() - output_delay) > 0.05:
         data_list = {}
-        data_list["program_time"] = str(time.time() - SM._program_T0)
+        data_list["program_time"] = str(round((time.time() - SM._program_T0), 0))
         data_list["state"] = str(SM.current_mode)
         data_list["spotted_object"] = str(cam.cam_data)
-        data_list["inference_time"] = str(1/cam.inference_time)
-        data_list["spotted_object_score"] = str(100*cam.cam_data_score)
+        data_list["inference_time"] = str(round((1/cam.inference_time), 1))
+        data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
         data_list["muscle_input"] = str(mi.ads.read_adc(0, gain=1))
         data_list["muscle_input_percent"] = str(100*mi.pmd)
         data_list["muscle_input_type"] = str(mi.last_input[0])
