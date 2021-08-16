@@ -110,6 +110,7 @@ class camera_interface():
         # QR code detection object
         self.cam_data = ""
         self.cam_data_score = 0
+        self.inference_time = 0
         self.object_spotted = False
         self.test_count = 0
         self.killed_thread = False
