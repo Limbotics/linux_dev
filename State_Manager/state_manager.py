@@ -178,3 +178,57 @@ class Mode_Manager():
         input_processed = self.inputs_to_events_mapping[user_input]()
         if input_processed:
             self.input_processed_successfully()
+
+    def nice_output(data_list):
+        """
+            data_list required key/value pairs:
+                "program_time":         Current time of the system
+
+                "state":                Current mode of the system
+
+                "spotted_object":       Current object being reported by the camera
+                    "spotted_object_score": The confidence value the camera has for given object
+                
+                "muscle_input":         Current value from muscle sensor
+                    "muscle_input_percent": The converted value from raw adc to percent bucket
+                    "muscle_input_type":    The current input type being reported by the muscle sensor
+
+                "servo_grip_loaded":    The current grip loaded into the servo module
+                
+                "vibes":                The current state of the vibration motor
+        """
+        #Clear the terminal, maybe?
+        print("\n")
+        #Print the top of the text box
+        print("--------------------------")
+
+        #Print the current program time
+        print("|\t\tT: ", data_list["program_time"])
+
+        print("\n")
+
+        #Print the current mode 
+        print("| Current State: ", data_list["state"])
+
+        print("|\n")
+
+        #Print the Camera data
+        print("| Object spotted: ", data_list["spotted_object"])
+        print("| \tConfidence score: ", data_list["spotted_object_score"])
+
+        print("|\n")
+
+        #Print sensor data
+        print("| EMG input: ", data_list["muscle_input"])
+        print("| \tConverted percentage: ", data_list["muscle_input_percent"], "%")
+        print("| \tInput type: ", data_list["muscle_input_type"])
+
+        print("|\n")
+
+        #Print servo data
+        print("| Grip loaded: ", data_list["servo_grip_loaded"])
+
+        print("|\n")
+
+        #Print vibration status
+        print("| Vibration status: ", data_list["vibes"])
