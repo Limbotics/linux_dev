@@ -81,7 +81,7 @@ statuslights.startup_complete = True
 slights_startup_thread.join()
 
 #Initialize hand positon/state lights
-servs.grip_config = hand_interface.grips.openGrip.value
+servs.grip_config = hand_interface.grip_angles.lateral_power.value
 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
 servo_thread.start()
 servo_thread.join()
