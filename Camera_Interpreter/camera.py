@@ -177,7 +177,7 @@ class camera_interface():
         self.other_cam_data = []
         for c in objs:
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
-            if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.keys())):
+            if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score

@@ -77,7 +77,7 @@ class handLUTControl(handServoControl):
             self.moveFinger(finger, (percent)*self.grip_config[finger])  
 
     def safe_shutdown(self):
-        self.grip_config = grips.openGrip.value
+        self.grip_config = hand_interface.grip_angles.lateral_power.value
 
         self.process_grip_change()
 
