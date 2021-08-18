@@ -181,7 +181,12 @@ class muscle_interface():
         max_delta = 0.03 #Max percent change in a single step across the range
 
         #Read the raw value
-        raw_val = self.ads.read_adc(0, gain=1)
+        raw_val = 0
+        if not self.disconnected:
+            raw_val = self.ads.read_adc(0, gain=1)
+        else:
+            raw_val = self.c.root.channel_0_value()
+
         #Check edge case on startup
         if len(self.averaging_array) == 0:
             self.averaging_array.append(raw_val)

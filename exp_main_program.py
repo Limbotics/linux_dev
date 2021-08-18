@@ -62,8 +62,6 @@ else:
 #Servo control initialization
 servs = servo.handLUTControl()
 
-outValue = 0
-    
 #Save the state of the arm
 reported_object = ""
 saved_state = False
@@ -71,7 +69,6 @@ user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.25
 time_required_for_user_command = 0.1
-servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
 #Create user input program killer watchdog
@@ -83,7 +80,7 @@ statuslights.startup_complete = True
 slights_startup_thread.join()
 
 #Initialize hand positon/state lights
-servs.grip_config = hand_interface.grips.openGrip.value
+servs.grip_config = hand_interface.grip_angles.lateral_power.value
 servo_thread = threading.Thread(target=servs.process_grip_change, args=())
 servo_thread.start()
 servo_thread.join()
@@ -109,31 +106,32 @@ while (cam_thread.is_alive() and not SM.killed):
 
     #Set grip_picked to "" if it's not in the database of known objects
     object_id = True
-    if(reported_object not in hand_interface.grips._value2member_map_ or (reported_object == hand_interface.grips.openGrip.value)):
-        reported_object = SM.default_grip.value
+    if(reported_object == ""):
+        reported_object = SM.default_grip
         object_id = False
+    grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
     
     #Check if the new state is a special one
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
     #Generate the nice output
-    if (time.time() - output_delay) > 0.05:
+    if (time.time() - output_delay) > 0.25:
         data_list = {}
         data_list["program_time"] = str(round((time.time() - SM._program_T0), 2))
         data_list["state"] = str(SM.current_mode)
         data_list["spotted_object"] = str(cam.cam_data)
+        data_list["other_cam_data"] = cam.other_cam_data 
         data_list["inference_time"] = str(round((1/cam.inference_time), 1))
         data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
         data_list["muscle_input"] = str(int(mi.read_filtered()))
         data_list["muscle_input_percent"] = str(100*mi.pmd)
         data_list["muscle_input_type"] = str(mi.last_input[0])
-        data_list["servo_grip_loaded"] = str(servs.grip_config)
+        data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
         SM.nice_output(data_list)
 
         output_delay = time.time()
     
-
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
     if (SM.current_mode == modes.AGS):
@@ -142,22 +140,21 @@ while (cam_thread.is_alive() and not SM.killed):
         if cam.temp_pause:
             cam.temp_pause = False
 
-        #Let the servos know if the camera sees anything            
-        servs.grip_config = reported_object
+        #Let the servos know if the camera sees anything         
+        grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+        servs.grip_config = grip_name
 
     elif (SM.current_mode == modes.GCM):
         # print("[MT] In GCM Mode Processing")
         #Command the camera to stop processing inputs temporarily
         cam.temp_pause = True
         #Confirmed user commanding into reported object
-        servs.grip_config = reported_object
+        # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+        # servs.grip_config = grip_name
 
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,mi.pmd))
+        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd,))
         servo_thread.start()
-
-        #Give servos some time to actuate
-        time.sleep(servo_sleep)
     else:
         raise AttributeError("State Manager has no current mode defined.")
 

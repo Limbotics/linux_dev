@@ -13,8 +13,8 @@ sys.path.append(os.path.abspath('../Hand_Classes'))
 #Import interface enums from hand_interface
 from Hand_Classes import hand_interface
 fingers = hand_interface.fingers
+grip_names = hand_interface.grip_names
 grips = hand_interface.grips
-grip_finger_angles = hand_interface.grip_finger_angles
 
 class handServoControl:
     """
@@ -50,7 +50,6 @@ class handServoControl:
         """
         self.kit.servo[finger].angle = angle
         self.angles[finger] = angle
-        time.sleep(0.1)
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
@@ -65,79 +64,20 @@ class handLUTControl(handServoControl):
         
     """
     
-    def __init__(self, grip_config=grips.openGrip.value):
+    def __init__(self, grip_config=hand_interface.grip_angles.lateral_power.value):
         super().__init__()
         self.grip_config = grip_config
-
-        #Initialize the dispatcher
-        dispatch = {
-            grips.openGrip.value: grip_finger_angles.openGrip.value,
-            grips.small.value:     grip_finger_angles.small.value,
-            grips.bottle.value:   grip_finger_angles.bottle.value,
-            grips.bowl.value:      grip_finger_angles.bowl.value,
-            grips.test.value:       grip_finger_angles.test.value,
-            grips.cell.value:    grip_finger_angles.cell_phone.value
-        }
-        user_dispatch = {
-            grips.openGrip.value: grip_finger_angles.open_closed.value,
-            grips.bottle.value: grip_finger_angles.bottle_full_closed.value,
-            grips.small.value:     grip_finger_angles.small_full_closed.value,
-            grips.test.value: grip_finger_angles.test.value,
-            grips.cell.value:    grip_finger_angles.cell_phone_closed.value
-        }
-        self.user_dispatch = user_dispatch
-        self.dispatch = dispatch
 
         #Run the dispatcher to initialize servo position
         self.process_grip_change()
 
-    def process_grip_change(self, user_grip=False, percent=0):
+    def process_grip_change(self, percent=0):
         """Process the current grip config set in the class object."""
-        # print("[SERVO] Processing grip change to ", str(self.grip_config))
-        #try:
-        if(not user_grip):
-            #Use the dispatcher to correlate the current grip to the angles for that grip
-            finger_angles = self.dispatch[self.grip_config]
-
-            #Iterate through the fingers and set them to their respective angle
-            # print("[SERVO] Setting finger angles")
-            for finger in finger_angles:
-                self.moveFinger(finger, finger_angles[finger])  
-        else:
-            #Use the dispatcher to correlate the current grip to the angles for that grip
-            finger_angles = self.user_dispatch[self.grip_config]
-
-            #Iterate through the fingers and set them to their respective angle
-            # print("[SERVO] Setting user commanded fingers to ", str(100*percent), "%")
-            for finger in finger_angles:
-                self.moveFinger(finger, (percent)*finger_angles[finger])  
-        #except Exception as e:
-        #    print(str(e))
-            # print("[DEBUG] User command for no specific object")
-        #    pass
-
-    def user_input_actuation(self, percent):
-        """Convert myoelectric input into servo actuation for the current grip."""
-        pass
-
-    def _user_input_thread(self):
-        pass
-
-    def __list_diff(self, li1, li2):
-        """Math helper function for authorized_to_change_grips"""
-        return (list(list(set(li1)-set(li2)) + list(set(li2)-set(li1))))
-
-    def authorized_to_change_grips(self):
-        """Checks if all the angles are set to zero by the user, implying the computer has priority to change the grip."""
-        
-        #Get the difference between the current list of angles and the initial angles in the current grip
-        delta_vals = self.__list_diff(list(self.angles.values()), list(self.dispatch[self.grip_config].values()))
-
-        #return True if all are zero, or False if any are not zero.
-        return all(value == 0 for value in delta_vals)
+        for finger in self.grip_config:
+            self.moveFinger(finger, (percent)*self.grip_config[finger])  
 
     def safe_shutdown(self):
-        self.grip_config = grips.openGrip.value
+        self.grip_config = hand_interface.grip_angles.lateral_power.value
 
         self.process_grip_change()
 

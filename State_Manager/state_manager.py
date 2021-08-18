@@ -48,7 +48,7 @@ class Mode_Manager():
         self._current_mode = modes.AGS
 
         #Define the default grip 
-        self._default_grip = grips.openGrip
+        self._default_grip = ""
 
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
@@ -222,9 +222,9 @@ class Mode_Manager():
         # print("|\n")
 
         #Print the Camera data
-        object_spot = "\n| Object spotted: " + data_list["spotted_object"]
+        object_spot = "\n| Object spotted: " + data_list["spotted_object"] + ", " + data_list["spotted_object_score"] + "%"
         main_str += object_spot
-        conf_score = "\n| \tConfidence score: " + data_list["spotted_object_score"] + "%"
+        conf_score = "\n| \tOther objects: " + str(data_list["other_cam_data"])
         main_str += conf_score
         main_str += "\n| \tInference FPS: " + data_list["inference_time"]
 

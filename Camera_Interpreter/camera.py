@@ -106,6 +106,7 @@ class camera_interface():
         
         # QR code detection object
         self.cam_data = ""
+        self.other_cam_data = []
         self.cam_data_score = 0
         self.inference_time = 1
         self.object_spotted = False
@@ -114,7 +115,8 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 1
+        self.object_not_spotted_delta_req = 5
+        self.new_object_spotted_timer = 1
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -144,7 +146,7 @@ class camera_interface():
                 data, score = self.detect_main_object(self.cam_image)
                 
                 #If the camera sees an object, skip the time requirement
-                if((data != "" and (time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req) or data == self.cam_data):
+                if((data != "" and (time.time() - self.object_spotted_T0) > self.new_object_spotted_timer) or data == self.cam_data):
                     self.cam_data = data
                     self.cam_data_score = score
                     self.object_spotted_T0 = time.time()
@@ -173,13 +175,16 @@ class camera_interface():
 
         highest_scoring_label = ""
         highest_score = 0
+        self.other_cam_data = []
         for c in objs:
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
-            if((c.score > min_conf_threshold) and (c.score <= 10) and (c.score > highest_score) and (object_name in grips._value2member_map_)):
+            if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
+            elif (c.score > min_conf_threshold):
+                self.other_cam_data.append((object_name, c.score))
         #return (highest_scoring_label, highest_score)
         # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")

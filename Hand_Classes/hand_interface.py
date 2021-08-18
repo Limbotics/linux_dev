@@ -26,102 +26,109 @@ class fingers(Enum):
     ring = 2
     pinky = 4 #4
 
-class grips(Enum):
-    """ Defines the different grips available."""
-    openGrip = "open grip"
-    small =    "eventually sciss"
-    bottle =   "banana"
-    bowl =     "bowl grip"
-    test = "test"
-    cell = "cell phone"
+# class grip_finger_angles(Enum):
+#     """Stores the angle each finger goes to initially for a given grip."""
+#     lateral_power = {
+#         fingers.thumb.value:   0,
+#         fingers.index.value:   0,
+#         fingers.middle.value:  15,
+#         fingers.ring.value:    15,
+#         # fingers.pinky.value:   0
+#     }
 
-    def next(self):
-        cls = self.__class__
-        members = list(cls)
-        index = members.index(self) + 1
-        if index >= len(members):
-            # to cycle around
-            index = 0
-        return members[index]
+#     tripod_pinch = {
+#         fingers.thumb.value:   45,
+#         fingers.index.value:   45,
+#         fingers.middle.value:  180,
+#         fingers.ring.value:    180,
+#         # fingers.pinky.value:   0
+#     }
 
-class grip_finger_angles(Enum):
-    """Stores the angle each finger goes to initially for a given grip."""
-    openGrip = {
-        fingers.thumb.value:   0,
-        fingers.index.value:   0,
-        fingers.middle.value:  15,
-        fingers.ring.value:    15,
-        # fingers.pinky.value:   0
-    }
+#     thumb_pinch = {
+#         fingers.thumb.value:   45,
+#         fingers.index.value:   180,
+#         fingers.middle.value:  180,
+#         fingers.ring.value:    180,
+#         # fingers.pinky.value:   180
+#     }
 
-    open_closed = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   45,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
-        # fingers.pinky.value:   0
-    }
+#     point = {
+#         fingers.thumb.value:   45,
+#         fingers.index.value:   45,
+#         fingers.middle.value:  180,
+#         fingers.ring.value:    180,
+#         # fingers.pinky.value:   180
+#     }
 
-    bowl = {
-        # fingers.thumb.value:   45,
-        # fingers.index.value:   180,
-        # fingers.middle.value:  180,
-        # fingers.ring.value:    180,
-        # fingers.pinky.value:   180
-    }
+class grip_names(Enum):
+    """Defines the different grip types"""
+    lateral_power = "lateral_power"
+    tripod = "tripod"
+    thumb_pinch = "thumb_pinch"
+    point = "point"
+    open_palm = "open_palm"
 
-    small = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   45,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
-        # fingers.pinky.value:   180
-    }
-
-    small_full_closed = {
-        fingers.thumb.value:   180,
-        fingers.index.value:   180,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
-        # fingers.pinky.value:   180
-    }
-
-    bottle = { 
-        fingers.thumb.value:   20,
-        fingers.index.value:   20,
-        fingers.middle.value:  30,
-        fingers.ring.value:    30,
-    #     fingers.pinky.value:   160
-    }
-
-    bottle_full_closed = {
-        fingers.thumb.value:   130,
-        fingers.index.value:   130,
-        fingers.middle.value:  170,
-        fingers.ring.value:    170,
-    #     fingers.pinky.value:   160
-    }
-
-    cell_phone = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   0,
-        fingers.middle.value:  0,
-        fingers.ring.value:    100,
-    #     fingers.pinky.value:   160
-    }
-
-    cell_phone_closed = {
+class grip_angles(Enum):
+    lateral_power = {
         fingers.thumb.value:   150,
-        fingers.index.value:   0,
-        fingers.middle.value:  0,
-        fingers.ring.value:    180,
-    #     fingers.pinky.value:   160
-    }
-
-    test = {
-        fingers.thumb.value:   180,
         fingers.index.value:   180,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
-    #     fingers.pinky.value:   160
+        # fingers.pinky.value:   0
     }
+    tripod = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   0
+    }
+    thumb_pinch = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   180
+    }
+    point = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   180
+    }
+
+class grips(Enum):
+    """ Defines the different grips available with a dictionary. Maps all objects to different grip angle names."""
+    object_to_grip_mapping = {
+        "":             grip_angles.lateral_power.value,
+        "umbrella":     grip_angles.lateral_power.value,
+        "handbag" :     grip_angles.lateral_power.value,
+        "tie":          grip_angles.thumb_pinch.value,
+        "suitcase":     grip_angles.thumb_pinch.value,
+        "frisbee":      grip_angles.thumb_pinch.value,
+        "cup":          grip_angles.lateral_power.value,
+        "fork":         grip_angles.tripod.value,
+        "knife":        grip_angles.tripod.value,
+        "spoon":        grip_angles.tripod.value,
+        "bowl":         grip_angles.point.value,
+        "banana":       grip_angles.lateral_power.value,
+        "apple":        grip_angles.lateral_power.value,
+        "sandwich":     grip_angles.lateral_power.value,
+        "remote":       grip_angles.lateral_power.value,
+        "cell phone":   grip_angles.thumb_pinch.value,
+        "microwave":    grip_angles.lateral_power.value,
+        "refrigerator": grip_angles.lateral_power.value,
+        "book":         grip_angles.thumb_pinch.value,
+        "scissors":     grip_angles.lateral_power.value,
+        "toothbrush":   grip_names.tripod.value,
+    }
+    
+    # def next(self):
+    #     cls = self.__class__
+    #     members = list(cls)
+    #     index = members.index(self) + 1
+    #     if index >= len(members):
+    #         # to cycle around
+    #         index = 0
+    #     return members[index]
