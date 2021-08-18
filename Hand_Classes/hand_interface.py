@@ -101,7 +101,7 @@ class grip_angles(Enum):
 class grips(Enum):
     """ Defines the different grips available with a dictionary. Maps all objects to different grip angle names."""
     object_to_grip_mapping = {
-        "none": grip_angles.lateral_power.value,
+        "": grip_angles.lateral_power.value,
         "umbrella": grip_angles.lateral_power.value,
         "handbag" : grip_angles.lateral_power.value,
         "tie": grip_angles.thumb_pinch.value,

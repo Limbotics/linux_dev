@@ -138,7 +138,7 @@ class slights_interface():
                         pulse_thread.start()
                     elif not object_detected and (reported_object != self.spotted_object):
                         self.object_pulse_T0 = 0
-                        self.spotted_object = grips.openGrip.value #the default "no object" 
+                        self.spotted_object = "" #the default "no object" 
                         pulse_thread = threading.Thread(target=self.pulse_vibes, args=(0.05,))
                         pulse_thread.start()
 
