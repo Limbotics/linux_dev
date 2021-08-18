@@ -115,7 +115,8 @@ class camera_interface():
         self.cam_image = None
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
-        self.object_not_spotted_delta_req = 1
+        self.object_not_spotted_delta_req = 5
+        self.new_object_spotted_timer = 1
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -145,7 +146,7 @@ class camera_interface():
                 data, score = self.detect_main_object(self.cam_image)
                 
                 #If the camera sees an object, skip the time requirement
-                if((data != "" and (time.time() - self.object_spotted_T0) > self.object_not_spotted_delta_req) or data == self.cam_data):
+                if((data != "" and (time.time() - self.object_spotted_T0) > self.new_object_spotted_timer) or data == self.cam_data):
                     self.cam_data = data
                     self.cam_data_score = score
                     self.object_spotted_T0 = time.time()
