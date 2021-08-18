@@ -149,7 +149,8 @@ while (cam_thread.is_alive() and not SM.killed):
         #Command the camera to stop processing inputs temporarily
         cam.temp_pause = True
         #Confirmed user commanding into reported object
-        servs.grip_config = reported_object
+        # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+        # servs.grip_config = grip_name
 
         #servo_thread.join()
         servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd,))
