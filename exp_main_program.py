@@ -152,7 +152,7 @@ while (cam_thread.is_alive() and not SM.killed):
         servs.grip_config = reported_object
 
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(True,mi.pmd))
+        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd))
         servo_thread.start()
 
         #Give servos some time to actuate
