@@ -141,7 +141,7 @@ while (cam_thread.is_alive() and not SM.killed):
             cam.temp_pause = False
 
         #Let the servos know if the camera sees anything         
-        grip_name = hand_interface.grips.object_to_grip_mapping[reported_object]   
+        grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
         servs.grip_config = grip_name
 
     elif (SM.current_mode == modes.GCM):
