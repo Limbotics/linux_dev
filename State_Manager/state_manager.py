@@ -222,7 +222,7 @@ class Mode_Manager():
         # print("|\n")
 
         #Print the Camera data
-        object_spot = "\n| Object spotted: (" + data_list["spotted_object"] + ", " + data_list["spotted_object_score"] + "%"
+        object_spot = "\n| Object spotted: " + data_list["spotted_object"] + ", " + data_list["spotted_object_score"] + "%"
         main_str += object_spot
         conf_score = "\n| \tOther objects: " + str(data_list["other_cam_data"])
         main_str += conf_score
