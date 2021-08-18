@@ -69,7 +69,6 @@ user_command_detected = False
 time_required_for_open_state = 5
 time_required_for_any_state = 0.25
 time_required_for_user_command = 0.1
-servo_sleep = 0.05
 program_T0 = time.time()
 SM = state_manager.Mode_Manager()
 #Create user input program killer watchdog
@@ -110,6 +109,7 @@ while (cam_thread.is_alive() and not SM.killed):
     if(reported_object == ""):
         reported_object = SM.default_grip
         object_id = False
+    grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
     
     #Check if the new state is a special one
     statuslights.set_status(object_id, user_command_detected, reported_object)
@@ -126,7 +126,7 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["muscle_input"] = str(int(mi.read_filtered()))
         data_list["muscle_input_percent"] = str(100*mi.pmd)
         data_list["muscle_input_type"] = str(mi.last_input[0])
-        data_list["servo_grip_loaded"] = str(servs.grip_config)
+        data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
         SM.nice_output(data_list)
 
@@ -155,9 +155,6 @@ while (cam_thread.is_alive() and not SM.killed):
         #servo_thread.join()
         servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd,))
         servo_thread.start()
-
-        #Give servos some time to actuate
-        time.sleep(servo_sleep)
     else:
         raise AttributeError("State Manager has no current mode defined.")
 
