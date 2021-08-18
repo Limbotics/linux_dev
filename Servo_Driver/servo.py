@@ -71,7 +71,7 @@ class handLUTControl(handServoControl):
         #Run the dispatcher to initialize servo position
         self.process_grip_change()
 
-    def process_grip_change(self, percent=0):
+    def process_grip_change(self, percent):
         """Process the current grip config set in the class object."""
         for finger in self.grip_config:
             self.moveFinger(finger, (percent)*self.grip_config[finger])  
