@@ -62,8 +62,6 @@ else:
 #Servo control initialization
 servs = servo.handLUTControl()
 
-outValue = 0
-    
 #Save the state of the arm
 reported_object = ""
 saved_state = False
@@ -109,7 +107,7 @@ while (cam_thread.is_alive() and not SM.killed):
 
     #Set grip_picked to "" if it's not in the database of known objects
     object_id = True
-    if(reported_object not in hand_interface.grips._value2member_map_ or (reported_object == hand_interface.grips.openGrip.value)):
+    if(reported_object == ""):
         reported_object = SM.default_grip.value
         object_id = False
     
@@ -117,11 +115,12 @@ while (cam_thread.is_alive() and not SM.killed):
     statuslights.set_status(object_id, user_command_detected, reported_object)
 
     #Generate the nice output
-    if (time.time() - output_delay) > 0.05:
+    if (time.time() - output_delay) > 0.01:
         data_list = {}
         data_list["program_time"] = str(round((time.time() - SM._program_T0), 2))
         data_list["state"] = str(SM.current_mode)
         data_list["spotted_object"] = str(cam.cam_data)
+        data_list["other_objects"] = cam.other_cam_data 
         data_list["inference_time"] = str(round((1/cam.inference_time), 1))
         data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
         data_list["muscle_input"] = str(int(mi.read_filtered()))
@@ -133,7 +132,6 @@ while (cam_thread.is_alive() and not SM.killed):
 
         output_delay = time.time()
     
-
     #Pass the current system status to the state manager
     SM.master_state_tracker(user_command_detected)
     if (SM.current_mode == modes.AGS):
@@ -142,8 +140,9 @@ while (cam_thread.is_alive() and not SM.killed):
         if cam.temp_pause:
             cam.temp_pause = False
 
-        #Let the servos know if the camera sees anything            
-        servs.grip_config = reported_object
+        #Let the servos know if the camera sees anything         
+        grip_name = hand_interface.grips.object_to_grip_mapping[reported_object]   
+        servs.grip_config = grip_name
 
     elif (SM.current_mode == modes.GCM):
         # print("[MT] In GCM Mode Processing")
