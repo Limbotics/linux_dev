@@ -64,7 +64,7 @@ class handLUTControl(handServoControl):
         
     """
     
-    def __init__(self, grip_config=grips.grip_to_angle_mapping[grip_names.lateral_power.value]):
+    def __init__(self, grip_config=hand_interface.grip_angles.lateral_power):
         super().__init__()
         self.grip_config = grip_config
 
@@ -73,10 +73,8 @@ class handLUTControl(handServoControl):
 
     def process_grip_change(self, percent=0):
         """Process the current grip config set in the class object."""
-        finger_angles = grips.grip_to_angle_mapping[self.grip_config]
-
-        for finger in finger_angles:
-            self.moveFinger(finger, (percent)*finger_angles[finger])  
+        for finger in self.grip_config:
+            self.moveFinger(finger, (percent)*self.grip_config[finger])  
 
     def safe_shutdown(self):
         self.grip_config = grips.openGrip.value

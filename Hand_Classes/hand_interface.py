@@ -68,67 +68,67 @@ class grip_names(Enum):
     point = "point"
     open_palm = "open_palm"
 
+class grip_angles(Enum):
+    lateral_power = {
+        fingers.thumb.value:   0,
+        fingers.index.value:   0,
+        fingers.middle.value:  15,
+        fingers.ring.value:    15,
+        # fingers.pinky.value:   0
+    }
+    tripod = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   0
+    }
+    thumb_pinch = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   180
+    }
+    point = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   180
+    }
+
 class grips(Enum):
     """ Defines the different grips available with a dictionary. Maps all objects to different grip angle names."""
     object_to_grip_mapping = {
-        "none": grip_names.lateral_power.value,
-        "umbrella": grip_names.lateral_power.value,
-        "handbag" : grip_names.lateral_power.value,
-        "tie": grip_names.thumb_pinch.value,
-        "suitcase": grip_names.thumb_pinch.value,
-        "frisbee":grip_names.thumb_pinch.value,
-        "cup":grip_names.lateral_power.value,
-        "fork": grip_names.tripod.value,
-        "knife": grip_names.tripod.value,
-        "spoon":grip_names.tripod.value,
-        "bowl":grip_names.open_palm.value,
-        "banana":grip_names.lateral_power.value,
-        "apple":grip_names.lateral_power.value,
-        "sandwich":grip_names.lateral_power.value,
-        "remote":grip_names.lateral_power.value,
-        "cell phone":grip_names.thumb_pinch.value,
-        "microwave":grip_names.lateral_power.value,
-        "refrigerator":grip_names.lateral_power.value,
-        "book":grip_names.thumb_pinch.value,
-        "scissors":grip_names.lateral_power.value,
+        "none": grip_angles.lateral_power.value,
+        "umbrella": grip_angles.lateral_power.value,
+        "handbag" : grip_angles.lateral_power.value,
+        "tie": grip_angles.thumb_pinch.value,
+        "suitcase": grip_angles.thumb_pinch.value,
+        "frisbee":grip_angles.thumb_pinch.value,
+        "cup":grip_angles.lateral_power.value,
+        "fork": grip_angles.tripod.value,
+        "knife": grip_angles.tripod.value,
+        "spoon":grip_angles.tripod.value,
+        "bowl":grip_angles.point.value,
+        "banana":grip_angles.lateral_power.value,
+        "apple":grip_angles.lateral_power.value,
+        "sandwich":grip_angles.lateral_power.value,
+        "remote":grip_angles.lateral_power.value,
+        "cell phone":grip_angles.thumb_pinch.value,
+        "microwave":grip_angles.lateral_power.value,
+        "refrigerator":grip_angles.lateral_power.value,
+        "book":grip_angles.thumb_pinch.value,
+        "scissors":grip_angles.lateral_power.value,
         "toothbrush":grip_names.tripod.value,
     }
-    grip_to_angle_mapping = {
-        grip_names.lateral_power.value: {
-            fingers.thumb.value:   0,
-            fingers.index.value:   0,
-            fingers.middle.value:  15,
-            fingers.ring.value:    15,
-            # fingers.pinky.value:   0
-        }, 
-        grip_names.tripod.value: {
-            fingers.thumb.value:   45,
-            fingers.index.value:   45,
-            fingers.middle.value:  180,
-            fingers.ring.value:    180,
-            # fingers.pinky.value:   0
-        },
-        grip_names.thumb_pinch.value: {
-            fingers.thumb.value:   45,
-            fingers.index.value:   180,
-            fingers.middle.value:  180,
-            fingers.ring.value:    180,
-            # fingers.pinky.value:   180
-        },
-        grip_names.point.value: {
-            fingers.thumb.value:   45,
-            fingers.index.value:   45,
-            fingers.middle.value:  180,
-            fingers.ring.value:    180,
-            # fingers.pinky.value:   180
-        }
-    }
     
-    def next(self):
-        cls = self.__class__
-        members = list(cls)
-        index = members.index(self) + 1
-        if index >= len(members):
-            # to cycle around
-            index = 0
-        return members[index]
+    # def next(self):
+    #     cls = self.__class__
+    #     members = list(cls)
+    #     index = members.index(self) + 1
+    #     if index >= len(members):
+    #         # to cycle around
+    #         index = 0
+    #     return members[index]
