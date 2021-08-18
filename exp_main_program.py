@@ -108,7 +108,7 @@ while (cam_thread.is_alive() and not SM.killed):
     #Set grip_picked to "" if it's not in the database of known objects
     object_id = True
     if(reported_object == ""):
-        reported_object = SM.default_grip.value
+        reported_object = SM.default_grip
         object_id = False
     
     #Check if the new state is a special one

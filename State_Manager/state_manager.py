@@ -48,7 +48,7 @@ class Mode_Manager():
         self._current_mode = modes.AGS
 
         #Define the default grip 
-        self._default_grip = grips.grip_to_angle_mapping[hand_interface.grip_names.lateral_power.value]
+        self._default_grip = hand_interface.grip_angles.lateral_power.value
 
         #Maps how system inputs map to events
         self.inputs_to_events_mapping = {
