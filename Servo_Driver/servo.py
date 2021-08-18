@@ -64,7 +64,7 @@ class handLUTControl(handServoControl):
         
     """
     
-    def __init__(self, grip_config=hand_interface.grip_angles.lateral_power):
+    def __init__(self, grip_config=hand_interface.grip_angles.lateral_power.value):
         super().__init__()
         self.grip_config = grip_config
 
