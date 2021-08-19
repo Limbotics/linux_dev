@@ -240,7 +240,7 @@ class Mode_Manager():
 
         #Print servo data
         grip_name = ""
-        for key in hand_interface.grip_angles.angle_names:
+        for key in hand_interface.grip_angles.angle_names.value:
             if hand_interface.grip_angles.angle_names.value[key] == data_list["servo_grip_loaded"]:
                 grip_name = key.value
                 break
