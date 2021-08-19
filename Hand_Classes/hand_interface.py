@@ -97,6 +97,20 @@ class grip_angles(Enum):
         fingers.ring.value:    180,
         # fingers.pinky.value:   180
     }
+    open_palm = {
+        fingers.thumb.value:   0,
+        fingers.index.value:   0,
+        fingers.middle.value:  0,
+        fingers.ring.value:    0,
+        # fingers.pinky.value:   180
+    }
+    angle_names = {
+        grip_names.lateral_power: lateral_power,
+        grip_names.tripod: tripod,
+        grip_names.thumb_pinch: thumb_pinch,
+        grip_names.point: point,
+        grip_names.open_palm: open_palm
+    }
 
 class grips(Enum):
     """ Defines the different grips available with a dictionary. Maps all objects to different grip angle names."""
