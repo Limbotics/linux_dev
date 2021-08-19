@@ -239,8 +239,12 @@ class Mode_Manager():
         main_str += input_type
 
         #Print servo data
-        name = next(name for name, value in vars(hand_interface.grip_angles.angle_names).items() if value == data_list["servo_grip_loaded"])
-        loaded = "\n| Grip loaded: " + name
+        grip_name = ""
+        for key in hand_interface.grip_angles.angle_names:
+            if hand_interface.grip_angles.angle_names.value[key] == data_list["servo_grip_loaded"]:
+                grip_name = key.value
+                break
+        loaded = "\n| Grip loaded: " + str(grip_name)
         main_str += loaded
 
         # print("|\n")
