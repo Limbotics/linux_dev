@@ -49,12 +49,12 @@ x = 0
 
 
 # Load default font.
-font = ImageFont.load_default()
+# font = ImageFont.load_default()
 
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
-# font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 9)
+font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 9)
 
 while True:
 
