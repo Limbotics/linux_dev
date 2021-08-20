@@ -75,7 +75,7 @@ while True:
     # Write four lines of text.
 
     draw.text((x, top + 0), "Aye where my", font=font, fill=255)
-    draw.text((x, top + 0), " board, bitch", font=font, fill=255)
+    draw.text((x, top + 20), " board, bitch", font=font, fill=255)
     # draw.text((x, top + 8), "CPU load: " + CPU, font=font, fill=255)
     # draw.text((x, top + 16), MemUsage, font=font, fill=255)
     # draw.text((x, top + 25), Disk, font=font, fill=255)
