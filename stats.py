@@ -54,7 +54,7 @@ x = 0
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
-font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 9)
+font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 20)
 
 while True:
 
@@ -75,9 +75,9 @@ while True:
     # Write four lines of text.
 
     draw.text((x, top + 0), "IP: " + IP, font=font, fill=255)
-    draw.text((x, top + 8), "CPU load: " + CPU, font=font, fill=255)
-    draw.text((x, top + 16), MemUsage, font=font, fill=255)
-    draw.text((x, top + 25), Disk, font=font, fill=255)
+    # draw.text((x, top + 8), "CPU load: " + CPU, font=font, fill=255)
+    # draw.text((x, top + 16), MemUsage, font=font, fill=255)
+    # draw.text((x, top + 25), Disk, font=font, fill=255)
 
     # Display image.
     disp.image(image)
