@@ -14,6 +14,14 @@ input_types = hand_interface.input_types
 
 from enum import Enum
 
+import time
+import subprocess
+
+from board import SCL, SDA
+import busio
+from PIL import Image, ImageDraw, ImageFont
+import adafruit_ssd1306
+
 #Tutorial for the display
 #https://learn.adafruit.com/adafruit-pioled-128x32-mini-oled-for-raspberry-pi/usage
 
@@ -109,8 +117,21 @@ class slights_interface():
             input_types.none: status_states.user_not_active
         }
 
-        #Run the startup sequence
-        # self.startup_sequence()
+        #Initialize the display
+        self.i2c = busio.I2C(SCL, SDA)
+        self.disp = adafruit_ssd1306.SSD1306_I2C(128, 32, self.i2c)
+        self.disp.fill(0)
+        self.disp.show()
+        self.width = self.disp.width
+        self.height = self.disp.height
+        self.image = Image.new("1", (self.width, self.height))
+
+        # Get drawing object to draw on image.
+        self.draw = ImageDraw.Draw(self.image)
+
+        # Draw a black filled box to clear the image.
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        self.font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 35)
 
         #Set initial status
         # self.set_status(False, False)
@@ -129,10 +150,11 @@ class slights_interface():
         statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
 
         #Update the display with the object
-        # draw.text((x, top + 0), "IP: " + IP, font=font, fill=255)
-        # draw.text((x, top + 8), "CPU load: " + CPU, font=font, fill=255)
-        # draw.text((x, top + 16), MemUsage, font=font, fill=255)
-        # draw.text((x, top + 25), Disk, font=font, fill=255)
+        # Draw a black filled box to clear the image.
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+        self.draw.text((0, 0), reported_object, font=self.font, fill=255)
+        self.disp.image(self.image)
+        self.disp.show() 
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
