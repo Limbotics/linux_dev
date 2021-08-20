@@ -53,7 +53,7 @@ class MyService(rpyc.Service):
             elif ans == 2:
                 #Write a down hold to channel 0
                 self.channel_0 = self.max_0
-                time.sleep(5)
+                time.sleep(60)
                 self.channel_0 = self.default_0
             elif ans == 3:
                 #Write an up hold to channel 1
@@ -64,7 +64,7 @@ class MyService(rpyc.Service):
                 #Write a continuous pulse from min to max over 10 seconds
                 self.channel_0 = self.default_0
                 c = time.time()
-                loop_time = 5
+                loop_time = 60
                 while ((time.time() - c) < loop_time):
                     self.channel_0 = (((time.time() - c)/loop_time) - self.default_0/(self.default_0-self.max_0) ) * (self.max_0 - self.default_0)
                     print(str(self.channel_0))
