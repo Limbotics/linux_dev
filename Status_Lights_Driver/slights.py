@@ -14,6 +14,9 @@ input_types = hand_interface.input_types
 
 from enum import Enum
 
+#Tutorial for the display
+#https://learn.adafruit.com/adafruit-pioled-128x32-mini-oled-for-raspberry-pi/usage
+
 class pinouts(Enum):
     #Use https://coral.ai/docs/dev-board-mini/gpio/#header-pinout to find path, chip, and line for each pin
     #Note: Pins 8, 10, 29, 31, and 37 should not be used to drive resistive loads directly, due to weak drive strength.
@@ -124,6 +127,12 @@ class slights_interface():
         object_status = self.object_status_dispatcher[object_detected]
         user_status = self.user_status_dispatcher[is_activated]
         statuses = [object_status, user_status] #Create statuses list to iterate through, ez updating
+
+        #Update the display with the object
+        # draw.text((x, top + 0), "IP: " + IP, font=font, fill=255)
+        # draw.text((x, top + 8), "CPU load: " + CPU, font=font, fill=255)
+        # draw.text((x, top + 16), MemUsage, font=font, fill=255)
+        # draw.text((x, top + 25), Disk, font=font, fill=255)
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
