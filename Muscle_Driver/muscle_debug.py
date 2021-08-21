@@ -43,7 +43,6 @@ class MyService(rpyc.Service):
         return "what is the airspeed velocity of an unladen swallow?"
 
     def main_thread(self):
-        self.rng = np.random.default_rng(12345)
         while(True):
             print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 4 for continuous close")
             ans = int(input())
