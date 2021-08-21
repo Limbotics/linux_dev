@@ -202,18 +202,18 @@ class muscle_interface():
         self.raw_data.append(raw_val)
 
         #Check edge case on startup
+        self.averaging_array.append(raw_val)
         if len(self.averaging_array) == 0:
-            self.averaging_array.append(raw_val)
-            print("[EMG] Returning raw val, since we have no curve.")
+            # print("[EMG] Returning raw val, since we have no curve.")
             return raw_val
         elif len(self.averaging_array) > array_avg_len:
-            print("[EMG] Popping array element..")
+            # print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
-        print("[EMG] Array: ", str(self.averaging_array))
+        # print("[EMG] Array: ", str(self.averaging_array))
 
         smoothed = self.smooth(self.averaging_array, 19)
-        print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
+        # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
 
         # #Perform filtering step #1: max delta change
