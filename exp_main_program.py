@@ -60,10 +60,6 @@ else:
         time.sleep(2)
         # print("[CAL-CH1] CH1 input threshold: ", str(mi.analogThreshold_1), "CH1 max: ", str(mi.max_input_1))
 
-#Start the emg read thread
-emg_thread = Process(target=mi.AnalogRead, args=())
-emg_thread.start()
-
 #Servo control initialization
 servs = servo.handLUTControl()
 
@@ -165,7 +161,6 @@ while (cam_thread.is_alive() and not SM.killed):
 print("\nScript quit command detected - closing IO objects.")
 statuslights.startup_complete = False
 mi.shutdown()
-emg_thread.join()
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 

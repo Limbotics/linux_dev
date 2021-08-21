@@ -3,6 +3,8 @@ from typing import ChainMap
 
 import queue
 import time
+from multiprocessing import Process
+
 
 from numpy.core.fromnumeric import argmax
 from numpy.lib.twodim_base import _trilu_indices_form_dispatcher
@@ -105,8 +107,8 @@ class muscle_interface():
             #usage: chan.value, chan.voltage
 
             #for advanced trigger
-            self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
-            self.fifo = queue.Queue(self.fifoLength)
+            # self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
+            # self.fifo = queue.Queue(self.fifoLength)
 
             self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
             self.disconnected = False
@@ -172,6 +174,10 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
+        print("[EMG] Initialized emg reader")
+        emg_thread = Process(target=self.read_filtered, args=())
+        emg_thread.start()
+
     def update_0_threshold(self):
         self.analogThreshold_0 = self.ads.read_adc(0, gain=1)
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
@@ -198,64 +204,66 @@ class muscle_interface():
         mvg_avg = 4
 
         #Read the raw value
-        raw_val = 0
-        if not self.disconnected:
-            raw_val = self.ads.read_adc(0, gain=1)
-        else:
-            raw_val = self.c.root.channel_0_value()
+        while not self.thread_killed:
+            raw_val = 0
+            if not self.disconnected:
+                raw_val = self.ads.read_adc(0, gain=1)
+            else:
+                raw_val = self.c.root.channel_0_value()
 
-        #Save the raw data to the debug plot
-        self.raw_data_time.append(time.time() - self.program_T0)
-        self.raw_data.append(raw_val)
+            #Save the raw data to the debug plot
+            self.raw_data_time.append(time.time() - self.program_T0)
+            self.raw_data.append(raw_val)
 
-        #Check edge case on startup
-        self.averaging_array.append(raw_val)
-        if len(self.averaging_array) <= mvg_avg:
-            # print("[EMG] Returning raw val, since we have no curve.")
-            return raw_val
-        elif len(self.averaging_array) > array_avg_len:
-            # print("[EMG] Popping array element..")
-            self.averaging_array.pop(0)
+            #Check edge case on startup
+            self.averaging_array.append(raw_val)
+            if len(self.averaging_array) <= mvg_avg:
+                # print("[EMG] Returning raw val, since we have no curve.")
+                # return raw_val
+                pass
+            elif len(self.averaging_array) > array_avg_len:
+                # print("[EMG] Popping array element..")
+                self.averaging_array.pop(0)
 
-        # print("[EMG] Array: ", str(self.averaging_array))
-        t = time.time()
-        smoothed = self.smooth(self.averaging_array)
-        self.smoothing_time = time.time() - t
-        # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
-        return smoothed
+            # print("[EMG] Array: ", str(self.averaging_array))
+            t = time.time()
+            smoothed = self.smooth(self.averaging_array)
+            self.smoothing_time = time.time() - t
+            # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
+            self.smoothed_data = smoothed
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
         input_persistency = 0.75
-        print("[EMG] Initialized emg reader")
-        while not self.thread_killed:
-            if self.disconnected:
-                new_down_value = self.c.root.channel_0_value() ####
+        #Start the emg read thread
+        
+        if self.disconnected:
+            new_down_value = self.c.root.channel_0_value() ####
 
-                self.ads.update_value(new_down_value)
+            self.ads.update_value(new_down_value)
 
-            input_value = self.read_filtered()
+        input_value = self.smoothed_data
 
-            #Save the filtered value to the debug plot
-            self.filtered_data_time.append(time.time() - self.program_T0)
-            self.filtered_data.append(input_value)
+        #Save the filtered value to the debug plot
+        self.filtered_data_time.append(time.time() - self.program_T0)
+        self.filtered_data.append(input_value)
 
-            #Convert raw analog into percentage range 
-            self.pmd = self.convert_perc(input_value, input_types.down)
+        #Convert raw analog into percentage range 
+        self.pmd = self.convert_perc(input_value, input_types.down)
 
-            if self.pmd != self.temp_input[0]:
-                self.unique_input = True
-                if self.pmd:
-                    self.temp_input = (input_types.down, input_value, time.time())
-                else:
-                    self.temp_input = (input_types.none, input_value, time.time())
+        if self.pmd != self.temp_input[0]:
+            self.unique_input = True
+            if self.pmd:
+                self.temp_input = (input_types.down, input_value, time.time())
+            else:
+                self.temp_input = (input_types.none, input_value, time.time())
 
-            if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
-                self.unique_input = False
-                self.last_input = self.temp_input
-                self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
+        if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
+            self.unique_input = False
+            self.last_input = self.temp_input
+            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
 
         #Check if we have a difference in what we're reporting and the current state
         # if new_pmd and self.last_input[0] == input_types.none:
