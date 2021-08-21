@@ -296,9 +296,12 @@ class muscle_interface():
         plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
         #Plot the events in the timeline
         for event in self.event_list:
-            plt.axvline(event[0], label=event[1]) 
+            if event[1] == "Activated":
+                plt.axvline(event[0], label=event[1], color='g')
+            else:
+                plt.axvline(event[0], label=event[1], color='r')
         #Plot the threshold and maxes
-        plt.axhline(y=(self.max_input_0*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
+        plt.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
         plt.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
         plt.legend()
         plt.xlabel("Time")
