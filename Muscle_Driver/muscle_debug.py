@@ -2,6 +2,7 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 import threading
 import time
+import numpy as np
 
 class MyService(rpyc.Service):
 
@@ -42,6 +43,7 @@ class MyService(rpyc.Service):
         return "what is the airspeed velocity of an unladen swallow?"
 
     def main_thread(self):
+        self.rng = np.random.default_rng(12345)
         while(True):
             print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 4 for continuous close")
             ans = int(input())
@@ -70,8 +72,10 @@ class MyService(rpyc.Service):
     def send_pulse(self, start, fin, delta_t):
         c = time.time()
         while ((time.time() - c) < delta_t):
-                    self.channel_0 = (((time.time() - c)/delta_t) - start/(start-fin) ) * (fin - start)
-                    print(str(self.channel_0))
+            signal = ((((time.time() - c)/delta_t) - start/(start-fin) ) * (fin - start))
+            noise = np.random.uniform(-0.2, 0.2, 1)
+            self.channel_0 = signal + noise[0]*signal
+            print(str(self.channel_0))
 
 if __name__ == "__main__":
 
