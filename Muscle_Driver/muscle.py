@@ -4,6 +4,7 @@ from typing import ChainMap
 import queue
 import time
 from multiprocessing import Process
+from adafruit_blinka.board.pyboard import Y12
 
 
 from numpy.core.fromnumeric import argmax
@@ -196,7 +197,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 4 #The number of readings to average across
+        array_avg_len = 5 #The number of readings to average across
         mvg_avg = 4
 
         #Read the raw value
@@ -214,15 +215,14 @@ class muscle_interface():
         self.averaging_array.append(raw_val)
         if len(self.averaging_array) <= mvg_avg:
             # print("[EMG] Returning raw val, since we have no curve.")
-            # return raw_val
-            pass
+            return raw_val
         elif len(self.averaging_array) > array_avg_len:
             # print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
         # print("[EMG] Array: ", str(self.averaging_array))
         t = time.time()
-        smoothed = self.smooth(self.averaging_array)
+        smoothed = self.smooth(self.averaging_array, mvg_avg)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
@@ -353,10 +353,9 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, y, box_pts=4):
-        box = np.ones(box_pts)/box_pts
-        y_smooth = np.convolve(y, box, mode='same')
-        return y_smooth
+    def smooth(self, y, window_width=4):
+        cumsum_vec = np.cumsum(np.insert(y, 0, 0)) 
+        ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
