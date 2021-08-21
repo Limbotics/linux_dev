@@ -347,10 +347,9 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, data, n=4):
-        ret = np.cumsum(data, dtype=float)
-        ret[n:] = ret[n:] - ret[:-n]
-        return ret[n - 1:] / n
+    def smooth(self, data, N=4):
+        cumsum = np.cumsum(np.insert(data, 0, 0)) 
+        return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
