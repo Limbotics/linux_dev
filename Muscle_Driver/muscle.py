@@ -292,7 +292,7 @@ class muscle_interface():
 
     def shutdown(self):
         """Save the debug data, if it exists."""
-        fig, ax = plt.subplots(1,1)
+        f, ax = plt.subplots(1,1)
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         #Debug
         #Plot the raw data
@@ -311,7 +311,8 @@ class muscle_interface():
         ax.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
-        
+        f.set_figheight(16)
+        f.set_figwidth(12)
         plt.savefig('emg_input.png')
         print("[EMG] Saved Debug plot successfully!")
         
