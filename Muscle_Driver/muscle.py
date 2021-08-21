@@ -5,7 +5,6 @@ import queue
 import time
 import rpyc #Muscle sensor debugging
 import matplotlib
-matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 
 from Hand_Classes import hand_interface
@@ -126,8 +125,11 @@ class muscle_interface():
             
         if(disconnect):
             #Debug
-            plt.plot([1, 2, 3])
-            plt.show()
+            plt.plot([0, 1, 2, 3, 4], [0, 3, 5, 9, 11])
+            plt.plot([0, 1, 2, 3, 4], [2, 1, 7, 3, 20])
+            plt.xlabel("Time")
+            plt.ylabel("EMG input")
+            plt.savefig('emg_input.png')
             print("Plot shown! Waiting now..")
             input()
             self.ads = Analog_Debug()
