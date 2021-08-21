@@ -155,7 +155,7 @@ class muscle_interface():
             self.max_input_0 = 1500
             
         self.pmd = 0
-        self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
+        self.unique_input = True
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
         self.temp_input = (input_types.none, 0, time.time()) #The temporary, nonreported input to compare to last_input
@@ -243,12 +243,14 @@ class muscle_interface():
         new_pmd = self.convert_perc(input_value, input_types.down)
 
         if new_pmd != self.temp_input[0]:
+            self.unique_input = True
             if new_pmd:
                 self.temp_input = (input_types.down, input_value, time.time())
             else:
                 self.temp_input = (input_types.none, input_value, time.time())
 
         if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
+            self.unique_input = False
             self.last_input = self.temp_input
             self.event_list.apend((time.time()-self.program_T0, self.last_input[0]))
 
