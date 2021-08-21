@@ -155,6 +155,7 @@ class muscle_interface():
             self.max_input_0 = 1500
             
         self.pmd = 0
+        self.thread_killed = False
         self.unique_input = True
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
@@ -228,33 +229,32 @@ class muscle_interface():
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
         input_persistency = 0.75
-        if self.disconnected:
-            new_down_value = self.c.root.channel_0_value() ####
+        while not self.thread_killed:
+            if self.disconnected:
+                new_down_value = self.c.root.channel_0_value() ####
 
-            self.ads.update_value(new_down_value)
+                self.ads.update_value(new_down_value)
 
-        input_value = self.read_filtered()
+            input_value = self.read_filtered()
 
-        #Save the filtered value to the debug plot
-        self.filtered_data_time.append(time.time() - self.program_T0)
-        self.filtered_data.append(input_value)
+            #Save the filtered value to the debug plot
+            self.filtered_data_time.append(time.time() - self.program_T0)
+            self.filtered_data.append(input_value)
 
-        #Convert raw analog into percentage range 
-        self.pmd = self.convert_perc(input_value, input_types.down)
+            #Convert raw analog into percentage range 
+            self.pmd = self.convert_perc(input_value, input_types.down)
 
-        if self.pmd != self.temp_input[0]:
-            self.unique_input = True
-            if self.pmd:
-                self.temp_input = (input_types.down, input_value, time.time())
-            else:
-                self.temp_input = (input_types.none, input_value, time.time())
+            if self.pmd != self.temp_input[0]:
+                self.unique_input = True
+                if self.pmd:
+                    self.temp_input = (input_types.down, input_value, time.time())
+                else:
+                    self.temp_input = (input_types.none, input_value, time.time())
 
-        if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
-            self.unique_input = False
-            self.last_input = self.temp_input
-            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
-
-        return self.last_input[0]
+            if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
+                self.unique_input = False
+                self.last_input = self.temp_input
+                self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
 
         #Check if we have a difference in what we're reporting and the current state
         # if new_pmd and self.last_input[0] == input_types.none:
@@ -311,6 +311,8 @@ class muscle_interface():
 
     def shutdown(self):
         """Save the debug data, if it exists."""
+        self.thread_killed = True
+        print("[EMG] Saving data plot...")
         f, ax = plt.subplots(1,1)
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         #Debug
