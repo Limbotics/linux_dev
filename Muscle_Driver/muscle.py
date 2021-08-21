@@ -210,9 +210,9 @@ class muscle_interface():
             # print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
-        # print("[EMG] Array: ", str(self.averaging_array))
+        print("[EMG] Array: ", str(self.averaging_array))
 
-        smoothed = self.smooth(self.averaging_array, 19)
+        smoothed = self.smooth(self.averaging_array, 5)
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
 
