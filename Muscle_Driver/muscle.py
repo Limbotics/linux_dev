@@ -328,17 +328,14 @@ class muscle_interface():
     def shutdown(self):
         """Save the debug data, if it exists."""
         if (self.disconnected):
-            try:
-                #Debug
-                plt.plot(self.raw_data_time, self.raw_data, "Raw Data")
-                plt.plot(self.filtered_data_time, self.filtered_data, "Filtered Data")
-                plt.legend()
-                plt.xlabel("Time")
-                plt.ylabel("EMG input")
-                plt.savefig('emg_input.png')
-                print("[EMG] Saved Debug plot successfully!")
-            except Exception as e:
-                pass
+            #Debug
+            plt.plot(self.raw_data_time, self.raw_data, "Raw Data")
+            plt.plot(self.filtered_data_time, self.filtered_data, "Filtered Data")
+            plt.legend()
+            plt.xlabel("Time")
+            plt.ylabel("EMG input")
+            plt.savefig('emg_input.png')
+            print("[EMG] Saved Debug plot successfully!")
 
     #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):
