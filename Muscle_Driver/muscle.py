@@ -326,10 +326,10 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, y, box_pts):
-        box = np.ones(box_pts)/box_pts
-        y_smooth = np.convolve(y, box, mode='same')
-        return y_smooth
+    def smooth(self, data, window_width):
+        cumsum_vec = np.cumsum(np.insert(data, 0, 0)) 
+        ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
+        return ma_vec
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
