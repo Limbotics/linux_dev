@@ -66,7 +66,7 @@ class MyService(rpyc.Service):
                 self.set_with_noise(self.default_0)
 
     def set_with_noise(self, val):
-        noise = np.random.uniform(-0.2, 0.2, 1)
+        noise = np.random.uniform(-0.1, 0.1, 1)
         self.channel_0 = noise[0]*val + val
 
     def send_pulse(self, start, fin, delta_t):
