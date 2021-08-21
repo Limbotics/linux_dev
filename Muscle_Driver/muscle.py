@@ -154,7 +154,7 @@ class muscle_interface():
                     time.sleep(3)
 
             #Define debug-compatible threshold values
-            self.analogThreshold_0 = 500 
+            self.analogThreshold_0 = 700 
             self.max_input_0 = 1500
             
         self.pmd = 0
@@ -308,8 +308,10 @@ class muscle_interface():
                 # new_perc = self.closest(self.perc_buckets, perc)
                 if perc > self.binary_threshold:
                     return 1
-                else:
+                elif perc < self.analogThreshold_0:
                     return 0
+                else:
+                    return self.pmd
             else:
                 return 0
         else:
