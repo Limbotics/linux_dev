@@ -340,8 +340,8 @@ class muscle_interface():
             else:
                 ax.axvline(event[0], color='r')
         #Plot the threshold and maxes
-        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'darkorange', label="Upper Trigger")
-        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'bisque', label="Lower Trigger")
+        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'mediumorchid', label="Upper Trigger")
+        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'royalblue', label="Lower Trigger")
         ax.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
