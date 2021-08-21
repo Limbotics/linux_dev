@@ -125,7 +125,7 @@ while (cam_thread.is_alive() and not SM.killed):
         except Exception as e:
             data_list["muscle_input"] = str("N/A")
             data_list["smoothing_time"] = str("N/A")
-        data_list["muscle_input_percent"] = str(100*mi.pmd)
+        data_list["muscle_input_percent"] = str(100*mi.last_input[1])
         data_list["muscle_input_type"] = str(mi.last_input[0])
         data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
@@ -155,7 +155,7 @@ while (cam_thread.is_alive() and not SM.killed):
         # servs.grip_config = grip_name
 
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd,))
+        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
         servo_thread.start()
     else:
         raise AttributeError("State Manager has no current mode defined.")
