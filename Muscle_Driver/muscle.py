@@ -3,10 +3,13 @@ from typing import ChainMap
 
 import queue
 import time
+
+from numpy.core.fromnumeric import argmax
 import rpyc #Muscle sensor debugging
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+import matplotlib.ticker as ticker
 import numpy as np
 
 from Hand_Classes import hand_interface
@@ -223,7 +226,7 @@ class muscle_interface():
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
-        input_persistency = 0.25
+        input_persistency = 0.5
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
@@ -306,6 +309,8 @@ class muscle_interface():
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
+        fig, ax = plt.subplots(1,1)
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         plt.savefig('emg_input.png')
         print("[EMG] Saved Debug plot successfully!")
         
