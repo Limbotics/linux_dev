@@ -348,8 +348,7 @@ class muscle_interface():
         return new_val
 
     def smooth(self, data, N=4):
-        cumsum = np.cumsum(np.insert(data, 0, 0)) 
-        return (cumsum[N:] - cumsum[:-N]) / float(N)
+        return sum(data) / len(data)
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
