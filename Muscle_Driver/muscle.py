@@ -202,9 +202,9 @@ class muscle_interface():
         #Read the raw value
         raw_val = 0
         if not self.disconnected:
-            raw_val = self.ads.read_adc(0, gain=1)
+            raw_val = int(self.ads.read_adc(0, gain=1))
         else:
-            raw_val = self.c.root.channel_0_value()
+            raw_val = int(self.c.root.channel_0_value())
 
         #Save the raw data to the debug plot
         self.raw_data_time.append(time.time() - self.program_T0)
