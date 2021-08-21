@@ -121,7 +121,7 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["EMG_array"] = mi.averaging_array
         try:
             data_list["smoothing_time"] = str(mi.smoothing_time)
-            data_list["muscle_input"] = str(int(mi.last_input[1]))
+            data_list["muscle_input"] = str(int(mi.filtered_data[-1]))
         except Exception as e:
             data_list["muscle_input"] = str("N/A")
             data_list["smoothing_time"] = str("N/A")
