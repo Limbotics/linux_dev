@@ -119,14 +119,16 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["inference_time"] = str(round((1/cam.inference_time), 1))
         data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
         try:
+            data_list["smoothing_time"] = str(mi.smoothing_time)
             data_list["muscle_input"] = str(int(mi.filtered_data[-1]))
         except Exception as e:
             data_list["muscle_input"] = str("N/A")
+            data_list["smoothing_time"] = str("N/A")
         data_list["muscle_input_percent"] = str(100*mi.pmd)
         data_list["muscle_input_type"] = str(mi.last_input[0])
         data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
-        data_list["smoothing_time"] = str(mi.smoothing_time)
+        
         SM.nice_output(data_list)
 
         output_delay = time.time()
