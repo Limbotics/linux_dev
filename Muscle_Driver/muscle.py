@@ -4,6 +4,9 @@ from typing import ChainMap
 import queue
 import time
 import rpyc #Muscle sensor debugging
+import matplotlib
+matplotlib.use('tkagg')
+import matplotlib.pyplot as plt
 
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
@@ -122,6 +125,11 @@ class muscle_interface():
             #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
+            #Debug
+            plt.plot([1, 2, 3])
+            plt.show()
+            print("Plot shown! Waiting now..")
+            input()
             self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
