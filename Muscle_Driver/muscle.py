@@ -226,7 +226,7 @@ class muscle_interface():
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
-        input_persistency = 0.5
+        input_persistency = 0.75
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
@@ -311,8 +311,8 @@ class muscle_interface():
         ax.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
-        f.set_figheight(16)
-        f.set_figwidth(12)
+        f.set_figheight(12)
+        f.set_figwidth(16)
         plt.savefig('emg_input.png')
         print("[EMG] Saved Debug plot successfully!")
         
