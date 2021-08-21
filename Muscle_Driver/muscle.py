@@ -176,7 +176,7 @@ class muscle_interface():
             counter += spacing
 
     def update_0_threshold(self):
-        self.analogThreshold_0 = 1.2*self.ads.read_adc(0, gain=1)
+        self.analogThreshold_0 = 1.1*self.ads.read_adc(0, gain=1)
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
