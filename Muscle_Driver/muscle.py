@@ -204,11 +204,14 @@ class muscle_interface():
         #Check edge case on startup
         if len(self.averaging_array) == 0:
             self.averaging_array.append(raw_val)
+            print("[EMG] Returning raw val, since we have no curve.")
             return raw_val
         elif len(self.averaging_array) > array_avg_len:
+            print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
         smoothed = self.smooth(self.averaging_array, 19)
+        print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
 
         # #Perform filtering step #1: max delta change
@@ -302,15 +305,14 @@ class muscle_interface():
 
     def shutdown(self):
         """Save the debug data, if it exists."""
-        if (self.disconnected):
-            #Debug
-            plt.plot(self.raw_data_time, self.raw_data, label="Raw Data")
-            plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
-            plt.legend()
-            plt.xlabel("Time")
-            plt.ylabel("EMG input")
-            plt.savefig('emg_input.png')
-            print("[EMG] Saved Debug plot successfully!")
+        #Debug
+        plt.plot(self.raw_data_time, self.raw_data, label="Raw Data")
+        plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
+        plt.legend()
+        plt.xlabel("Time")
+        plt.ylabel("EMG input")
+        plt.savefig('emg_input.png')
+        print("[EMG] Saved Debug plot successfully!")
         
     #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):

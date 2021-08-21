@@ -35,7 +35,6 @@ else:
 
     #Run through the muscle calibration sequence if necessary
     if not mi.disconnected:
-        input_margin = 0.2 #%/100 margin for input val
 
         print("[CALIBRATION] Logging current channel 0 input as input threshold in 3...")
         time.sleep(1)
@@ -64,12 +63,7 @@ servs = servo.handLUTControl()
 
 #Save the state of the arm
 reported_object = ""
-saved_state = False
 user_command_detected = False
-time_required_for_open_state = 5
-time_required_for_any_state = 0.25
-time_required_for_user_command = 0.1
-program_T0 = time.time()
 SM = state_manager.Mode_Manager()
 #Create user input program killer watchdog
 program_killer_thread = threading.Thread(target=SM.killer_watcher, args=())
@@ -97,7 +91,6 @@ count = 0
 output_delay = time.time()
 while (cam_thread.is_alive() and not SM.killed):
     
-
     count += 1
 
     #Create new state matrix for current moment
