@@ -193,8 +193,8 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 3 #The number of readings to average across
-        mvg_avg = 3
+        array_avg_len = 4 #The number of readings to average across
+        mvg_avg = 4
 
         #Read the raw value
         raw_val = 0
@@ -240,11 +240,11 @@ class muscle_interface():
         self.filtered_data.append(input_value)
 
         #Convert raw analog into percentage range 
-        new_pmd = self.convert_perc(input_value, input_types.down)
+        self.pmd = self.convert_perc(input_value, input_types.down)
 
-        if new_pmd != self.temp_input[0]:
+        if self.pmd != self.temp_input[0]:
             self.unique_input = True
-            if new_pmd:
+            if self.pmd:
                 self.temp_input = (input_types.down, input_value, time.time())
             else:
                 self.temp_input = (input_types.none, input_value, time.time())
@@ -345,7 +345,7 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, data, n=3):
+    def smooth(self, data, n=4):
         ret = np.cumsum(data, dtype=float)
         ret[n:] = ret[n:] - ret[:-n]
         return ret[n - 1:] / n
