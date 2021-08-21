@@ -292,26 +292,27 @@ class muscle_interface():
 
     def shutdown(self):
         """Save the debug data, if it exists."""
+        fig, ax = plt.subplots(1,1)
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         #Debug
         #Plot the raw data
-        plt.plot(self.raw_data_time, self.raw_data, label="Raw Data")
+        ax.plot(self.raw_data_time, self.raw_data, label="Raw Data")
         #Plot the filtered data
-        plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
+        ax.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
         #Plot the events in the timeline
         for event in self.event_list:
             if event[1] == "Activated":
-                plt.axvline(event[0], label=event[1], color='g')
+                ax.axvline(event[0], label=event[1], color='g')
             else:
-                plt.axvline(event[0], label=event[1], color='r')
+                ax.axvline(event[0], label=event[1], color='r')
         #Plot the threshold and maxes
-        plt.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
-        plt.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
-        plt.legend()
-        plt.xlabel("Time")
-        plt.ylabel("EMG input")
-        fig, ax = plt.subplots(1,1)
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-        plt.savefig('emg_input.png')
+        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
+        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
+        ax.legend()
+        ax.xlabel("Time")
+        ax.ylabel("EMG input")
+        
+        ax.savefig('emg_input.png')
         print("[EMG] Saved Debug plot successfully!")
         
     #Given a list of values and another Number, return the closest value within list to the given Number
