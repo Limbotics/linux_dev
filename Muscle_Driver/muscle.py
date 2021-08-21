@@ -336,12 +336,12 @@ class muscle_interface():
         #Plot the events in the timeline
         for event in self.event_list:
             if event[1] == input_types.down:
-                ax.axvline(event[0], label=event[1], color='g')
+                ax.axvline(event[0], color='g')
             else:
-                ax.axvline(event[0], label=event[1], color='r')
+                ax.axvline(event[0], color='r')
         #Plot the threshold and maxes
-        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
-        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
+        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'darkorange', label="Upper Trigger")
+        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'bisque', label="Lower Trigger")
         ax.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
