@@ -309,10 +309,10 @@ class muscle_interface():
         ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
         ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
         ax.legend()
-        ax.xlabel("Time")
-        ax.ylabel("EMG input")
+        plt.xlabel("Time")
+        plt.ylabel("EMG input")
         
-        ax.savefig('emg_input.png')
+        plt.savefig('emg_input.png')
         print("[EMG] Saved Debug plot successfully!")
         
     #Given a list of values and another Number, return the closest value within list to the given Number
