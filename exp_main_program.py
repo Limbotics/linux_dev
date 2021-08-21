@@ -97,7 +97,7 @@ while (cam_thread.is_alive() and not SM.killed):
 
     #Create new state matrix for current moment
     reported_object = cam.cam_data
-    user_command_detected = mi.last_input[0]
+    user_command_detected = mi.AnalogRead()
 
     #Set grip_picked to "" if it's not in the database of known objects
     object_id = True

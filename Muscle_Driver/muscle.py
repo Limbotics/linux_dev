@@ -204,33 +204,32 @@ class muscle_interface():
         mvg_avg = 4
 
         #Read the raw value
-        while not self.thread_killed:
-            raw_val = 0
-            if not self.disconnected:
-                raw_val = self.ads.read_adc(0, gain=1)
-            else:
-                raw_val = self.c.root.channel_0_value()
+        raw_val = 0
+        if not self.disconnected:
+            raw_val = self.ads.read_adc(0, gain=1)
+        else:
+            raw_val = self.c.root.channel_0_value()
 
-            #Save the raw data to the debug plot
-            self.raw_data_time.append(time.time() - self.program_T0)
-            self.raw_data.append(raw_val)
+        #Save the raw data to the debug plot
+        self.raw_data_time.append(time.time() - self.program_T0)
+        self.raw_data.append(raw_val)
 
-            #Check edge case on startup
-            self.averaging_array.append(raw_val)
-            if len(self.averaging_array) <= mvg_avg:
-                # print("[EMG] Returning raw val, since we have no curve.")
-                # return raw_val
-                pass
-            elif len(self.averaging_array) > array_avg_len:
-                # print("[EMG] Popping array element..")
-                self.averaging_array.pop(0)
+        #Check edge case on startup
+        self.averaging_array.append(raw_val)
+        if len(self.averaging_array) <= mvg_avg:
+            # print("[EMG] Returning raw val, since we have no curve.")
+            # return raw_val
+            pass
+        elif len(self.averaging_array) > array_avg_len:
+            # print("[EMG] Popping array element..")
+            self.averaging_array.pop(0)
 
-            # print("[EMG] Array: ", str(self.averaging_array))
-            t = time.time()
-            smoothed = self.smooth(self.averaging_array)
-            self.smoothing_time = time.time() - t
-            # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
-            self.smoothed_data = smoothed
+        # print("[EMG] Array: ", str(self.averaging_array))
+        t = time.time()
+        smoothed = self.smooth(self.averaging_array)
+        self.smoothing_time = time.time() - t
+        # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
+        return smoothed
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
@@ -244,7 +243,7 @@ class muscle_interface():
 
             self.ads.update_value(new_down_value)
 
-        input_value = self.smoothed_data
+        input_value = self.read_filtered()
 
         #Save the filtered value to the debug plot
         self.filtered_data_time.append(time.time() - self.program_T0)
