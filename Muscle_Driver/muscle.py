@@ -174,10 +174,6 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
-        print("[EMG] Initialized emg reader")
-        emg_thread = Process(target=self.read_filtered, args=())
-        emg_thread.start()
-
     def update_0_threshold(self):
         self.analogThreshold_0 = self.ads.read_adc(0, gain=1)
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
@@ -358,7 +354,7 @@ class muscle_interface():
         return new_val
 
     def smooth(self, data, N=4):
-        return sum(data) / len(data)
+        return data[-1]
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
