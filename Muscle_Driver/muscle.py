@@ -5,7 +5,7 @@ import queue
 import time
 import rpyc #Muscle sensor debugging
 import matplotlib
-matplotlib.use('tkagg')
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 
 from Hand_Classes import hand_interface
