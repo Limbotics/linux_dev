@@ -121,6 +121,7 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["muscle_input_type"] = str(mi.last_input[0])
         data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
+        data_list["smoothing_time"] = str(mi.smoothing_time)
         SM.nice_output(data_list)
 
         output_delay = time.time()
