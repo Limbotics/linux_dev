@@ -298,7 +298,7 @@ class muscle_interface():
         for event in self.event_list:
             plt.axvline(event[0], label=event[1]) 
         #Plot the threshold and maxes
-        plt.axhline(y=self.max_input_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Max Input")
+        plt.axhline(y=(self.max_input_0*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Triggered input")
         plt.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
         plt.legend()
         plt.xlabel("Time")
