@@ -236,7 +236,7 @@ class Mode_Manager():
         perc = "\n| \tConverted percentage: " + data_list["muscle_input_percent"] + "%"
         main_str += perc
         main_str += "\n| \tSmoothing time: " + data_list["smoothing_time"]
-        main_str += "\n| \tData avg: " + data_list["EMG_array"]
+        main_str += "\n| \tData avg: " + str(data_list["EMG_array"])
         input_type = "\n| \tInput type: " + data_list["muscle_input_type"]
         main_str += input_type
 
