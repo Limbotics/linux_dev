@@ -83,6 +83,13 @@ class grip_angles(Enum):
         fingers.ring.value:    180,
         # fingers.pinky.value:   0
     }
+    thumb_pinch = {
+        fingers.thumb.value:   45,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
+        # fingers.pinky.value:   0
+    }
     point = {
         fingers.thumb.value:   45,
         fingers.index.value:   45,
