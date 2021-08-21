@@ -124,14 +124,11 @@ class muscle_interface():
             #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
-            #Debug
-            plt.plot([0, 1, 2, 3, 4], [0, 3, 5, 9, 11])
-            plt.plot([0, 1, 2, 3, 4], [2, 1, 7, 3, 20])
-            plt.xlabel("Time")
-            plt.ylabel("EMG input")
-            plt.savefig('emg_input.png')
-            print("Plot shown! Waiting now..")
-            input()
+            self.program_T0 = time.time()
+            self.raw_data_time = []
+            self.raw_data = []
+            self.filtered_data_time = []
+            self.filtered_data = []
             self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
@@ -197,6 +194,11 @@ class muscle_interface():
         else:
             raw_val = self.c.root.channel_0_value()
 
+        #Save the raw data to the debug plot
+        self.raw_data_time.append(time.time() - self.program_T0)
+        self.raw_data.append(raw_val)
+        
+
         #Check edge case on startup
         if len(self.averaging_array) == 0:
             self.averaging_array.append(raw_val)
@@ -236,6 +238,10 @@ class muscle_interface():
             self.ads.update_value(new_down_value)
 
         input_value = self.read_filtered()
+
+        #Save the filtered value to the debug plot
+        self.filtered_data_time.append(time.time() - self.program_T0)
+        self.filtered_data.append(input_value)
 
         #Convert raw analog into percentage range 
         new_pmd = self.convert_perc(input_value, input_types.down)
@@ -318,6 +324,20 @@ class muscle_interface():
                 return 0
         else:
             return 0
+
+    def shutdown(self):
+        """Save the debug data, if it exists."""
+        if (self.disconnected):
+            try:
+                #Debug
+                plt.plot(self.raw_data_time, self.raw_data)
+                plt.plot(self.filtered_data_time, self.filtered_data)
+                plt.xlabel("Time")
+                plt.ylabel("EMG input")
+                plt.savefig('emg_input.png')
+                print("[EMG] Saved Debug plot successfully!")
+            except Exception as e:
+                pass
 
     #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):

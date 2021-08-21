@@ -161,6 +161,7 @@ while (cam_thread.is_alive() and not SM.killed):
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
 statuslights.startup_complete = False
+mi.shutdown()
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 
