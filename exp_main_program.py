@@ -137,7 +137,7 @@ while (cam_thread.is_alive() and not SM.killed):
         # print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
         if cam.temp_pause:
-            cam.temp_pause = False
+            cam.temp_pause = True #TODO: Set back
 
         #Let the servos know if the camera sees anything         
         grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
