@@ -197,7 +197,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 10 #The number of readings to average across
+        array_avg_len = 4 #The number of readings to average across
         mvg_avg = 4
 
         #Read the raw value
@@ -355,7 +355,7 @@ class muscle_interface():
 
     def smooth(self, y, window_width=4):
         cumsum_vec = np.cumsum(np.insert(y, 0, 0)) 
-        ma_vec = (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
+        return (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
