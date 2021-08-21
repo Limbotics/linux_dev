@@ -225,7 +225,7 @@ class muscle_interface():
         smoothed = self.smooth(self.averaging_array)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
-        return smoothed
+        return smoothed[-1]
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
@@ -353,8 +353,10 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, data, N=4):
-        return sum(data) / len(data)
+    def smooth(self, y, box_pts=4):
+        box = np.ones(box_pts)/box_pts
+        y_smooth = np.convolve(y, box, mode='same')
+        return y_smooth
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
