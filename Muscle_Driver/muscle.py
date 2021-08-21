@@ -189,7 +189,7 @@ class muscle_interface():
         """
         #Constants
         array_avg_len = 20 #The number of readings to average across
-        mvg_avg = 5
+        mvg_avg = 20
 
         #Read the raw value
         raw_val = 0
@@ -213,7 +213,7 @@ class muscle_interface():
 
         # print("[EMG] Array: ", str(self.averaging_array))
         t = time.time()
-        smoothed = self.smooth(self.averaging_array, mvg_avg)
+        smoothed = self.smooth(self.averaging_array, 5)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
