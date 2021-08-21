@@ -329,8 +329,8 @@ class muscle_interface():
         """Save the debug data, if it exists."""
         if (self.disconnected):
             #Debug
-            plt.plot(self.raw_data_time, self.raw_data, "Raw Data")
-            plt.plot(self.filtered_data_time, self.filtered_data, "Filtered Data")
+            plt.plot(self.raw_data_time, self.raw_data, label="Raw Data")
+            plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
             plt.legend()
             plt.xlabel("Time")
             plt.ylabel("EMG input")
