@@ -265,7 +265,7 @@ class muscle_interface():
                 self.temp_input = (input_types.none, input_value, 0)
                 self.event_list.append((time.time()-self.program_T0, "No Input"))
         else:
-            #reset temp input object 
+            #reset temp input object if what we're reporting and what we have saved is the same
             self.temp_input = (self.last_input[0], self.last_input[1], 0)
         return self.last_input[0]
 
@@ -279,9 +279,13 @@ class muscle_interface():
             #If in above the analog threshold, then convert to the percentage range
             elif raw_analog > self.analogThreshold_0:
                 perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+                if perc < 0:
+                    perc = 0
+                elif perc > 100:
+                    perc = 100
                 #Convert the raw percentage to a filtered percentage
-                new_perc = self.closest(self.perc_buckets, perc)
-                if new_perc > self.binary_threshold:
+                # new_perc = self.closest(self.perc_buckets, perc)
+                if perc > self.binary_threshold:
                     return 1
                 else:
                     return 0

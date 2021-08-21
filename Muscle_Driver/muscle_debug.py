@@ -61,7 +61,7 @@ class MyService(rpyc.Service):
                 loop_time = 10
                 self.send_pulse(self.default_0, self.max_0, loop_time)
                 self.set_with_noise(self.max_0)
-                self.send_pulse(self.max_0-1, self.max_0, 0.5)
+                self.send_pulse(self.max_0-1, self.max_0, 5)
                 self.send_pulse(self.max_0, self.default_0, loop_time)
                 self.set_with_noise(self.default_0)
 
