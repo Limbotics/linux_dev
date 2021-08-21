@@ -56,6 +56,7 @@ else:
         print("[CALIBRATION-CH0] Great! Thank you.")
         print("[CALIBRATION] Calibration sequence summary:")
         print("[CAL-CH0] CH0 input threshold: ", str(mi.analogThreshold_0), "CH0 max: ", str(mi.max_input_0))
+        time.sleep(2)
         # print("[CAL-CH1] CH1 input threshold: ", str(mi.analogThreshold_1), "CH1 max: ", str(mi.max_input_1))
 
 #Servo control initialization
