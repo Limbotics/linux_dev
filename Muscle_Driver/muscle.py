@@ -6,6 +6,8 @@ import time
 import rpyc #Muscle sensor debugging
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
+import numpy as np
 
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
@@ -124,6 +126,8 @@ class muscle_interface():
             #     print("[LOADING] Connecting to sensor input simulator...")
             
         if(disconnect):
+            #Define all my debug plotting values
+            figure(figsize=(16, 12), dpi=80)
             self.program_T0 = time.time()
             self.raw_data_time = []
             self.raw_data = []
@@ -184,8 +188,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 5 #The number of readings to average across
-        max_delta = 0.03 #Max percent change in a single step across the range
+        array_avg_len = 20 #The number of readings to average across
 
         #Read the raw value
         raw_val = 0
@@ -197,35 +200,39 @@ class muscle_interface():
         #Save the raw data to the debug plot
         self.raw_data_time.append(time.time() - self.program_T0)
         self.raw_data.append(raw_val)
-        
 
         #Check edge case on startup
         if len(self.averaging_array) == 0:
             self.averaging_array.append(raw_val)
             return raw_val
-
-        #Perform filtering step #1: max delta change
-        new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-        old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-
-        #perform delta filtering
-        if (new_perc - old_perc) > max_delta:
-            new_perc = new_perc + max_delta
-            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
-            new_perc = new_perc - max_delta
-            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        else:
-            new_val = raw_val
-
-        #perform value filtering
-        if len(self.averaging_array) >= array_avg_len:
-            #Pop element, add new to end
+        elif len(self.averaging_array) > array_avg_len:
             self.averaging_array.pop(0)
 
-        self.averaging_array.append(new_val)
+        smoothed = self.smooth(self.averaging_array, 19)
+        return smoothed[-1]
 
-        return sum(self.averaging_array)/len(self.averaging_array)
+        # #Perform filtering step #1: max delta change
+        # new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+        # old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+
+        # #perform delta filtering
+        # if (new_perc - old_perc) > max_delta:
+        #     new_perc = new_perc + max_delta
+        #     new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        # elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
+        #     new_perc = new_perc - max_delta
+        #     new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
+        # else:
+        #     new_val = raw_val
+
+        # #perform value filtering
+        # if len(self.averaging_array) >= array_avg_len:
+        #     #Pop element, add new to end
+        #     self.averaging_array.pop(0)
+
+        # self.averaging_array.append(new_val)
+
+        # return sum(self.averaging_array)/len(self.averaging_array)
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
@@ -272,38 +279,6 @@ class muscle_interface():
             self.temp_input = (self.last_input[0], self.last_input[1], 0)
         return self.last_input[0]
 
-        # #Build the temp input object if it's not already in use (tracked by timer)
-        # if self.temp_input[2] == 0:
-        #     if self.temp_input[0] != self.temp_input[0]:
-        #         temp_type = input_types.none
-        #         if new_pmd:
-        #             temp_type = input_types.down
-
-                
-        # else:
-        #     #We know we're already tracking what could be a change in muscle input from user
-        #     if (self.temp_input[2] - self.last_input[2]) > input_persistency:
-        #         #It's time to change the last input object!
-        #         self.last_input = self.temp_input
-
-        # #If above the input threshold   
-        # #   and enough time has passed to allow a new value to be reported,
-        # #   or the last value reported was user input
-        # if ((new_pmd == 1 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (new_pmd == 1))):
-        #     # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
-        #     self.input_T0 = time.time()
-        #     self.last_input = (input_types.down, self.max_input_0)
-        #     self.pmd = new_pmd
-        #     return self.last_input[0]
-
-        # #If the input persistency threshold has passed, then report no user input 
-        # if (time.time() - self.input_T0) > input_persistency:
-        #     self.input_T0 = time.time()
-        #     self.last_input = (input_types.none, 0)
-        #     self.pmd = new_pmd
-        #     return self.last_input[0]
-        # return self.last_input[0]
-
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
 
@@ -336,7 +311,7 @@ class muscle_interface():
             plt.ylabel("EMG input")
             plt.savefig('emg_input.png')
             print("[EMG] Saved Debug plot successfully!")
-
+        
     #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):
         aux = []
@@ -346,6 +321,11 @@ class muscle_interface():
         new_val = list[aux.index(min(aux))]
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
+
+    def smooth(self, y, box_pts):
+        box = np.ones(box_pts)/box_pts
+        y_smooth = np.convolve(y, box, mode='same')
+        return y_smooth
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
