@@ -229,6 +229,7 @@ class muscle_interface():
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
         input_persistency = 0.75
+        print("[EMG] Initialized emg reader")
         while not self.thread_killed:
             if self.disconnected:
                 new_down_value = self.c.root.channel_0_value() ####
