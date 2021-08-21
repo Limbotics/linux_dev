@@ -5,6 +5,7 @@ import queue
 import time
 
 from numpy.core.fromnumeric import argmax
+from numpy.lib.twodim_base import _trilu_indices_form_dispatcher
 import rpyc #Muscle sensor debugging
 import matplotlib
 import matplotlib.pyplot as plt
@@ -241,33 +242,45 @@ class muscle_interface():
         #Convert raw analog into percentage range 
         new_pmd = self.convert_perc(input_value, input_types.down)
 
-        #Check if we have a difference in what we're reporting and the current state
-        if new_pmd and self.last_input[0] == input_types.none:
-            #We are detecting input from the user, so create the new temp input object to track if not already exists
-            if self.temp_input[2] == 0:
-                #Save the new temp input object
+        if new_pmd != self.temp_input[0]:
+            if new_pmd:
                 self.temp_input = (input_types.down, input_value, time.time())
-            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
-                #We're over threshold, so report new input type
-                self.last_input = self.temp_input
-                self.pmd = new_pmd
-                self.temp_input = (input_types.down, input_value, 0)
-                self.event_list.append((time.time()-self.program_T0, "Activated"))
-        elif not new_pmd and self.last_input[0] == input_types.down:
-            #We're reporting user input but not receiving it, start timer
-            if self.temp_input[2] == 0:
-                #Save the new temp input object
+            else:
                 self.temp_input = (input_types.none, input_value, time.time())
-            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
-                #We're over threshold, so report new input type
-                self.last_input = self.temp_input
-                self.pmd = new_pmd
-                self.temp_input = (input_types.none, input_value, 0)
-                self.event_list.append((time.time()-self.program_T0, "No Input"))
-        else:
-            #reset temp input object if what we're reporting and what we have saved is the same
-            self.temp_input = (self.last_input[0], self.last_input[1], 0)
+
+        if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
+            self.last_input = self.temp_input
+            self.event_list.apend((time.time()-self.program_T0, self.last_input[0]))
+
         return self.last_input[0]
+
+        #Check if we have a difference in what we're reporting and the current state
+        # if new_pmd and self.last_input[0] == input_types.none:
+        #     #We are detecting input from the user, so create the new temp input object to track if not already exists
+        #     if self.temp_input[2] == 0:
+        #         #Save the new temp input object
+        #         self.temp_input = (input_types.down, input_value, time.time())
+        #     elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+        #         #We're over threshold, so report new input type
+        #         self.last_input = self.temp_input
+        #         self.pmd = new_pmd
+        #         self.temp_input = (input_types.down, input_value, 0)
+        #         self.event_list.append((time.time()-self.program_T0, "Activated"))
+        # elif not new_pmd and self.last_input[0] == input_types.down:
+        #     #We're reporting user input but not receiving it, start timer
+        #     if self.temp_input[2] == 0:
+        #         #Save the new temp input object
+        #         self.temp_input = (input_types.none, input_value, time.time())
+        #     elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+        #         #We're over threshold, so report new input type
+        #         self.last_input = self.temp_input
+        #         self.pmd = new_pmd
+        #         self.temp_input = (input_types.none, input_value, 0)
+        #         self.event_list.append((time.time()-self.program_T0, "No Input"))
+        # else:
+        #     #reset temp input object if what we're reporting and what we have saved is the same
+        #     self.temp_input = (self.last_input[0], self.last_input[1], 0)
+        # return self.last_input[0]
 
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
@@ -305,7 +318,7 @@ class muscle_interface():
         ax.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
         #Plot the events in the timeline
         for event in self.event_list:
-            if event[1] == "Activated":
+            if event[1] == input_types.down:
                 ax.axvline(event[0], label=event[1], color='g')
             else:
                 ax.axvline(event[0], label=event[1], color='r')
