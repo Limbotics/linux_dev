@@ -197,7 +197,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 5 #The number of readings to average across
+        array_avg_len = 10 #The number of readings to average across
         mvg_avg = 4
 
         #Read the raw value
