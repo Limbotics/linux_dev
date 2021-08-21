@@ -222,7 +222,7 @@ class muscle_interface():
         smoothed = self.smooth(self.averaging_array)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
-        return smoothed[-1]
+        return smoothed
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
