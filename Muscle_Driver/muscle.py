@@ -218,29 +218,6 @@ class muscle_interface():
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
 
-        # #Perform filtering step #1: max delta change
-        # new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-        # old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-
-        # #perform delta filtering
-        # if (new_perc - old_perc) > max_delta:
-        #     new_perc = new_perc + max_delta
-        #     new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        # elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
-        #     new_perc = new_perc - max_delta
-        #     new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        # else:
-        #     new_val = raw_val
-
-        # #perform value filtering
-        # if len(self.averaging_array) >= array_avg_len:
-        #     #Pop element, add new to end
-        #     self.averaging_array.pop(0)
-
-        # self.averaging_array.append(new_val)
-
-        # return sum(self.averaging_array)/len(self.averaging_array)
-
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
