@@ -49,31 +49,31 @@ class MyService(rpyc.Service):
             if ans == 1:
                 #Write a down pulse to channel 0
                 self.send_pulse(self.default_0, self.max_0, 0.3)
-                # self.channel_0 = self.max_0
-                # time.sleep(0.3)
-                # self.channel_0 = self.default_0
             elif ans == 2:
                 #Write a down hold to channel 0
                 self.send_pulse(self.default_0, self.max_0, 0.5)
-                self.channel_0 = self.max_0
-                time.sleep(2)
-                self.channel_0 = self.default_0
+                self.set_with_noise(self.max_0)
+                self.send_pulse(self.max_0-1, self.max_0, 0.5)
+                self.set_with_noise(self.default_0)
             elif ans == 4:
                 #Write a continuous pulse from min to max over 10 seconds, then max to min over 10 again
-                self.channel_0 = self.default_0
+                self.set_with_noise(self.default_0)
                 loop_time = 10
                 self.send_pulse(self.default_0, self.max_0, loop_time)
-                self.channel_0 = self.max_0
-                time.sleep(loop_time)
+                self.set_with_noise(self.max_0)
+                self.send_pulse(self.max_0-1, self.max_0, 0.5)
                 self.send_pulse(self.max_0, self.default_0, loop_time)
-                self.channel_0 = self.default_0
+                self.set_with_noise(self.default_0)
+
+    def set_with_noise(self, val):
+        noise = np.random.uniform(-0.2, 0.2, 1)
+        self.channel_0 = noise*val + val
 
     def send_pulse(self, start, fin, delta_t):
         c = time.time()
         while ((time.time() - c) < delta_t):
             signal = ((((time.time() - c)/delta_t) - start/(start-fin) ) * (fin - start))
-            noise = np.random.uniform(-0.2, 0.2, 1)
-            self.channel_0 = signal + noise[0]*signal
+            self.set_with_noise(signal)
             print(str(self.channel_0))
 
 if __name__ == "__main__":
