@@ -286,7 +286,7 @@ class muscle_interface():
 
     def convert_perc(self, raw_analog, type):
         #Converts the raw analog value into a predefined percentage from the list below
-
+        #TODO: Implement Shmitt Trigger
         if type == input_types.down:
             #If higher than the max input from the calibration, then return 100%
             if raw_analog >= self.max_input_0:
