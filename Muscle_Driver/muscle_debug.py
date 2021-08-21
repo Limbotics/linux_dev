@@ -19,8 +19,8 @@ class MyService(rpyc.Service):
         # code that runs when a connection is created
         # (to init the service, if needed)
 
-        self.default_0 = 2000
-        self.max_0 = 15000
+        self.default_0 = 500
+        self.max_0 = 1500
 
         self.default_1 = 1000
         self.max_1 = 13000
@@ -43,38 +43,35 @@ class MyService(rpyc.Service):
 
     def main_thread(self):
         while(True):
-            print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 3 for up hold (1 second), 4 for continuous close")
+            print("Hello! Press 1 to send a down pulse, 2 for a down hold (1 second), 4 for continuous close")
             ans = int(input())
             if ans == 1:
                 #Write a down pulse to channel 0
-                self.channel_0 = self.max_0
-                time.sleep(0.3)
-                self.channel_0 = self.default_0
+                self.send_pulse(self.default_0, self.max_0, 0.3)
+                # self.channel_0 = self.max_0
+                # time.sleep(0.3)
+                # self.channel_0 = self.default_0
             elif ans == 2:
                 #Write a down hold to channel 0
+                self.send_pulse(self.default_0, self.max_0, 0.5)
                 self.channel_0 = self.max_0
-                time.sleep(60)
+                time.sleep(2)
                 self.channel_0 = self.default_0
-            elif ans == 3:
-                #Write an up hold to channel 1
-                self.channel_1 = self.max_1
-                time.sleep(1)
-                self.channel_1 = self.default_1
             elif ans == 4:
-                #Write a continuous pulse from min to max over 10 seconds
+                #Write a continuous pulse from min to max over 10 seconds, then max to min over 10 again
                 self.channel_0 = self.default_0
-                c = time.time()
-                loop_time = 60
-                while ((time.time() - c) < loop_time):
-                    self.channel_0 = (((time.time() - c)/loop_time) - self.default_0/(self.default_0-self.max_0) ) * (self.max_0 - self.default_0)
-                    print(str(self.channel_0))
+                loop_time = 10
+                self.send_pulse(self.default_0, self.max_0, loop_time)
                 self.channel_0 = self.max_0
                 time.sleep(loop_time)
-                c = time.time()
-                while ((time.time() - c) < loop_time):
-                    self.channel_0 = (((time.time() - c)/loop_time) - self.max_0/(self.max_0-self.default_0) ) * (self.default_0 - self.max_0)
-                    print(str(self.channel_0))
+                self.send_pulse(self.max_0, self.default_0, loop_time)
                 self.channel_0 = self.default_0
+
+    def send_pulse(self, start, fin, delta_t):
+        c = time.time()
+        while ((time.time() - c) < delta_t):
+                    self.channel_0 = (((time.time() - c)/delta_t) - start/(start-fin) ) * (fin - start)
+                    print(str(self.channel_0))
 
 if __name__ == "__main__":
 

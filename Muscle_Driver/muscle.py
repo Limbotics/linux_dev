@@ -142,8 +142,8 @@ class muscle_interface():
                     time.sleep(3)
 
             #Define debug-compatible threshold values
-            self.analogThreshold_0 = 2000 
-            self.max_input_0 = 15000
+            self.analogThreshold_0 = 500 
+            self.max_input_0 = 1500
             
         self.pmd = 0
         self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
@@ -330,8 +330,9 @@ class muscle_interface():
         if (self.disconnected):
             try:
                 #Debug
-                plt.plot(self.raw_data_time, self.raw_data)
-                plt.plot(self.filtered_data_time, self.filtered_data)
+                plt.plot(self.raw_data_time, self.raw_data, "Raw Data")
+                plt.plot(self.filtered_data_time, self.filtered_data, "Filtered Data")
+                plt.legend()
                 plt.xlabel("Time")
                 plt.ylabel("EMG input")
                 plt.savefig('emg_input.png')
