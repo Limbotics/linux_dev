@@ -264,6 +264,8 @@ class muscle_interface():
             self.last_input = self.temp_input
             self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
 
+        return self.last_input[0]
+
         #Check if we have a difference in what we're reporting and the current state
         # if new_pmd and self.last_input[0] == input_types.none:
         #     #We are detecting input from the user, so create the new temp input object to track if not already exists
