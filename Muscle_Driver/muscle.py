@@ -124,15 +124,16 @@ class muscle_interface():
             #     print("[DEBUG] Error loading muscle input; defaulting to debug mode")
             #     disconnect = True
             #     print("[LOADING] Connecting to sensor input simulator...")
-            
+        #Define all my debug plotting values
+        figure(figsize=(16, 12), dpi=80)
+        self.event_list = []
+        self.program_T0 = time.time()
+        self.raw_data_time = []
+        self.raw_data = []
+        self.filtered_data_time = []
+        self.filtered_data = []
         if(disconnect):
-            #Define all my debug plotting values
-            figure(figsize=(16, 12), dpi=80)
-            self.program_T0 = time.time()
-            self.raw_data_time = []
-            self.raw_data = []
-            self.filtered_data_time = []
-            self.filtered_data = []
+            
             self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
@@ -248,6 +249,7 @@ class muscle_interface():
                 self.last_input = self.temp_input
                 self.pmd = new_pmd
                 self.temp_input = (input_types.down, input_value, 0)
+                self.event_list.append((time.time()-self.program_T0, "Activated"))
         elif not new_pmd and self.last_input[0] == input_types.down:
             #We're reporting user input but not receiving it, start timer
             if self.temp_input[2] == 0:
@@ -258,6 +260,7 @@ class muscle_interface():
                 self.last_input = self.temp_input
                 self.pmd = new_pmd
                 self.temp_input = (input_types.none, input_value, 0)
+                self.event_list.append((time.time()-self.program_T0, "No Input"))
         else:
             #reset temp input object 
             self.temp_input = (self.last_input[0], self.last_input[1], 0)
@@ -287,8 +290,16 @@ class muscle_interface():
     def shutdown(self):
         """Save the debug data, if it exists."""
         #Debug
+        #Plot the raw data
         plt.plot(self.raw_data_time, self.raw_data, label="Raw Data")
+        #Plot the filtered data
         plt.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
+        #Plot the events in the timeline
+        for event in self.event_list:
+            plt.axvline(event[0], label=event[1]) 
+        #Plot the threshold and maxes
+        plt.axhline(y=self.max_input_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Max Input")
+        plt.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'k', label="Input Threshold")
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("EMG input")
