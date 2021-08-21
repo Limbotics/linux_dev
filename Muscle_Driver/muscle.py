@@ -189,6 +189,7 @@ class muscle_interface():
         """
         #Constants
         array_avg_len = 20 #The number of readings to average across
+        mvg_avg = 5
 
         #Read the raw value
         raw_val = 0
@@ -203,7 +204,7 @@ class muscle_interface():
 
         #Check edge case on startup
         self.averaging_array.append(raw_val)
-        if len(self.averaging_array) == 0:
+        if len(self.averaging_array) <= mvg_avg:
             # print("[EMG] Returning raw val, since we have no curve.")
             return raw_val
         elif len(self.averaging_array) > array_avg_len:
@@ -212,7 +213,7 @@ class muscle_interface():
 
         # print("[EMG] Array: ", str(self.averaging_array))
         t = time.time()
-        smoothed = self.smooth(self.averaging_array, 5)
+        smoothed = self.smooth(self.averaging_array, mvg_avg)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
