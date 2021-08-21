@@ -246,7 +246,7 @@ class muscle_interface():
         self.filtered_data.append(input_value)
 
         #Convert raw analog into percentage range 
-        self.pmd = self.convert_perc(input_value, input_types.down)
+        self.pmd = self.trigger(input_value, input_types.down)
 
         if self.pmd != self.temp_input[0]:
             self.unique_input = True
@@ -290,30 +290,35 @@ class muscle_interface():
         #     self.temp_input = (self.last_input[0], self.last_input[1], 0)
         # return self.last_input[0]
 
-    def convert_perc(self, raw_analog, type):
+    def trigger(self, value_in, type):
         #Converts the raw analog value into a predefined percentage from the list below
-        #TODO: Implement Shmitt Trigger
         if type == input_types.down:
-            #If higher than the max input from the calibration, then return 100%
-            if raw_analog >= self.max_input_0:
-                return 1
-            #If in above the analog threshold, then convert to the percentage range
-            elif raw_analog > self.analogThreshold_0:
-                perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-                if perc < 0:
-                    perc = 0
-                elif perc > 100:
-                    perc = 100
-                #Convert the raw percentage to a filtered percentage
-                # new_perc = self.closest(self.perc_buckets, perc)
-                if perc > self.binary_threshold:
-                    return 1
-                elif perc < self.analogThreshold_0:
-                    return 0
-                else:
-                    return self.pmd
-            else:
+            if value_in < self.analogThreshold_0:
                 return 0
+            elif value_in > self.max_input_0:
+                return 1
+            return self.pmd
+
+            # #If higher than the max input from the calibration, then return 100%
+            # if raw_analog >= self.max_input_0:
+            #     return 1
+            # #If in above the analog threshold, then convert to the percentage range
+            # elif raw_analog > self.analogThreshold_0:
+            #     perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+            #     if perc < 0:
+            #         perc = 0
+            #     elif perc > 100:
+            #         perc = 100
+            #     #Convert the raw percentage to a filtered percentage
+            #     # new_perc = self.closest(self.perc_buckets, perc)
+            #     if perc > self.binary_threshold:
+            #         return 1
+            #     elif perc < self.:
+            #         return 0
+            #     else:
+            #         return self.pmd
+            # else:
+            #     return 0
         else:
             return 0
 
