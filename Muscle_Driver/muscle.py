@@ -213,7 +213,7 @@ class muscle_interface():
 
         # print("[EMG] Array: ", str(self.averaging_array))
         t = time.time()
-        smoothed = self.smooth(self.averaging_array, 5)
+        smoothed = self.smooth(self.averaging_array)
         self.smoothing_time = time.time() - t
         # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
         return smoothed[-1]
@@ -305,18 +305,10 @@ class muscle_interface():
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
 
-    def smooth(self, data, degree):
-        triangle=np.concatenate((np.arange(degree + 1), np.arange(degree)[::-1])) # up then down
-        smoothed=[]
-
-        for i in range(degree, len(data) - degree * 2):
-            point=data[i:i + len(triangle)] * triangle
-            smoothed.append(np.sum(point)/np.sum(triangle))
-        # Handle boundaries
-        smoothed=[smoothed[0]]*int(degree + degree/2) + smoothed
-        while len(smoothed) < len(data):
-            smoothed.append(smoothed[-1])
-        return smoothed
+    def smooth(self, data, n=3):
+        ret = np.cumsum(data, dtype=float)
+        ret[n:] = ret[n:] - ret[:-n]
+        return ret[n - 1:] / n
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""
