@@ -252,7 +252,7 @@ class muscle_interface():
         if (self.temp_input[2] - self.last_input[2] > input_persistency) and self.temp_input[0] != self.last_input[0]:
             self.unique_input = False
             self.last_input = self.temp_input
-            self.event_list.apend((time.time()-self.program_T0, self.last_input[0]))
+            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
 
         return self.last_input[0]
 
