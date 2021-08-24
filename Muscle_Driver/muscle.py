@@ -197,8 +197,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 4 #The number of readings to average across
-        mvg_avg = 4
+        mvg_avg = 10
 
         #Read the raw value
         raw_val = 0
@@ -216,7 +215,7 @@ class muscle_interface():
         if len(self.averaging_array) <= mvg_avg:
             # print("[EMG] Returning raw val, since we have no curve.")
             return raw_val
-        elif len(self.averaging_array) > array_avg_len:
+        elif len(self.averaging_array) > mvg_avg:
             # print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
