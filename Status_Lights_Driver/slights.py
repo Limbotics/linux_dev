@@ -131,8 +131,11 @@ class slights_interface():
 
         # Draw a black filled box to clear the image.
         self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
-        # self.font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 35)
-        self.font = ImageFont.load_default()
+        try:
+            self.font = ImageFont.truetype('/home/mendel/new_dev/linux_dev/monofonto.otf', 35)
+        except Exception as e:
+            self.font = ImageFont.load_default()
+            print("[DISP] Couldn't load custom font.")
 
         #Set initial status
         # self.set_status(False, False)
@@ -152,8 +155,8 @@ class slights_interface():
 
         #Update the display with the object
         # Draw a black filled box to clear the image.
-        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
-        self.draw.text((0, 0), reported_object, font=self.font, fill=255)
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=255)    
+        self.draw.text((0, 0), reported_object, font=self.font, fill=0)
         self.disp.image(self.image)
         self.disp.show() 
 
