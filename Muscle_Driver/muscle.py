@@ -254,8 +254,9 @@ class muscle_interface():
                 self.temp_input = (input_types.down, self.pmd, time.time())
             else:
                 self.temp_input = (input_types.none, self.pmd, time.time())
-        elif self.pmd == self.temp_input[1]:
+        elif self.pmd != self.temp_input[1]:
             self.temp_input = self.last_input
+            self.unique_input = False
 
         if ((time.time() - self.temp_input[2]) > input_persistency) and self.temp_input[0] != self.last_input[0]:
             self.unique_input = False
