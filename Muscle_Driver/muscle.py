@@ -248,12 +248,14 @@ class muscle_interface():
         #Convert raw analog into percentage range 
         self.pmd = self.trigger(input_value, input_types.down)
 
-        if self.pmd != self.temp_input[1]:
+        if self.pmd != self.temp_input[1] and not self.unique_input:
             self.unique_input = True
             if self.pmd:
                 self.temp_input = (input_types.down, self.pmd, time.time())
             else:
                 self.temp_input = (input_types.none, self.pmd, time.time())
+        elif self.pmd == self.temp_input[1]:
+            self.temp_input = self.last_input
 
         if ((time.time() - self.temp_input[2]) > input_persistency) and self.temp_input[0] != self.last_input[0]:
             self.unique_input = False
