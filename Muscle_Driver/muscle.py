@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from functools import update_wrapper
 from typing import ChainMap
 
 import queue
@@ -291,10 +292,13 @@ class muscle_interface():
 
     def trigger(self, value_in, type):
         #Converts the raw analog value into a predefined percentage from the list below
+        upper_mod = 1.05    
+        
+
         if type == input_types.down:
             if value_in < self.analogThreshold_0:
                 return 0
-            elif value_in > self.max_input_0:
+            elif value_in > (upper_mod*self.max_input_0):
                 return 1
             return self.pmd
 
