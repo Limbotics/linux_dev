@@ -177,7 +177,13 @@ class muscle_interface():
             counter += spacing
 
     def update_0_threshold(self):
-        self.analogThreshold_0 = 1.1*self.ads.read_adc(0, gain=1)
+        
+        start = time.time()
+        input_array = []
+        while (time.time() - start) < 1:
+            input_array.append(self.ads.read_adc(0, gain=1))
+
+        self.analogThreshold_0 = 1.1*(sum(input_array)/len(input_array))
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
@@ -232,6 +238,8 @@ class muscle_interface():
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
         input_persistency = 0.5
+        unput_persistancy = 0.25
+
         #Start the emg read thread
         
         if self.disconnected:
@@ -258,7 +266,11 @@ class muscle_interface():
             self.temp_input = self.last_input
             self.unique_input = False
 
-        if ((time.time() - self.temp_input[2]) > input_persistency) and self.temp_input[0] != self.last_input[0]:
+        if ((time.time() - self.temp_input[2]) > input_persistency) and self.temp_input[1] and self.temp_input[0] != self.last_input[0]:
+            self.unique_input = False
+            self.last_input = self.temp_input
+            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
+        elif ((time.time() - self.temp_input[2]) > unput_persistancy) and not self.temp_input[1] and self.temp_input[0] != self.last_input[0]:
             self.unique_input = False
             self.last_input = self.temp_input
             self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
@@ -296,8 +308,7 @@ class muscle_interface():
     def trigger(self, value_in, type):
         #Converts the raw analog value into a predefined percentage from the list below
         upper_mod = 1.05    
-        
-
+    
         if type == input_types.down:
             if value_in < self.analogThreshold_0:
                 return 0
