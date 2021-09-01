@@ -156,7 +156,7 @@ class muscle_interface():
 
             #Define debug-compatible threshold values
             self.analogThreshold_0 = self.c.root.default_0_value()
-            self.max_input_0 = self.c.root.max_0_value()
+            self.max_input_0 = 0.75*self.c.root.max_0_value()
             
         self.pmd = 0
         self.thread_killed = False
