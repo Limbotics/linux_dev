@@ -49,6 +49,7 @@ class MyService(rpyc.Service):
             if ans == 1:
                 #Write a down pulse to channel 0
                 self.send_pulse(self.default_0, self.max_0, 0.3)
+                self.set_with_noise(self.default_0)
             elif ans == 2:
                 #Write a down hold to channel 0
                 self.send_pulse(self.default_0, self.max_0, 0.5)
