@@ -177,7 +177,7 @@ class muscle_interface():
             counter += spacing
 
     def read_true_raw(self):
-        channel = 1
+        channel = 0
         self.ads.read_adc(channel, gain=1)
 
     def update_0_threshold(self):
