@@ -178,7 +178,7 @@ class muscle_interface():
 
     def read_true_raw(self):
         channel = 0
-        self.ads.read_adc(channel, gain=1)
+        return self.ads.read_adc(channel, gain=1)
 
     def update_0_threshold(self):
         
