@@ -103,7 +103,7 @@ class muscle_interface():
             _ = self.ads._conversion_value( 0, 2000)
 
             #line to read the value of the channel
-            self.value = self.ads.read_adc(0, gain=1)
+            self.value = self.read_true_raw()
 
             self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
             #usage: chan.value, chan.voltage
@@ -176,12 +176,16 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
+    def read_true_raw(self):
+        channel = 1
+        self.ads.read_adc(channel, gain=1)
+
     def update_0_threshold(self):
         
         start = time.time()
         input_array = []
         while (time.time() - start) < 1:
-            input_array.append(self.ads.read_adc(0, gain=1))
+            input_array.append(self.read_true_raw())
 
         self.analogThreshold_0 = 1.25*(sum(input_array)/len(input_array))
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
@@ -191,7 +195,7 @@ class muscle_interface():
         start = time.time()
         input_array = []
         while (time.time() - start) < 1:
-            input_array.append(self.ads.read_adc(0, gain=1))
+            input_array.append(self.read_true_raw())
 
         #Set val to be average of past second
         self.max_input_0 = sum(input_array)/len(input_array)
@@ -209,7 +213,7 @@ class muscle_interface():
         #Read the raw value
         raw_val = 0
         if not self.disconnected:
-            raw_val = int(self.ads.read_adc(0, gain=1))
+            raw_val = int(self.read_true_raw())
         else:
             raw_val = int(self.c.root.channel_0_value())
 
