@@ -155,8 +155,8 @@ class muscle_interface():
                     time.sleep(3)
 
             #Define debug-compatible threshold values
-            self.analogThreshold_0 = 700 
-            self.max_input_0 = 1500
+            self.analogThreshold_0 = self.c.root.default_0_value()
+            self.max_input_0 = self.c.root.max_0_value()
             
         self.pmd = 0
         self.thread_killed = False
