@@ -21,7 +21,7 @@ class MyService(rpyc.Service):
         # (to init the service, if needed)
 
         self.default_0 = 500
-        self.max_0 = 1500
+        self.max_0 = 2000
 
         self.default_1 = 1000
         self.max_1 = 13000
