@@ -119,7 +119,7 @@ class camera_interface():
         self.new_object_spotted_timer = 1
 
         #Initialize the paused flag to false
-        self.temp_pause = True
+        self.temp_pause = False
 
     def camera_read_threader(self):
         #Start the read cam thread
