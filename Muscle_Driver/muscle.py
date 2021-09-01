@@ -183,7 +183,7 @@ class muscle_interface():
         while (time.time() - start) < 1:
             input_array.append(self.ads.read_adc(0, gain=1))
 
-        self.analogThreshold_0 = 1.15*(sum(input_array)/len(input_array))
+        self.analogThreshold_0 = 1.25*(sum(input_array)/len(input_array))
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
