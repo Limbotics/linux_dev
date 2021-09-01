@@ -50,7 +50,7 @@ class handServoControl:
         """
         self.kit.servo[finger].angle = angle
         self.angles[finger] = angle
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 #https://www.w3schools.com/python/python_inheritance.asp
 
@@ -68,14 +68,19 @@ class handLUTControl(handServoControl):
     def __init__(self, grip_config=hand_interface.grip_angles.lateral_power.value):
         super().__init__()
         self.grip_config = grip_config
+        self.last_processed_grip = grip_config
+        self.last_processed_angle = 0
 
         #Run the dispatcher to initialize servo position
         self.process_grip_change()
 
     def process_grip_change(self, percent=0):
         """Process the current grip config set in the class object."""
-        for finger in self.grip_config:
-            self.moveFinger(finger, (percent)*self.grip_config[finger])  
+        if self.last_processed_grip != self.grip_config or self.last_processed_angle != percent:
+            self.last_processed_grip = self.grip_config
+            self.last_processed_angle = percent
+            for finger in self.grip_config:
+                self.moveFinger(finger, (percent)*self.grip_config[finger])  
 
     def safe_shutdown(self):
         self.grip_config = hand_interface.grip_angles.lateral_power.value
