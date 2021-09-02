@@ -348,6 +348,7 @@ class muscle_interface():
     def shutdown(self):
         """Save the debug data, if it exists."""
         self.thread_killed = True
+        return
         print("[EMG] Saving data plot...")
         f, ax = plt.subplots(1,1)
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
