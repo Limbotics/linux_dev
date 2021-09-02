@@ -131,7 +131,7 @@ class slights_interface():
 
         # Draw a black filled box to clear the image.
         self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
-        self.font = ImageFont.truetype('/home/mendel/linux_dev/monofonto.otf', 35)
+        self.font = ImageFont.truetype('/home/mendel/linux_dev/monofonto.otf', 15)
         # self.font = ImageFont.truetype("arial.ttf", 35)
 
         #Set initial status
