@@ -156,24 +156,30 @@ class slights_interface():
         #Update the display with the object
         # Draw a black filled box to clear the image.
         print_text = ""
-        if time.time() - self.last_dots_update_time > 0.45:
+        if (time.time() - self.last_dots_update_time > 0.5) and reported_object == "":
             self.last_dots_update_time = time.time()
             if reported_object == "":
                 for i in range(0,self.no_object_dots+1):
                     print_text += "."
+                #Reset the loading screen
                 if self.no_object_dots > 4:
                     self.no_object_dots = 0
+                    self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+                    self.disp.image(self.image)
+                    self.disp.show()   
+                else:#Just draw another period without resetting
+                    self.draw.text((0, 0), print_text, font=self.font, fill=255)
+                    self.disp.image(self.image)
+                    self.disp.show() 
                 self.no_object_dots += 1
-            else:
-                print_text = reported_object
         else:
             print_text = reported_object
             
-        # if reported_object != "":
-        #     self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
-        self.draw.text((0, 0), print_text, font=self.font, fill=255)
-        self.disp.image(self.image)
-        self.disp.show() 
+        if reported_object != "":
+            self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+            self.draw.text((0, 0), print_text, font=self.font, fill=255)
+            self.disp.image(self.image)
+            self.disp.show() 
 
         #Update the pins given the guidelines in the display state
         for status in statuses:
