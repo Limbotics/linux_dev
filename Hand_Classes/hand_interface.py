@@ -70,7 +70,7 @@ class grip_names(Enum):
 
 class grip_angles(Enum):
     lateral_power = {
-        fingers.thumb.value:   150,
+        fingers.thumb.value:   180,
         fingers.index.value:   180,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
@@ -84,10 +84,10 @@ class grip_angles(Enum):
         # fingers.pinky.value:   0
     }
     thumb_pinch = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   180,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
+        fingers.thumb.value:   180,
+        fingers.index.value:   75,
+        fingers.middle.value:  75,
+        fingers.ring.value:    120,
         # fingers.pinky.value:   0
     }
     point = {
@@ -98,10 +98,10 @@ class grip_angles(Enum):
         # fingers.pinky.value:   180
     }
     open_palm = {
-        fingers.thumb.value:   0,
-        fingers.index.value:   0,
-        fingers.middle.value:  0,
-        fingers.ring.value:    0,
+        fingers.thumb.value:   45,
+        fingers.index.value:   45,
+        fingers.middle.value:  45,
+        fingers.ring.value:    45,
         # fingers.pinky.value:   180
     }
     angle_names = {
@@ -138,6 +138,7 @@ class grips(Enum):
         "cell phone":   grip_angles.thumb_pinch.value,
         "refrigerator": grip_angles.lateral_power.value,
         "keyboard": grip_angles.point.value,
+        "cat": grip_angles
         # "microwave":    grip_angles.lateral_power.value,
         # "refrigerator": grip_angles.lateral_power.value,
         # "book":         grip_angles.thumb_pinch.value,
