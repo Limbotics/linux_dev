@@ -10,6 +10,9 @@ from Status_Lights_Driver import slights
 #testing new mendel workflow
 #Status Lights initialization
 statuslights = slights.slights_interface()
+#Tell the user that we're ready for their input
+slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
+slights_startup_thread.start()
 
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
@@ -20,9 +23,7 @@ from Hand_Classes import hand_interface
 modes = hand_interface.modes
 from State_Manager import state_manager
 
-#Tell the user that we're ready for their input
-slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args=())
-slights_startup_thread.start()
+
 
 #Camera initialization
 cam = camera.camera_interface()
