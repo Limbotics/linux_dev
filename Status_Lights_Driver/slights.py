@@ -169,7 +169,8 @@ class slights_interface():
         else:
             print_text = reported_object
             
-        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+        if reported_object != "":
+            self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
         self.draw.text((0, 0), print_text, font=self.font, fill=255)
         self.disp.image(self.image)
         self.disp.show() 
