@@ -105,6 +105,7 @@ class slights_interface():
             except Exception as e:
                 self.lights[pinout] = PWM(pinout.value["chip"], pinout.value["line"])
                 self.lights[pinout].frequency = 1e3
+                self.lights[pinout].duty_cycle = 0
 
         #Define a matching set between status states and inputs to set_status
         self.object_status_dispatcher = {
@@ -139,6 +140,8 @@ class slights_interface():
         self.startup_complete = False
         self.object_pulse_T0 = 0
         self.spotted_object = ""
+        self.no_object_dots = 1
+        self.last_dots_update_time = time.time()
 
         #Stored list of led objects if on a threaded pulse
         # self.threaded_leds = {status_states.grip_saved_id.value: [GPIO.PWM(pinouts.yellow.value, 100), False]}
@@ -152,8 +155,22 @@ class slights_interface():
 
         #Update the display with the object
         # Draw a black filled box to clear the image.
+        print_text = ""
+        if time.time() - self.last_dots_update_time > 0.25:
+            self.last_dots_update_time = time.time()
+            if reported_object == "":
+                for i in range(0,self.no_object_dots+1):
+                    print_text += "."
+                if self.no_object_dots > 4:
+                    self.no_object_dots = 0
+                self.no_object_dots += 1
+            else:
+                print_text = reported_object
+        else:
+            print_text = reported_object
+            
         self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
-        self.draw.text((0, 0), reported_object, font=self.font, fill=255)
+        self.draw.text((0, 0), print_text, font=self.font, fill=255)
         self.disp.image(self.image)
         self.disp.show() 
 
@@ -214,8 +231,6 @@ class slights_interface():
         #     except Exception as e:
         #         print(str(e))
         pulse_time = 0.1
-        self.pulse_vibes(pulse_time)
-        time.sleep(pulse_time)
         self.pulse_vibes(pulse_time)
         time.sleep(pulse_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
