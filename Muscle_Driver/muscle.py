@@ -1,9 +1,21 @@
 from enum import Enum, auto
+from functools import update_wrapper
 from typing import ChainMap
 
 import queue
 import time
+from multiprocessing import Process
+from adafruit_blinka.board.pyboard import Y12
+
+
+from numpy.core.fromnumeric import argmax
+from numpy.lib.twodim_base import _trilu_indices_form_dispatcher
 import rpyc #Muscle sensor debugging
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
+import matplotlib.ticker as ticker
+import numpy as np
 
 from Hand_Classes import hand_interface
 input_types = hand_interface.input_types
@@ -91,14 +103,14 @@ class muscle_interface():
             _ = self.ads._conversion_value( 0, 2000)
 
             #line to read the value of the channel
-            self.value = self.ads.read_adc(0, gain=1)
+            self.value = self.read_true_raw()
 
             self.percent_actuated = 0 #Define the conversion from the self.chan value to a range from 0 to full squeeze
             #usage: chan.value, chan.voltage
 
             #for advanced trigger
-            self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
-            self.fifo = queue.Queue(self.fifoLength)
+            # self.fifoLength = 10                        #adjust to tune advanced trigger sensitvity
+            # self.fifo = queue.Queue(self.fifoLength)
 
             self.analogRatioThreshold = 2               #adjust to tune advanced trigger sensitvity
             self.disconnected = False
@@ -120,8 +132,16 @@ class muscle_interface():
             #     print("[DEBUG] Error loading muscle input; defaulting to debug mode")
             #     disconnect = True
             #     print("[LOADING] Connecting to sensor input simulator...")
-            
+        #Define all my debug plotting values
+        figure(figsize=(16, 12), dpi=80)
+        self.event_list = []
+        self.program_T0 = time.time()
+        self.raw_data_time = []
+        self.raw_data = []
+        self.filtered_data_time = []
+        self.filtered_data = []
         if(disconnect):
+            
             self.ads = Analog_Debug()
             self.disconnected = True #Flag to not call other things
 
@@ -135,11 +155,12 @@ class muscle_interface():
                     time.sleep(3)
 
             #Define debug-compatible threshold values
-            self.analogThreshold_0 = 2000 
-            self.max_input_0 = 15000
+            self.analogThreshold_0 = self.c.root.default_0_value()
+            self.max_input_0 = 0.75*self.c.root.max_0_value()
             
         self.pmd = 0
-        self.grip_T0 = time.time()  #Used for tracking grip inputs over thresholds
+        self.thread_killed = False
+        self.unique_input = True
         self.input_T0 = time.time() #Used for tracking raw inputs over thresholds
         self.last_input = (input_types.none, 0, time.time()) #The last input pair reported by AnalogRead
         self.temp_input = (input_types.none, 0, time.time()) #The temporary, nonreported input to compare to last_input
@@ -155,8 +176,19 @@ class muscle_interface():
             self.perc_buckets.append(counter)
             counter += spacing
 
+    def read_true_raw(self):
+        channel = 1
+        return self.ads.read_adc(channel, gain=1)
+
     def update_0_threshold(self):
-        self.analogThreshold_0 = self.ads.read_adc(0, gain=1)
+        
+        start = time.time()
+        input_array = []
+        while (time.time() - start) < 1:
+            input_array.append(self.read_true_raw())
+
+        # self.analogThreshold_0 = 1.25*(sum(input_array)/len(input_array))
+        self.analogThreshold_0 = 10
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
@@ -164,10 +196,11 @@ class muscle_interface():
         start = time.time()
         input_array = []
         while (time.time() - start) < 1:
-            input_array.append(self.ads.read_adc(0, gain=1))
+            input_array.append(self.read_true_raw())
 
         #Set val to be average of past second
-        self.max_input_0 = sum(input_array)/len(input_array)
+        # self.max_input_0 = sum(input_array)/len(input_array)
+        self.max_input_0 = 100
 
         #Set threshold to be half the range
         # self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
@@ -177,49 +210,44 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        array_avg_len = 5 #The number of readings to average across
-        max_delta = 0.03 #Max percent change in a single step across the range
+        mvg_avg = 10
 
         #Read the raw value
         raw_val = 0
         if not self.disconnected:
-            raw_val = self.ads.read_adc(0, gain=1)
+            raw_val = int(self.read_true_raw())
         else:
-            raw_val = self.c.root.channel_0_value()
+            raw_val = int(self.c.root.channel_0_value())
+
+        #Save the raw data to the debug plot
+        self.raw_data_time.append(time.time() - self.program_T0)
+        self.raw_data.append(raw_val)
 
         #Check edge case on startup
-        if len(self.averaging_array) == 0:
-            self.averaging_array.append(raw_val)
+        self.averaging_array.append(raw_val)
+        if len(self.averaging_array) <= mvg_avg:
+            # print("[EMG] Returning raw val, since we have no curve.")
             return raw_val
-
-        #Perform filtering step #1: max delta change
-        new_perc = raw_val*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-        old_perc = self.averaging_array[-1]*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-
-        #perform delta filtering
-        if (new_perc - old_perc) > max_delta:
-            new_perc = new_perc + max_delta
-            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        elif (new_perc - old_perc) > -1*max_delta: #We've reached the max decrease limit
-            new_perc = new_perc - max_delta
-            new_val = new_perc*(self.max_input_0 - self.analogThreshold_0) + self.analogThreshold_0
-        else:
-            new_val = raw_val
-
-        #perform value filtering
-        if len(self.averaging_array) >= array_avg_len:
-            #Pop element, add new to end
+        elif len(self.averaging_array) > mvg_avg:
+            # print("[EMG] Popping array element..")
             self.averaging_array.pop(0)
 
-        self.averaging_array.append(new_val)
-
-        return sum(self.averaging_array)/len(self.averaging_array)
+        # print("[EMG] Array: ", str(self.averaging_array))
+        t = time.time()
+        smoothed = self.smooth(self.averaging_array, mvg_avg)
+        self.smoothing_time = time.time() - t
+        # print("[EMG] Returning smoothed value of ", str(smoothed[-1]))
+        return smoothed[-1]
 
     #Process the inputs past the thresholds 
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
-        input_persistency = 0.25
+        input_persistency = 0.5
+        unput_persistancy = 0.25
+
+        #Start the emg read thread
+        
         if self.disconnected:
             new_down_value = self.c.root.channel_0_value() ####
 
@@ -227,88 +255,124 @@ class muscle_interface():
 
         input_value = self.read_filtered()
 
-        #Convert raw analog into percentage range 
-        new_pmd = self.convert_perc(input_value, input_types.down)
+        #Save the filtered value to the debug plot
+        self.filtered_data_time.append(time.time() - self.program_T0)
+        self.filtered_data.append(input_value)
 
-        #Check if we have a difference in what we're reporting and the current state
-        if new_pmd and self.last_input[0] == input_types.none:
-            #We are detecting input from the user, so create the new temp input object to track if not already exists
-            if self.temp_input[2] == 0:
-                #Save the new temp input object
-                self.temp_input = (input_types.down, input_value, time.time())
-            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
-                #We're over threshold, so report new input type
-                self.last_input = self.temp_input
-                self.pmd = new_pmd
-                self.temp_input = (input_types.down, input_value, 0)
-        elif not new_pmd and self.last_input[0] == input_types.down:
-            #We're reporting user input but not receiving it, start timer
-            if self.temp_input[2] == 0:
-                #Save the new temp input object
-                self.temp_input = (input_types.none, input_value, time.time())
-            elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
-                #We're over threshold, so report new input type
-                self.last_input = self.temp_input
-                self.pmd = new_pmd
-                self.temp_input = (input_types.none, input_value, 0)
-        else:
-            #reset temp input object 
-            self.temp_input = (self.last_input[0], self.last_input[1], 0)
+        #Convert raw analog into percentage range 
+        self.pmd = self.trigger(input_value, input_types.down)
+
+        if self.pmd != self.temp_input[1] and not self.unique_input:
+            self.unique_input = True
+            if self.pmd:
+                self.temp_input = (input_types.down, self.pmd, time.time())
+            else:
+                self.temp_input = (input_types.none, self.pmd, time.time())
+        elif self.pmd != self.temp_input[1]:
+            self.temp_input = self.last_input
+            self.unique_input = False
+
+        if ((time.time() - self.temp_input[2]) > input_persistency) and self.temp_input[1] and self.temp_input[0] != self.last_input[0]:
+            self.unique_input = False
+            self.last_input = self.temp_input
+            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
+        elif ((time.time() - self.temp_input[2]) > unput_persistancy) and not self.temp_input[1] and self.temp_input[0] != self.last_input[0]:
+            self.unique_input = False
+            self.last_input = self.temp_input
+            self.event_list.append((time.time()-self.program_T0, self.last_input[0]))
+
         return self.last_input[0]
 
-        # #Build the temp input object if it's not already in use (tracked by timer)
-        # if self.temp_input[2] == 0:
-        #     if self.temp_input[0] != self.temp_input[0]:
-        #         temp_type = input_types.none
-        #         if new_pmd:
-        #             temp_type = input_types.down
-
-                
-        # else:
-        #     #We know we're already tracking what could be a change in muscle input from user
-        #     if (self.temp_input[2] - self.last_input[2]) > input_persistency:
-        #         #It's time to change the last input object!
+        #Check if we have a difference in what we're reporting and the current state
+        # if new_pmd and self.last_input[0] == input_types.none:
+        #     #We are detecting input from the user, so create the new temp input object to track if not already exists
+        #     if self.temp_input[2] == 0:
+        #         #Save the new temp input object
+        #         self.temp_input = (input_types.down, input_value, time.time())
+        #     elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+        #         #We're over threshold, so report new input type
         #         self.last_input = self.temp_input
-
-        # #If above the input threshold   
-        # #   and enough time has passed to allow a new value to be reported,
-        # #   or the last value reported was user input
-        # if ((new_pmd == 1 and (time.time() - self.input_T0) > input_persistency) or ((self.last_input[0] == input_types.down) and (new_pmd == 1))):
-        #     # print("[MDEBUG] Detecting input on channel 0 above analog threshold")
-        #     self.input_T0 = time.time()
-        #     self.last_input = (input_types.down, self.max_input_0)
-        #     self.pmd = new_pmd
-        #     return self.last_input[0]
-
-        # #If the input persistency threshold has passed, then report no user input 
-        # if (time.time() - self.input_T0) > input_persistency:
-        #     self.input_T0 = time.time()
-        #     self.last_input = (input_types.none, 0)
-        #     self.pmd = new_pmd
-        #     return self.last_input[0]
+        #         self.pmd = new_pmd
+        #         self.temp_input = (input_types.down, input_value, 0)
+        #         self.event_list.append((time.time()-self.program_T0, "Activated"))
+        # elif not new_pmd and self.last_input[0] == input_types.down:
+        #     #We're reporting user input but not receiving it, start timer
+        #     if self.temp_input[2] == 0:
+        #         #Save the new temp input object
+        #         self.temp_input = (input_types.none, input_value, time.time())
+        #     elif (self.temp_input[2] - self.last_input[2]) > input_persistency: #Already created, so just compare the timers
+        #         #We're over threshold, so report new input type
+        #         self.last_input = self.temp_input
+        #         self.pmd = new_pmd
+        #         self.temp_input = (input_types.none, input_value, 0)
+        #         self.event_list.append((time.time()-self.program_T0, "No Input"))
+        # else:
+        #     #reset temp input object if what we're reporting and what we have saved is the same
+        #     self.temp_input = (self.last_input[0], self.last_input[1], 0)
         # return self.last_input[0]
 
-    def convert_perc(self, raw_analog, type):
+    def trigger(self, value_in, type):
         #Converts the raw analog value into a predefined percentage from the list below
-
+        upper_mod = 1.05    
+    
         if type == input_types.down:
-            #If higher than the max input from the calibration, then return 100%
-            if raw_analog >= self.max_input_0:
-                return 1
-            #If in above the analog threshold, then convert to the percentage range
-            elif raw_analog > self.analogThreshold_0:
-                perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
-                #Convert the raw percentage to a filtered percentage
-                new_perc = self.closest(self.perc_buckets, perc)
-                if new_perc > self.binary_threshold:
-                    return 1
-                else:
-                    return 0
-            else:
+            if value_in < self.analogThreshold_0:
                 return 0
+            elif value_in > (upper_mod*self.max_input_0):
+                return 1
+            return self.pmd
+
+            # #If higher than the max input from the calibration, then return 100%
+            # if raw_analog >= self.max_input_0:
+            #     return 1
+            # #If in above the analog threshold, then convert to the percentage range
+            # elif raw_analog > self.analogThreshold_0:
+            #     perc = raw_analog*(1/(self.max_input_0-self.analogThreshold_0)) + (self.analogThreshold_0/(self.analogThreshold_0-self.max_input_0))
+            #     if perc < 0:
+            #         perc = 0
+            #     elif perc > 100:
+            #         perc = 100
+            #     #Convert the raw percentage to a filtered percentage
+            #     # new_perc = self.closest(self.perc_buckets, perc)
+            #     if perc > self.binary_threshold:
+            #         return 1
+            #     elif perc < self.:
+            #         return 0
+            #     else:
+            #         return self.pmd
+            # else:
+            #     return 0
         else:
             return 0
 
+    def shutdown(self):
+        """Save the debug data, if it exists."""
+        self.thread_killed = True
+        print("[EMG] Saving data plot...")
+        f, ax = plt.subplots(1,1)
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+        #Debug
+        #Plot the raw data
+        ax.plot(self.raw_data_time, self.raw_data, label="Raw Data")
+        #Plot the filtered data
+        ax.plot(self.filtered_data_time, self.filtered_data, label="Filtered Data")
+        #Plot the events in the timeline
+        for event in self.event_list:
+            if event[1] == input_types.down:
+                ax.axvline(event[0], color='g')
+            else:
+                ax.axvline(event[0], color='r')
+        #Plot the threshold and maxes
+        ax.axhline(y=((self.max_input_0 - self.analogThreshold_0)*self.binary_threshold + self.analogThreshold_0), xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'mediumorchid', label="Upper Trigger")
+        ax.axhline(y=self.analogThreshold_0, xmin=0, xmax=self.raw_data_time[-1], linewidth=2, color = 'royalblue', label="Lower Trigger")
+        ax.legend()
+        plt.xlabel("Time")
+        plt.ylabel("EMG input")
+        f.set_figheight(12)
+        f.set_figwidth(16)
+        plt.savefig('emg_input.png')
+        print("[EMG] Saved Debug plot successfully!")
+        
     #Given a list of values and another Number, return the closest value within list to the given Number
     def closest(self, list, Number):
         aux = []
@@ -318,6 +382,10 @@ class muscle_interface():
         new_val = list[aux.index(min(aux))]
         # print("Changing input from ", str(Number), " to ", str(new_val))
         return new_val
+
+    def smooth(self, y, window_width=4):
+        cumsum_vec = np.cumsum(np.insert(y, 0, 0)) 
+        return (cumsum_vec[window_width:] - cumsum_vec[:-window_width]) / window_width
 
 class ADS1x15(object):
     """Base functionality for ADS1x15 analog to digital converters."""

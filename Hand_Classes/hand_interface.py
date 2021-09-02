@@ -91,8 +91,8 @@ class grip_angles(Enum):
         # fingers.pinky.value:   0
     }
     point = {
-        fingers.thumb.value:   45,
-        fingers.index.value:   45,
+        fingers.thumb.value:   180,
+        fingers.index.value:   0,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
         # fingers.pinky.value:   180
@@ -116,11 +116,11 @@ class grips(Enum):
     """ Defines the different grips available with a dictionary. Maps all objects to different grip angle names."""
     object_to_grip_mapping = {
         "":             grip_angles.lateral_power.value,
-        "umbrella":     grip_angles.lateral_power.value,
-        "handbag" :     grip_angles.lateral_power.value,
-        "tie":          grip_angles.thumb_pinch.value,
-        "suitcase":     grip_angles.thumb_pinch.value,
-        "frisbee":      grip_angles.thumb_pinch.value,
+        # "umbrella":     grip_angles.lateral_power.value,
+        # "handbag" :     grip_angles.lateral_power.value,
+        # "tie":          grip_angles.thumb_pinch.value,
+        # "suitcase":     grip_angles.thumb_pinch.value,
+        # "frisbee":      grip_angles.thumb_pinch.value,
         # "umbrella":     grip_angles.lateral_power.value,
         # "handbag" :     grip_angles.lateral_power.value,
         # "tie":          grip_angles.thumb_pinch.value,
@@ -136,11 +136,13 @@ class grips(Enum):
         # "sandwich":     grip_angles.lateral_power.value,
         "remote":       grip_angles.lateral_power.value,
         "cell phone":   grip_angles.thumb_pinch.value,
+        "refrigerator": grip_angles.lateral_power.value,
+        "keyboard": grip_angles.point.value,
         # "microwave":    grip_angles.lateral_power.value,
         # "refrigerator": grip_angles.lateral_power.value,
         # "book":         grip_angles.thumb_pinch.value,
-        "scissors":     grip_angles.lateral_power.value,
-        "toothbrush":   grip_names.tripod.value,
+        # "scissors":     grip_angles.lateral_power.value,
+        # "toothbrush":   grip_names.tripod.value,
     }
     
     # def next(self):

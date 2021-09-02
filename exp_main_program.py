@@ -1,6 +1,7 @@
 import time
 import os
 import threading
+from multiprocessing import Process
 import tty
 import sys
 
@@ -35,28 +36,28 @@ else:
 
     #Run through the muscle calibration sequence if necessary
     if not mi.disconnected:
-        input_margin = 0.2 #%/100 margin for input val
 
         print("[CALIBRATION] Logging current channel 0 input as input threshold in 3...")
-        time.sleep(1)
+        # time.sleep(1)
         print("2...")
-        time.sleep(1)
+        # time.sleep(1)
         print("1...")
-        time.sleep(1)
+        # time.sleep(1)
         mi.update_0_threshold()
         print("[CALIBRATION-CH0] Please perform a down squeeze, starting on 2, until 0.")
         print("[CALIBRATION-CH0] Ready?")
-        time.sleep(2)
+        # time.sleep(2)
         print("3...")
-        time.sleep(1)
+        # time.sleep(1)
         print("Squeeze now, and hold! 2...")
-        time.sleep(1)
+        # time.sleep(1)
         print("1...")
         mi.update_0_max()
         # time.sleep(1) Not needed due to the integral/interval method in above function
         print("[CALIBRATION-CH0] Great! Thank you.")
         print("[CALIBRATION] Calibration sequence summary:")
         print("[CAL-CH0] CH0 input threshold: ", str(mi.analogThreshold_0), "CH0 max: ", str(mi.max_input_0))
+        # time.sleep(2)
         # print("[CAL-CH1] CH1 input threshold: ", str(mi.analogThreshold_1), "CH1 max: ", str(mi.max_input_1))
 
 #Servo control initialization
@@ -64,12 +65,7 @@ servs = servo.handLUTControl()
 
 #Save the state of the arm
 reported_object = ""
-saved_state = False
 user_command_detected = False
-time_required_for_open_state = 5
-time_required_for_any_state = 0.25
-time_required_for_user_command = 0.1
-program_T0 = time.time()
 SM = state_manager.Mode_Manager()
 #Create user input program killer watchdog
 program_killer_thread = threading.Thread(target=SM.killer_watcher, args=())
@@ -97,7 +93,6 @@ count = 0
 output_delay = time.time()
 while (cam_thread.is_alive() and not SM.killed):
     
-
     count += 1
 
     #Create new state matrix for current moment
@@ -123,11 +118,18 @@ while (cam_thread.is_alive() and not SM.killed):
         data_list["other_cam_data"] = cam.other_cam_data 
         data_list["inference_time"] = str(round((1/cam.inference_time), 1))
         data_list["spotted_object_score"] = str(round((100*cam.cam_data_score), 2))
-        data_list["muscle_input"] = str(int(mi.read_filtered()))
-        data_list["muscle_input_percent"] = str(100*mi.pmd)
+        data_list["EMG_array"] = mi.averaging_array
+        try:
+            data_list["smoothing_time"] = str(mi.smoothing_time)
+            data_list["muscle_input"] = str(int(mi.filtered_data[-1]))
+        except Exception as e:
+            data_list["muscle_input"] = str("N/A")
+            data_list["smoothing_time"] = str("N/A")
+        data_list["muscle_input_percent"] = str(100*mi.last_input[1])
         data_list["muscle_input_type"] = str(mi.last_input[0])
         data_list["servo_grip_loaded"] = str(grip_name)
         data_list["vibes"] = str(statuslights.vibe_status)
+        
         SM.nice_output(data_list)
 
         output_delay = time.time()
@@ -138,7 +140,7 @@ while (cam_thread.is_alive() and not SM.killed):
         # print("[MT] In AGS Mode Processing")
         #Ensure the camera isn't paused
         if cam.temp_pause:
-            cam.temp_pause = False
+            cam.temp_pause = False #TODO: Set back
 
         #Let the servos know if the camera sees anything         
         grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
@@ -153,7 +155,7 @@ while (cam_thread.is_alive() and not SM.killed):
         # servs.grip_config = grip_name
 
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.pmd,))
+        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
         servo_thread.start()
     else:
         raise AttributeError("State Manager has no current mode defined.")
@@ -161,6 +163,7 @@ while (cam_thread.is_alive() and not SM.killed):
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
 statuslights.startup_complete = False
+mi.shutdown()
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 
