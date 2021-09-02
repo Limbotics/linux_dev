@@ -72,11 +72,11 @@ class handLUTControl(handServoControl):
         self.last_processed_angle = 0
 
         #Run the dispatcher to initialize servo position
-        self.process_grip_change()
+        self.process_grip_change(override=True)
 
-    def process_grip_change(self, percent=0):
+    def process_grip_change(self, percent=0, override=False):
         """Process the current grip config set in the class object."""
-        if self.last_processed_grip != self.grip_config or self.last_processed_angle != percent:
+        if self.last_processed_grip != self.grip_config or self.last_processed_angle != percent or override:
             self.last_processed_grip = self.grip_config
             self.last_processed_angle = percent
             for finger in self.grip_config:
@@ -85,6 +85,6 @@ class handLUTControl(handServoControl):
     def safe_shutdown(self):
         self.grip_config = hand_interface.grip_angles.lateral_power.value
 
-        self.process_grip_change()
+        self.process_grip_change(override=True)
 
         print("[SERVO] Successfully killed servos.")
