@@ -28,7 +28,7 @@ slights_startup_thread = threading.Thread(target=statuslights.startup_wait, args
 slights_startup_thread.start()
 #Muscle sensor initialization
 print("Debug muscle sensor? Y/N")
-ans = input()
+ans = "N"
 if(ans == "Y"):
     mi = muscle.muscle_interface(disconnect=True)
 else:

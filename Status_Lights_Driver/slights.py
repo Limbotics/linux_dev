@@ -218,9 +218,13 @@ class slights_interface():
         time.sleep(pulse_time)
         self.pulse_vibes(pulse_time)
         time.sleep(pulse_time)
-        self.pulse_vibes(pulse_time)
-        time.sleep(pulse_time)
         self.lights[pinouts.vibrate].duty_cycle = 0
+
+        #Say we're doing startup...
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+        self.draw.text((0, 0), "Starting...", font=self.font, fill=255)
+        self.disp.image(self.image)
+        self.disp.show() 
 
     def safe_shutdown(self):
         """Funky shutdown sequence to indicate to the user the arm is shutting down."""
