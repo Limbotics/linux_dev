@@ -210,7 +210,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        mvg_avg = 10
+        mvg_avg = 4
 
         #Read the raw value
         raw_val = 0
@@ -243,8 +243,8 @@ class muscle_interface():
     #Returns the type of muscle input and the accompanying intensity
     def AnalogRead(self):
         # The fastest rate at which input states can change between down/none
-        input_persistency = 0.5
-        unput_persistancy = 0.25
+        input_persistency = 0.05
+        unput_persistancy = 0.05
 
         #Start the emg read thread
         
