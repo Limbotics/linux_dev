@@ -135,7 +135,7 @@ class camera_interface():
         self.cam_image_index = 0
         self.object_spotted_T0 = 0
         self.object_not_spotted_delta_req = 5
-        self.new_object_spotted_timer = 1
+        self.new_object_spotted_timer = 0.1
         self.centered_line_length_limit = 0
 
         #Initialize the paused flag to false
