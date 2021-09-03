@@ -250,7 +250,7 @@ class camera_interface():
                 self.other_cam_data.append((object_name, c.score))
 
             if self.live_camera_feed:
-                color = (255, 0, 0)
+                color = (0, 0, 125)
                 if was_selected:
                     color = (0, 255, 0)
                 cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), color, 2)
