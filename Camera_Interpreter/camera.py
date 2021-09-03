@@ -188,7 +188,7 @@ class camera_interface():
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
         highest_score = 0
-        dist_to_center = 0
+        max_dist = 0
         
         self.other_cam_data = []
         flag = False
@@ -209,16 +209,18 @@ class camera_interface():
             #Draw the line from the center of the bounding box to the center of the image
             cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
             #Draw the text label for the line distance
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, str(int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))), (x0, y0+30),
+            line_length = str(int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y)))
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, line_length, (x0, y0+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             #Draw the text label for the center of the box
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
+            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
+                max_dist = line_length
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
             elif (c.score > min_conf_threshold):
                 self.other_cam_data.append((object_name, c.score))
