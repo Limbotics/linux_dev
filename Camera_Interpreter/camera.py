@@ -209,8 +209,8 @@ class camera_interface():
             #Draw the line from the center of the bounding box to the center of the image
             cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
             #Draw the text label for the line distance
-            line_length = str(int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y)))
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, line_length, (x0, y0+30),
+            line_length = int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, str(line_length), (x0, y0+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             #Draw the text label for the center of the box
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y+30),
