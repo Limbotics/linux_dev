@@ -179,8 +179,8 @@ class camera_interface():
         #More image information
         height, width, channels = cv2_im_rgb.shape
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
-        midpoint_x = width/2
-        midpoint_y = height/2
+        midpoint_x = int(width/2)
+        midpoint_y = int(height/2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
@@ -202,7 +202,7 @@ class camera_interface():
             cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
             
             #Draw the line from the center of the bounding box to the center of the image
-            cv2_im_rgb = cv2.line(cv2_im_rgb, ((x1-x0)/2,(y1-y0)/2), (midpoint_x,midpoint_y), (0, 255, 0), 9)
+            cv2_im_rgb = cv2.line(cv2_im_rgb, (int((x1-x0)/2),int((y1-y0)/2)), (midpoint_x,midpoint_y), (0, 255, 0), 9)
 
             if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
