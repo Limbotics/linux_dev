@@ -134,11 +134,11 @@ class grips(Enum):
         "banana":       grip_angles.lateral_power.value,
         "apple":        grip_angles.lateral_power.value,
         # "sandwich":     grip_angles.lateral_power.value,
-        "remote":       grip_angles.lateral_power.value,
+        # "remote":       grip_angles.lateral_power.value,
         "cell phone":   grip_angles.thumb_pinch.value,
         "refrigerator": grip_angles.lateral_power.value,
-        "keyboard": grip_angles.point.value,
-        "cat": grip_angles
+        "keyboard": grip_angles.point.value
+        # "cat": grip_angles
         # "microwave":    grip_angles.lateral_power.value,
         # "refrigerator": grip_angles.lateral_power.value,
         # "book":         grip_angles.thumb_pinch.value,
