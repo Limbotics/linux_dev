@@ -237,7 +237,7 @@ class camera_interface():
         #Release the camera object
         self.cap.release()
         cv2.destroyAllWindows()
-        print("[CAM] Successfully killed camerea session.")
+        print("[CAM] Successfully killed camera session.")
 
     def load_labels(self, path):
         p = re.compile(r'\s*(\d+)(.+)')
