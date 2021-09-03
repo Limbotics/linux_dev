@@ -262,6 +262,18 @@ class slights_interface():
         for pinout in pinouts:
             self.lights[pinout].close()
 
+        #Clear the display
+        #Say we're doing startup...
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+        self.draw.text((0, 0), "Goodbye!", font=self.font, fill=255)
+        self.disp.image(self.image)
+        self.disp.show() 
+        time.sleep(1)
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)    
+        self.draw.text((0, 0), "", font=self.font, fill=255)
+        self.disp.image(self.image)
+        self.disp.show() 
+
         print("[STATUS] Successfully killed GPIO.")
 
     
