@@ -182,6 +182,8 @@ class camera_interface():
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
         midpoint_x = int(width/2)
         midpoint_y = int(height/2)
+        cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
+                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
@@ -206,8 +208,11 @@ class camera_interface():
             
             #Draw the line from the center of the bounding box to the center of the image
             cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
-            #Draw the text label
+            #Draw the text label for the line distance
             cv2_im_rgb = cv2.putText(cv2_im_rgb, str(int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))), (x0, y0+30),
+                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            #Draw the text label for the center of the box
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
             if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
