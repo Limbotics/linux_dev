@@ -75,9 +75,9 @@ class camera_interface():
         print("[INFO] loading model...")
         #Load the tflite model and labelmap
         # Get path to current working directory
-        GRAPH_NAME = "efficientdet_lite3_512_ptq_edgetpu.tflite"
-        MODEL_NAME = "Camera_Interpreter/Edge_TPU_Model"
-        LABELMAP_NAME = "coco_labels_efficientdet.txt"
+        GRAPH_NAME = "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
+        MODEL_NAME = "Camera_Interpreter/Coco"
+        LABELMAP_NAME = "coco_labels.txt"
         CWD_PATH = os.getcwd()
 
         # Path to .tflite file, which contains the model that is used for object detection
@@ -91,7 +91,7 @@ class camera_interface():
         # Load the Tensorflow Lite model.
         # If using Edge TPU, use special load_delegate argument
         # Initialize the TF interpreter
-        self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/efficientdet_lite3_512_ptq_edgetpu.tflite'))
+        self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'))
         self.interpreter.allocate_tensors()
 
         # Get model details
