@@ -213,7 +213,7 @@ class camera_interface():
             cv2_im_rgb = cv2.putText(cv2_im_rgb, str(line_length), (x0, y0+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             #Draw the text label for the center of the box
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y+30),
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
             if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (object_name in grips.object_to_grip_mapping.value.keys())):
