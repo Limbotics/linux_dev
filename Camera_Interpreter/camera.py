@@ -197,18 +197,25 @@ class camera_interface():
         centered_line_length_limit = int(width/4)
 
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
-        midpoint_x = int(width/2)
-        midpoint_y = int(height/2)
+        #The bounding limits for detecting objects
+        min_x = int(width/4)
+        max_x = int(width/2)+min_x
+        min_y = int(width/4)
+
+        #Determine the midpoint of the detection region
+        midpoint_x = int((max_x-min_x)/2)
+        midpoint_y = int((height - min_y)/2)
         if self.live_camera_feed:
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-            #Draw the radius on the image
-            cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
+            #Draw the spot region
+            # cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
+            cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (min_x, min_y), (max_x, height), (0, 255, 0), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
         highest_score = 0
-        max_dist = 0
+        min_dist = 0
         
         self.other_cam_data = []
         flag = False
@@ -225,26 +232,37 @@ class camera_interface():
 
             # #Put the bounding box on the image
             line_length = int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))
-            if self.live_camera_feed:
-                cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
-                
-                #Draw the line from the center of the bounding box to the center of the image
-                cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
-                #Draw the text label for the line distance
-                cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+30),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                #Draw the text label for the center of the box
-                cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if((c.score > self.min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
+
+            pass_dist_test = False
+            if bbox_mdpt_x > min_x and bbox_mdpt_x < max_x and bbox_mdpt_y > min_y:
+                pass_dist_test = True
+            
+            was_selected =False
+            if((c.score > self.min_conf_threshold) and (c.score <= 1) and pass_dist_test and line_length < min_dist and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
+                was_selected = True
                 highest_scoring_label = object_name
                 highest_score = c.score
-                max_dist = line_length
+                min_dist = line_length
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
             elif (object_name in grips.object_to_grip_mapping.value.keys()) or (c.score > self.min_conf_threshold):
                 self.other_cam_data.append((object_name, c.score))
+
+            if self.live_camera_feed:
+                color = (0, 255, 0)
+                if was_selected:
+                    color = (21, 118, 187)
+                cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), color, 2)
+                
+                #Draw the line from the center of the bounding box to the center of the image
+                cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), color, 5)
+                #Draw the text label for the line distance
+                cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+5),
+                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                #Draw the text label for the center of the box
+                cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
+                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         #Save the modified image for debugging
         if flag:
