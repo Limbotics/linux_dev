@@ -268,6 +268,7 @@ class camera_interface():
         if flag:
             cv2.imwrite("dist_img.jpg", cv2_im_rgb)
         if self.live_camera_feed:
+            cv2_im_rgb = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
             self.im_show(cv2_im_rgb, 'frame')
         self.inference_time = time.time() - t
         return(highest_scoring_label, highest_score)
