@@ -146,8 +146,8 @@ while (cam_thread.is_alive() and not SM.killed):
             cam.temp_pause = False #TODO: Set back
 
         #Let the servos know if the camera sees anything         
-        grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
-        servs.grip_config = grip_name
+        # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+        # servs.grip_config = grip_name
 
     elif (SM.current_mode == modes.GCM):
         # print("[MT] In GCM Mode Processing")
@@ -158,8 +158,8 @@ while (cam_thread.is_alive() and not SM.killed):
         # servs.grip_config = grip_name
 
         #servo_thread.join()
-        servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
-        servo_thread.start()
+        # servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
+        # servo_thread.start()
     else:
         raise AttributeError("State Manager has no current mode defined.")
 
