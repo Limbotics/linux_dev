@@ -252,8 +252,11 @@ class Mode_Manager():
         # print("|\n")
 
         #Print vibration status
-        vibe = "\n| Vibration status: " + data_list["vibes"]
-        main_str += vibe
+        try:
+            vibe = "\n| Vibration status: " + data_list["vibes"]
+            main_str += vibe
+        except Exception as e:
+            pass
 
         print(main_str)
         # self.output_file.write("\n" + main_str)
