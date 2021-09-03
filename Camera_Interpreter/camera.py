@@ -186,7 +186,7 @@ class camera_interface():
         cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
         #Draw the radius on the image
-        cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,0), 2)
+        cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
