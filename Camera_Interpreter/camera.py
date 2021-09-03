@@ -167,7 +167,7 @@ class camera_interface():
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
             
     def detect_main_object(self, frame1):
-        min_conf_threshold = 0.4
+        min_conf_threshold = 0.2
 
         # Perform the actual detection by running the model with the image as input
         t = time.time()
