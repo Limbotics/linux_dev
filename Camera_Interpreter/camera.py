@@ -76,10 +76,28 @@ class camera_interface():
         print("[INFO] loading model...")
         #Load the tflite model and labelmap
         # Get path to current working directory
-        GRAPH_NAME = "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
-        MODEL_NAME = "Camera_Interpreter/Coco"
-        LABELMAP_NAME = "coco_labels.txt"
-        CWD_PATH = os.getcwd()
+        if False:
+            self.min_conf_threshold = 0.2
+            GRAPH_NAME = "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
+            MODEL_NAME = "Camera_Interpreter/Coco"
+            LABELMAP_NAME = "coco_labels.txt"
+            CWD_PATH = os.getcwd()
+            # Load the Tensorflow Lite model.
+            # If using Edge TPU, use special load_delegate argument
+            # Initialize the TF interpreter
+            self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'))
+            self.interpreter.allocate_tensors()
+        else:
+            self.min_conf_threshold = 0.4
+            GRAPH_NAME = "efficientdet_lite3_512_ptq_edgetpu.tflite"
+            MODEL_NAME = "Camera_Interpreter/Edge_TPU_Model"
+            LABELMAP_NAME = "coco_labels_efficientdet.txt"
+            CWD_PATH = os.getcwd()
+            # Load the Tensorflow Lite model.
+            # If using Edge TPU, use special load_delegate argument
+            # Initialize the TF interpreter
+            self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Edge_TPU_Model/efficientdet_lite3_512_ptq_edgetpu.tflite'))
+            self.interpreter.allocate_tensors()
 
         # Path to .tflite file, which contains the model that is used for object detection
         PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
@@ -89,11 +107,7 @@ class camera_interface():
         #self.labels = dataset.read_label_file(PATH_TO_LABELS)
         self.labels = read_label_file(PATH_TO_LABELS)
 
-        # Load the Tensorflow Lite model.
-        # If using Edge TPU, use special load_delegate argument
-        # Initialize the TF interpreter
-        self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'))
-        self.interpreter.allocate_tensors()
+        
 
         # Get model details
         self.input_details = self.interpreter.get_input_details()
@@ -167,14 +181,12 @@ class camera_interface():
             # print("[INFO] Time to decode image: " + (str(time.time() - t)))
             
     def detect_main_object(self, frame1):
-        min_conf_threshold = 0.2
-
         # Perform the actual detection by running the model with the image as input
         t = time.time()
         cv2_im_rgb = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
         cv2_im_rgb = cv2.resize(cv2_im_rgb, self.size)
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
-        objs = get_objects(self.interpreter, min_conf_threshold)
+        objs = get_objects(self.interpreter, self.min_conf_threshold)
 
         #Get information about the image
         #More image information
@@ -220,13 +232,13 @@ class camera_interface():
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
+            if((c.score > self.min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
                 max_dist = line_length
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
-            elif (c.score > min_conf_threshold):
+            elif (c.score > self.min_conf_threshold):
                 self.other_cam_data.append((object_name, c.score))
 
         #Save the modified image for debugging
