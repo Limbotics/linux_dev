@@ -250,7 +250,7 @@ class camera_interface():
                 self.other_cam_data.append((object_name, c.score))
 
             if self.live_camera_feed:
-                color = (0, 0, 125)
+                color = (0, 0, 255)
                 if was_selected:
                     color = (0, 255, 0)
                 cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), color, 2)
@@ -259,7 +259,7 @@ class camera_interface():
                 cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), color, 5)
                 #Draw the text label for the line distance
                 cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+5),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 2)
                 #Draw the text label for the center of the box
                 # cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
                 #                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
