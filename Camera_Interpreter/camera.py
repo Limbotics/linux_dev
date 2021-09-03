@@ -243,7 +243,7 @@ class camera_interface():
                 highest_score = c.score
                 max_dist = line_length
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
-            elif (c.score > self.min_conf_threshold):
+            elif (object_name in grips.object_to_grip_mapping.value.keys()):
                 self.other_cam_data.append((object_name, c.score))
 
         #Save the modified image for debugging
