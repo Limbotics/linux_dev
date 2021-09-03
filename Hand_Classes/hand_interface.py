@@ -138,7 +138,8 @@ class grips(Enum):
         "cell phone":   grip_angles.thumb_pinch.value,
         "cell":   grip_angles.thumb_pinch.value,
         "refrigerator": grip_angles.lateral_power.value,
-        "keyboard": grip_angles.point.value
+        "keyboard": grip_angles.point.value,
+        "laptop": grip_angles.point.value
         # "cat": grip_angles
         # "microwave":    grip_angles.lateral_power.value,
         # "refrigerator": grip_angles.lateral_power.value,
