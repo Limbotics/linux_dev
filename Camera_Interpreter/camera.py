@@ -4,6 +4,7 @@
 # https://medium.com/@balaji_85683/installing-opencv-4-0-on-google-coral-dev-board-5c3a69d7f52f
 
 # import the necessary packages
+from numpy.lib.financial import _convert_when
 from imutils.video import VideoStream
 from imutils.video import FPS
 import numpy as np
@@ -231,6 +232,10 @@ class camera_interface():
         #Save the modified image for debugging
         if flag:
             cv2.imwrite("dist_img.jpg", cv2_im_rgb)
+        try:
+            cv2.imshow('frame', cv2_im_rgb)
+        except Exception as e:
+            pass
         #return (highest_scoring_label, highest_score)
         # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
