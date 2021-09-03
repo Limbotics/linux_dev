@@ -207,7 +207,7 @@ class camera_interface():
         midpoint_y = int((height - min_y)/2) + min_y
         if self.live_camera_feed:
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (230, 131, 37), 2)
             #Draw the spot region
             # cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
             cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (min_x, min_y), (max_x, height), (0, 255, 0), 2)
@@ -250,9 +250,9 @@ class camera_interface():
                 self.other_cam_data.append((object_name, c.score))
 
             if self.live_camera_feed:
-                color = (0, 255, 0)
+                color = (255, 0, 0)
                 if was_selected:
-                    color = (230, 131, 37)
+                    color = (0, 255, 0)
                 cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), color, 2)
                 
                 #Draw the line from the center of the bounding box to the center of the image
@@ -261,8 +261,8 @@ class camera_interface():
                 cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+5),
                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
                 #Draw the text label for the center of the box
-                cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                # cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
+                #                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         #Save the modified image for debugging
         if flag:
