@@ -247,8 +247,8 @@ class camera_interface():
                 self.other_cam_data.append((object_name, c.score))
 
         #Save the modified image for debugging
-        # if flag:
-        #     cv2.imwrite("dist_img.jpg", cv2_im_rgb)
+        if flag:
+            cv2.imwrite("dist_img.jpg", cv2_im_rgb)
         if self.live_camera_feed:
             self.im_show(cv2_im_rgb, 'frame')
         self.inference_time = time.time() - t
