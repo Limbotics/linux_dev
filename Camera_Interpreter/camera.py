@@ -96,8 +96,10 @@ class camera_interface():
         # Get model details
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        inference_size = input_size(self.interpreter)
+        self.inference_size = input_size(self.interpreter)
         self.size = input_size(self.interpreter)
+
+        
 
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
@@ -173,11 +175,35 @@ class camera_interface():
         run_inference(self.interpreter, cv2_im_rgb.tobytes())
         objs = get_objects(self.interpreter, min_conf_threshold)
 
+        #Get information about the image
+        #More image information
+        height, width, channels = cv2_im_rgb.shape
+        scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
+        midpoint_x = width/2
+        midpoint_y = height/2
+
+        #Information about the highest scoring/closest object
         highest_scoring_label = ""
         highest_score = 0
+        dist_to_center = 0
+        
         self.other_cam_data = []
+        flag = False
         for c in objs:
+            flag = True
             object_name = self.labels.get(c.id, c.id)# Look up object name from "labels" array using class index
+
+            #get the bounding box information
+            bbox = c.bbox.scale(scale_x, scale_y)
+            x0, y0 = int(bbox.xmin), int(bbox.ymin)
+            x1, y1 = int(bbox.xmax), int(bbox.ymax)
+
+            #Put the bounding box on the image
+            cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
+            
+            #Draw the line from the center of the bounding box to the center of the image
+            cv2_im_rgb = cv2.line(cv2_im_rgb, ((x1-x0)/2,(y1-y0)/2), (midpoint_x,midpoint_y), (0, 255, 0), 9)
+
             if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
@@ -185,6 +211,10 @@ class camera_interface():
                 # print("[DETECT - INFO] Highest scoring pair: ", highest_scoring_label, ", ", str(highest_score))
             elif (c.score > min_conf_threshold):
                 self.other_cam_data.append((object_name, c.score))
+
+        #Save the modified image for debugging
+        if flag:
+            cv2.imwrite("dist_img.jpg", cv2_im_rgb)
         #return (highest_scoring_label, highest_score)
         # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
