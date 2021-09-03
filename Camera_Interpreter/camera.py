@@ -215,7 +215,7 @@ class camera_interface():
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
         highest_score = 0
-        min_dist = 0
+        min_dist = width
         
         self.other_cam_data = []
         flag = False
