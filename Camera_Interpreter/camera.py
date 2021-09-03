@@ -252,7 +252,7 @@ class camera_interface():
             if self.live_camera_feed:
                 color = (0, 255, 0)
                 if was_selected:
-                    color = (21, 118, 187)
+                    color = (230, 131, 37)
                 cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), color, 2)
                 
                 #Draw the line from the center of the bounding box to the center of the image
