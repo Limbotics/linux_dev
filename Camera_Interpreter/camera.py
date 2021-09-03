@@ -207,7 +207,7 @@ class camera_interface():
             #Draw the line from the center of the bounding box to the center of the image
             cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
             #Draw the text label
-            cv2_im = cv2.putText(cv2_im, str(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y)), (x0, y0+30),
+            cv2_im_rgb = cv2.putText(cv2_im_rgb, str(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y)), (x0, y0+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 2)
             
 
