@@ -178,7 +178,7 @@ class camera_interface():
         #Get information about the image
         #More image information
         height, width, channels = cv2_im_rgb.shape
-        centered_line_length_limit = width/4
+        centered_line_length_limit = int(width/4)
 
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
         midpoint_x = int(width/2)
