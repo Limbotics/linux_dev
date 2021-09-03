@@ -232,12 +232,20 @@ class camera_interface():
         #Save the modified image for debugging
         if flag:
             cv2.imwrite("dist_img.jpg", cv2_im_rgb)
-        cv2.imshow('frame', cv2_im_rgb)
+        self.imshow(cv2_im_rgb, 'frame')
         #return (highest_scoring_label, highest_score)
         # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
         self.inference_time = time.time() - t
         return(highest_scoring_label, highest_score)
+
+    def im_show(self, img, name):
+
+        cv2.namedWindow(name)
+        cv2.moveWindow(name, 900,-900)
+        cv2.imshow(name, img)
+        cv2.waitKey(1)
+        return
 
     def line_length(self, x0, x1, y0, y1):
         return math.sqrt(((x1-x0)**2) + (y1-y0)**2)
