@@ -136,6 +136,7 @@ class grips(Enum):
         # "sandwich":     grip_angles.lateral_power.value,
         # "remote":       grip_angles.lateral_power.value,
         "cell phone":   grip_angles.thumb_pinch.value,
+        "cell":   grip_angles.thumb_pinch.value,
         "refrigerator": grip_angles.lateral_power.value,
         "keyboard": grip_angles.point.value
         # "cat": grip_angles
