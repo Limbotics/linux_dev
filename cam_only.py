@@ -138,30 +138,30 @@ while (cam_thread.is_alive() and not SM.killed):
         output_delay = time.time()
     
     #Pass the current system status to the state manager
-    SM.master_state_tracker(user_command_detected)
-    if (SM.current_mode == modes.AGS):
-        # print("[MT] In AGS Mode Processing")
-        #Ensure the camera isn't paused
-        if cam.temp_pause:
-            cam.temp_pause = False #TODO: Set back
+    # SM.master_state_tracker(user_command_detected)
+    # if (SM.current_mode == modes.AGS):
+    #     # print("[MT] In AGS Mode Processing")
+    #     #Ensure the camera isn't paused
+    #     if cam.temp_pause:
+    #         cam.temp_pause = False #TODO: Set back
 
-        #Let the servos know if the camera sees anything         
-        # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
-        # servs.grip_config = grip_name
+    #     #Let the servos know if the camera sees anything         
+    #     # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+    #     # servs.grip_config = grip_name
 
-    elif (SM.current_mode == modes.GCM):
-        # print("[MT] In GCM Mode Processing")
-        #Command the camera to stop processing inputs temporarily
-        cam.temp_pause = True
-        #Confirmed user commanding into reported object
-        # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
-        # servs.grip_config = grip_name
+    # elif (SM.current_mode == modes.GCM):
+    #     # print("[MT] In GCM Mode Processing")
+    #     #Command the camera to stop processing inputs temporarily
+    #     cam.temp_pause = True
+    #     #Confirmed user commanding into reported object
+    #     # grip_name = hand_interface.grips.object_to_grip_mapping.value[reported_object]
+    #     # servs.grip_config = grip_name
 
-        #servo_thread.join()
-        # servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
-        # servo_thread.start()
-    else:
-        raise AttributeError("State Manager has no current mode defined.")
+    #     #servo_thread.join()
+    #     # servo_thread = threading.Thread(target=servs.process_grip_change, args=(mi.last_input[1],))
+    #     # servo_thread.start()
+    # else:
+    #     raise AttributeError("State Manager has no current mode defined.")
 
 # except KeyboardInterrupt:
 print("\nScript quit command detected - closing IO objects.")
