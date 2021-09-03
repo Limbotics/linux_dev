@@ -282,7 +282,8 @@ class camera_interface():
         self.killed_thread = True
         #Release the camera object
         self.cap.release()
-        cv2.destroyAllWindows()
+        if self.live_camera_feed:
+            cv2.destroyAllWindows()
         print("[CAM] Successfully killed camera session.")
 
     def load_labels(self, path):
