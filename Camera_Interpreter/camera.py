@@ -100,8 +100,6 @@ class camera_interface():
         self.inference_size = input_size(self.interpreter)
         self.size = input_size(self.interpreter)
 
-        
-
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
 
         self.input_mean = 127.5
@@ -120,6 +118,7 @@ class camera_interface():
         self.object_spotted_T0 = 0
         self.object_not_spotted_delta_req = 5
         self.new_object_spotted_timer = 1
+        self.centered_line_length_limit = 200
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -216,7 +215,7 @@ class camera_interface():
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (object_name in grips.object_to_grip_mapping.value.keys())):
+            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < self.centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
