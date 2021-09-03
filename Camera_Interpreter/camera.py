@@ -191,15 +191,15 @@ class camera_interface():
         #Get information about the image
         #More image information
         height, width, channels = cv2_im_rgb.shape
-        centered_line_length_limit = int(width/4)
+        # centered_line_length_limit = int(width/4)
 
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
         midpoint_x = int(width/2)
         midpoint_y = int(height/2)
-        cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
-                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-        #Draw the radius on the image
-        cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
+        # cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
+        #                      cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        # #Draw the radius on the image
+        # cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
@@ -219,18 +219,18 @@ class camera_interface():
             bbox_mdpt_x = int((x1-x0)/2)+x0
             bbox_mdpt_y = int((y1-y0)/2)+y0
 
-            #Put the bounding box on the image
-            cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
+            # #Put the bounding box on the image
+            # cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
             
-            #Draw the line from the center of the bounding box to the center of the image
-            cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
-            #Draw the text label for the line distance
+            # #Draw the line from the center of the bounding box to the center of the image
+            # cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
+            # #Draw the text label for the line distance
             line_length = int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+30),
-                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-            #Draw the text label for the center of the box
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
-                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            # cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+30),
+            #                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            # #Draw the text label for the center of the box
+            # cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
+            #                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
             if((c.score > self.min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
@@ -242,12 +242,9 @@ class camera_interface():
                 self.other_cam_data.append((object_name, c.score))
 
         #Save the modified image for debugging
-        if flag:
-            cv2.imwrite("dist_img.jpg", cv2_im_rgb)
+        # if flag:
+        #     cv2.imwrite("dist_img.jpg", cv2_im_rgb)
         # self.im_show(cv2_im_rgb, 'frame')
-        #return (highest_scoring_label, highest_score)
-        # print("[TENSOR-INFO] Time to get classifying data from TPU: ", str(time.time() - t), " s.")
-        # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
         self.inference_time = time.time() - t
         return(highest_scoring_label, highest_score)
 
