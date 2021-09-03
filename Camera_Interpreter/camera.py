@@ -118,7 +118,7 @@ class camera_interface():
         self.object_spotted_T0 = 0
         self.object_not_spotted_delta_req = 5
         self.new_object_spotted_timer = 1
-        self.centered_line_length_limit = 200
+        self.centered_line_length_limit = 0
 
         #Initialize the paused flag to false
         self.temp_pause = False
@@ -178,11 +178,15 @@ class camera_interface():
         #Get information about the image
         #More image information
         height, width, channels = cv2_im_rgb.shape
+        centered_line_length_limit = width/4
+
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
         midpoint_x = int(width/2)
         midpoint_y = int(height/2)
         cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y+30),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        #Draw the radius on the image
+        cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,0), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
@@ -215,7 +219,7 @@ class camera_interface():
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < self.centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
+            if((c.score > min_conf_threshold) and (c.score <= 1) and (line_length > max_dist) and (line_length < centered_line_length_limit) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
                 highest_scoring_label = object_name
                 highest_score = c.score
