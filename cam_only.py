@@ -18,7 +18,7 @@ from Status_Lights_Driver import slights
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
 from Servo_Driver import servo
 from Camera_Interpreter import camera
-from Muscle_Driver import muscle
+# from Muscle_Driver import muscle
 from Hand_Classes import hand_interface
 modes = hand_interface.modes
 from State_Manager import state_manager
