@@ -203,8 +203,8 @@ class camera_interface():
         min_y = int(width/4)
 
         #Determine the midpoint of the detection region
-        midpoint_x = int((max_x-min_x)/2)
-        midpoint_y = int((height - min_y)/2)
+        midpoint_x = int((max_x-min_x)/2) + min_x
+        midpoint_y = int((height - min_y)/2) + min_y
         if self.live_camera_feed:
             cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
