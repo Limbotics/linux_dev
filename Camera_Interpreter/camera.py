@@ -8,6 +8,7 @@ from imutils.video import VideoStream
 from imutils.video import FPS
 import numpy as np
 import imutils
+import math
 from PIL import Image
 import time
 import cv2
@@ -197,12 +198,18 @@ class camera_interface():
             bbox = c.bbox.scale(scale_x, scale_y)
             x0, y0 = int(bbox.xmin), int(bbox.ymin)
             x1, y1 = int(bbox.xmax), int(bbox.ymax)
+            bbox_mdpt_x = int((x1-x0)/2)
+            bbox_mdpt_y = int((y1-y0)/2)
 
             #Put the bounding box on the image
             cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
             
             #Draw the line from the center of the bounding box to the center of the image
-            cv2_im_rgb = cv2.line(cv2_im_rgb, (int((x1-x0)/2),int((y1-y0)/2)), (midpoint_x,midpoint_y), (0, 255, 0), 9)
+            cv2_im_rgb = cv2.line(cv2_im_rgb, (bbox_mdpt_x,bbox_mdpt_y), (midpoint_x,midpoint_y), (0, 255, 0), 5)
+            #Draw the text label
+            cv2_im = cv2.putText(cv2_im, str(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y)), (x0, y0+30),
+                             cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 2)
+            
 
             if((c.score > min_conf_threshold) and (c.score <= 1) and (c.score > highest_score) and (object_name in grips.object_to_grip_mapping.value.keys())):
                 # Draw label
@@ -220,6 +227,9 @@ class camera_interface():
         # print("[TENSOR-INFO] Approx. ", str(1/(time.time() - t)), " fps")
         self.inference_time = time.time() - t
         return(highest_scoring_label, highest_score)
+
+    def line_length(self, x0, x1, y0, y1):
+        return math.sqrt(((x1-x0)**2) + (y1-y0)**2)
 
     def read_cam_thread(self):
         while not self.killed_thread:
