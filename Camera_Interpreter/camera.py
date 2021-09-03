@@ -200,8 +200,8 @@ class camera_interface():
             bbox = c.bbox.scale(scale_x, scale_y)
             x0, y0 = int(bbox.xmin), int(bbox.ymin)
             x1, y1 = int(bbox.xmax), int(bbox.ymax)
-            bbox_mdpt_x = int((x1-x0)/2)
-            bbox_mdpt_y = int((y1-y0)/2)
+            bbox_mdpt_x = int((x1-x0)/2)+x0
+            bbox_mdpt_y = int((y1-y0)/2)+y0
 
             #Put the bounding box on the image
             cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (x0, y0), (x1, y1), (0, 255, 0), 2)
