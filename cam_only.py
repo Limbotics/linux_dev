@@ -6,7 +6,7 @@ import tty
 import sys
 
 
-from Status_Lights_Driver import slights
+# from Status_Lights_Driver import slights
 #testing new mendel workflow
 #Status Lights initialization
 # statuslights = slights.slights_interface()
@@ -16,7 +16,7 @@ from Status_Lights_Driver import slights
 
 #import other files
 # from os import ~.limbotics_github.transradial_development.Servo_driver.servo
-from Servo_Driver import servo
+# from Servo_Driver import servo
 from Camera_Interpreter import camera
 # from Muscle_Driver import muscle
 from Hand_Classes import hand_interface
@@ -64,7 +64,7 @@ cam = camera.camera_interface()
 #         # print("[CAL-CH1] CH1 input threshold: ", str(mi.analogThreshold_1), "CH1 max: ", str(mi.max_input_1))
 
 #Servo control initialization
-servs = servo.handLUTControl()
+# servs = servo.handLUTControl()
 
 #Save the state of the arm
 reported_object = ""
@@ -170,7 +170,7 @@ print("\nScript quit command detected - closing IO objects.")
 
 cam.end_camera_session()
 # cam_thread.join() #Don't continue until the thread is closed 
-servs.safe_shutdown()
+# servs.safe_shutdown()
 time.sleep(0.5)
 
 #Everything else is complete, so do status lights last
