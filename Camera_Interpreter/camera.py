@@ -77,6 +77,7 @@ class camera_interface():
         #Load the tflite model and labelmap
         # Get path to current working directory
         if False:
+            print("[MODEL] Loading 20% MAP model...")
             self.min_conf_threshold = 0.2
             GRAPH_NAME = "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
             MODEL_NAME = "Camera_Interpreter/Coco"
@@ -88,6 +89,7 @@ class camera_interface():
             self.interpreter = make_interpreter(os.path.join("/home/mendel/linux_dev", 'Camera_Interpreter/Coco/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'))
             self.interpreter.allocate_tensors()
         else:
+            print("[MODEL] Loading 40% MAP model...")
             self.min_conf_threshold = 0.4
             GRAPH_NAME = "efficientdet_lite3_512_ptq_edgetpu.tflite"
             MODEL_NAME = "Camera_Interpreter/Edge_TPU_Model"
@@ -191,7 +193,7 @@ class camera_interface():
         #Get information about the image
         #More image information
         height, width, channels = cv2_im_rgb.shape
-        # centered_line_length_limit = int(width/4)
+        centered_line_length_limit = int(width/4)
 
         scale_x, scale_y = width / self.inference_size[0], height / self.inference_size[1]
         midpoint_x = int(width/2)
