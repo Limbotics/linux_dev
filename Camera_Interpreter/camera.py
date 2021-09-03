@@ -71,7 +71,7 @@ class camera_interface():
             raise Exception("Dev board not detected.")
         self.count = 0
         self.cap = cv2.VideoCapture(1)
-        self.live_camera_feed = True
+        self.live_camera_feed = bool(input("Live Camera feed? 0/1"))
         print("[INFO] Created video capture object")
 
         print("[INFO] loading model...")
