@@ -244,7 +244,7 @@ class camera_interface():
         cv2.namedWindow(name)
         cv2.moveWindow(name, 900,-900)
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
-        cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_AUTOSIZE)
+        # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_AUTOSIZE)
         cv2.imshow(name, img)
         cv2.waitKey(1)
         return
