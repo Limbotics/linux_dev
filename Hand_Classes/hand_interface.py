@@ -70,28 +70,28 @@ class grip_names(Enum):
 
 class grip_angles(Enum):
     lateral_power = {
-        fingers.thumb.value:   180,
-        fingers.index.value:   180,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
+        fingers.thumb.value:   170,
+        fingers.index.value:   170,
+        fingers.middle.value:  170,
+        fingers.ring.value:    170,
         # fingers.pinky.value:   0
     }
     tripod = {
         fingers.thumb.value:   45,
-        fingers.index.value:   180,
-        fingers.middle.value:  180,
-        fingers.ring.value:    180,
+        fingers.index.value:   170,
+        fingers.middle.value:  170,
+        fingers.ring.value:    170,
         # fingers.pinky.value:   0
     }
     thumb_pinch = {
-        fingers.thumb.value:   180,
+        fingers.thumb.value:   170,
         fingers.index.value:   75,
         fingers.middle.value:  75,
         fingers.ring.value:    120,
         # fingers.pinky.value:   0
     }
     point = {
-        fingers.thumb.value:   180,
+        fingers.thumb.value:   170,
         fingers.index.value:   0,
         fingers.middle.value:  180,
         fingers.ring.value:    180,
