@@ -84,7 +84,7 @@ class grip_angles(Enum):
         # fingers.pinky.value:   0
     }
     thumb_pinch = {
-        fingers.thumb.value:   170,
+        fingers.thumb.value:   180,
         fingers.index.value:   75,
         fingers.middle.value:  75,
         fingers.ring.value:    120,
