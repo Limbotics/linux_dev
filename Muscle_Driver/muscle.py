@@ -177,7 +177,7 @@ class muscle_interface():
             counter += spacing
 
     def read_true_raw(self):
-        channel = 1
+        channel = 0
         return self.ads.read_adc(channel, gain=1)
 
     def update_0_threshold(self):
@@ -187,8 +187,8 @@ class muscle_interface():
         while (time.time() - start) < 1:
             input_array.append(self.read_true_raw())
 
-        # self.analogThreshold_0 = 1.25*(sum(input_array)/len(input_array))
-        self.analogThreshold_0 = 10
+        self.analogThreshold_0 = 1.25*(sum(input_array)/len(input_array))
+        # self.analogThreshold_0 = 10
         print("[CALIBRATION-CH0] Setting input threshold as ", self.analogThreshold_0)
 
     def update_0_max(self):
@@ -199,8 +199,8 @@ class muscle_interface():
             input_array.append(self.read_true_raw())
 
         #Set val to be average of past second
-        # self.max_input_0 = sum(input_array)/len(input_array)
-        self.max_input_0 = 100
+        self.max_input_0 = sum(input_array)/len(input_array)
+        # self.max_input_0 = 100
 
         #Set threshold to be half the range
         # self.analogThreshold_0 = (self.max_input_0-self.analogThreshold_0)/2 + self.analogThreshold_0
@@ -210,7 +210,7 @@ class muscle_interface():
         Read the raw ADS value and return the current filtered value.
         """
         #Constants
-        mvg_avg = 2
+        mvg_avg = 4
 
         #Read the raw value
         raw_val = 0
