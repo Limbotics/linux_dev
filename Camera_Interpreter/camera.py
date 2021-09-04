@@ -110,8 +110,6 @@ class camera_interface():
         #self.labels = dataset.read_label_file(PATH_TO_LABELS)
         self.labels = read_label_file(PATH_TO_LABELS)
 
-        
-
         # Get model details
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
@@ -233,7 +231,6 @@ class camera_interface():
             # #Put the bounding box on the image
             line_length = int(self.line_length(bbox_mdpt_x, midpoint_x, bbox_mdpt_y, midpoint_y))
             
-
             pass_dist_test = False
             if bbox_mdpt_x > min_x and bbox_mdpt_x < max_x and bbox_mdpt_y > min_y:
                 pass_dist_test = True
@@ -260,9 +257,6 @@ class camera_interface():
                 #Draw the text label for the line distance
                 cv2_im_rgb = cv2.putText(cv2_im_rgb, object_name, (x0, y0+5),
                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2)
-                #Draw the text label for the center of the box
-                # cv2_im_rgb = cv2.putText(cv2_im_rgb, "BB", (bbox_mdpt_x, bbox_mdpt_y),
-                #                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         #Save the modified image for debugging
         if flag:
