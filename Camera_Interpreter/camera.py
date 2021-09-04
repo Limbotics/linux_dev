@@ -203,12 +203,11 @@ class camera_interface():
         #Determine the midpoint of the detection region
         midpoint_x = int((max_x-min_x)/2) + min_x
         midpoint_y = int((height - min_y)/2) + min_y
-        if self.live_camera_feed:
-            cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (230, 131, 37), 2)
-            #Draw the spot region
-            # cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
-            cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (min_x, min_y), (max_x, height), (0, 255, 0), 2)
+        cv2_im_rgb = cv2.putText(cv2_im_rgb, "M", (midpoint_x, midpoint_y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (230, 131, 37), 2)
+        #Draw the spot region
+        # cv2_im_rgb = cv2.circle(cv2_im_rgb, (midpoint_x, midpoint_y), centered_line_length_limit, (0,255,255), 2)
+        cv2_im_rgb = cv2.rectangle(cv2_im_rgb, (min_x, min_y), (max_x, height), (0, 255, 0), 2)
 
         #Information about the highest scoring/closest object
         highest_scoring_label = ""
