@@ -26,7 +26,7 @@ from State_Manager import state_manager
 
 
 #Camera initialization
-cam = camera.camera_interface()
+cam = camera.camera_interface(True)
 
 
 #Muscle sensor initialization
