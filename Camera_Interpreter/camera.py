@@ -65,13 +65,13 @@ class camera_interface():
         cap (cv2 VideoCapture): The VideoCapture object.
     """
 
-    def __init__(self,resolution=(640,480),framerate=30):
+    def __init__(self,live_camera_feed, resolution=(640,480),framerate=30):
         #Try to detect the coral dev board
         if not self.detectCoralDevBoard():
             raise Exception("Dev board not detected.")
         self.count = 0
         self.cap = cv2.VideoCapture(1)
-        self.live_camera_feed = bool(input("Live Camera feed? 0/1"))
+        self.live_camera_feed = live_camera_feed
         print("[INFO] Created video capture object")
 
         print("[INFO] loading model...")
