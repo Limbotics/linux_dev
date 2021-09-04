@@ -70,10 +70,10 @@ class grip_names(Enum):
 
 class grip_angles(Enum):
     lateral_power = {
-        fingers.thumb.value:   170,
-        fingers.index.value:   170,
-        fingers.middle.value:  170,
-        fingers.ring.value:    170,
+        fingers.thumb.value:   180,
+        fingers.index.value:   180,
+        fingers.middle.value:  180,
+        fingers.ring.value:    180,
         # fingers.pinky.value:   0
     }
     tripod = {
